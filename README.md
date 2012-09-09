@@ -134,10 +134,6 @@ db.users.gsum("first_name", "age")
 {
   "result": [
     {
-      "_id": null,
-      "sum": 0
-    },
-    {
       "_id": "Jessica",
       "sum": 30
     },
