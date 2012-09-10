@@ -20,9 +20,9 @@
   <body>
       <div id="header">
         <nav>
-          <li class="fork"><a href="https://github.com/TylerBrock/testaa">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/TylerBrock/testaa/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/TylerBrock/testaa/tarball/master">TAR</a></li>
+          <li class="fork"><a href="https://github.com/TylerBrock/mongo-hacker">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/TylerBrock/mongo-hacker/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/TylerBrock/mongo-hacker/tarball/master">TAR</a></li>
           <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
@@ -44,27 +44,43 @@ $ cd mongo-hacker
 $ ln -sf mongo_hacker.js ~/.mongorc.js
 </code></pre>
 
-<p><small>Currently works with version 2.2+ of the Mongo Shell</small></p>
-
 <h3>Features</h3>
 
-<h5>Colorized Shell</h5>
+<h4>Colorized Shell</h4>
 <img src="screenshots/colorized_shell.png"></img>
 
-<p>MongoDB lets you create rich documents, why not look at them in color?</p>
+<h4>Aggregation Framework Helpers</h4>
 
-<h3>Aggregation Framework Helpers</h3>
+<h5>Group and Count</h5>
+  <pre><code>gcount(group_field, filter)</pre></code>
+<h5>Group and Sum</h5>
+  <pre><code>gsum(group_field, sum_field, filter)</pre></code>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h4>Sensible Defaults</h4>
+<ul>
+  <li>Verbose shell enabled</li>
+  <li>Auto multi update </li>
+  <li>Two spaces indent</li>
+  <li>Colon next to keys</li>
+</ul>
+
+<h4>Index Paranoia</h4>
+
+<p>Print index usage information on every query</p>
+
+<h4>Colorize and Highlight Query Time</h4>
+
+<p>Highlights slow running queries<p>
 
 <h3>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>
+Originally created and conceived by Tyler Brock(<a href="https://github.com/TylerBrock" class="user-mention">@TylerBrock</a>) and Mike O'Brien(<a href="https://github.com/mpobrien" class="user-mention">@mpobrien</a>) who both work as Software Engineers at 10gen(<a href="https://github.com/10gen" class="user-mention">@10gen</a>) although there are have been many other contributors already. Thanks!
+</p>
 
 <h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
+<p>This software comes with no guarantee or warantee and is not endorsed by 10gen in any way.</p>
+    </section>
 
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
