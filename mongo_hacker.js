@@ -1,7 +1,11 @@
 /* 
  *
  * Mongo Hacker
+ * MongoDB Shell Enhancements for Hackers 
+ *
  * Tyler J. Brock - 2012
+ *
+ * https://github.com/TylerBrock/mongo-hacker
  *
  */
 
