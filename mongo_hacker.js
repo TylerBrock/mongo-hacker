@@ -5,12 +5,6 @@
  *
  */
 
-setVerboseShell(true);
-setIndexParanoia(true);
-setAutoMulti(true);
-
-__indent = "  "
-
 __ansi = {
     csi: String.fromCharCode(0x1B) + '[',
     reset: '0',
@@ -28,6 +22,17 @@ __ansi = {
         cyan: '6'  
     }
 }
+
+var ver = db.version().split(".");
+if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
+  print(colorize("\nSorry! Mongo Shell version 2.2.x and above is required! Please upgrade.\n", "red", true));
+} 
+
+setVerboseShell(false);
+setIndexParanoia(true);
+setAutoMulti(true);
+
+__indent = "  "
 
 function setIndexParanoia( value ) { 
     if( value == undefined ) value = true; 
