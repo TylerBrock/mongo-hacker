@@ -5,7 +5,7 @@
  *
  * Tyler J. Brock - 2012
  *
- * https://github.com/TylerBrock/mongo-hacker
+ * http://tylerbrock.github.com/mongo-hacker
  *
  */
 
