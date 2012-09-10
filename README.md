@@ -8,11 +8,11 @@ These enhancements are useful to me but they don't make sense for everyone. Feel
 
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
-Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
-
 ```
 ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
+
+Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
 
 ## List of Enhancements
 
