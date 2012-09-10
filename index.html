@@ -15,7 +15,19 @@
     <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script type="text/javascript">
 
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-34718663-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
   </head>
   <body>
       <div id="header">
@@ -66,16 +78,16 @@ $ ln -sf mongo_hacker.js ~/.mongorc.js
 
 <h4>Index Paranoia</h4>
 
-<p>Print index usage information on every query</p>
+  <p>Print index usage information on every query</p>
 
 <h4>Colorize and Highlight Query Time</h4>
 
-<p>Highlights slow running queries<p>
+  <p>Highlights slow running queries<p>
 
 <h3>Authors and Contributors</h3>
 
 <p>
-Originally created and conceived by Tyler Brock(<a href="https://github.com/TylerBrock" class="user-mention">@TylerBrock</a>) and Mike O'Brien(<a href="https://github.com/mpobrien" class="user-mention">@mpobrien</a>) who both work as Software Engineers at 10gen(<a href="https://github.com/10gen" class="user-mention">@10gen</a>) although there are have been many other contributors already. Thanks!
+Originally created and conceived of by Tyler Brock (<a href="https://github.com/TylerBrock" class="user-mention">@TylerBrock</a>) and Mike O'Brien (<a href="https://github.com/mpobrien" class="user-mention">@mpobrien</a>) who work as Software Engineers at 10gen (<a href="https://github.com/10gen" class="user-mention">@10gen</a>) in New York City. Despite being a young project, there have already been many other contributors as we encourage pull requests and criticism. Thank you to everyone who has used or contributed to Mongo Hacker.
 </p>
 
 <h3>Support or Contact</h3>
