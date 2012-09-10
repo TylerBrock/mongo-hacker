@@ -42,12 +42,8 @@ Highlight querytime if verboseShell is enabled
   - In **green** if querytime is at or below slowms
   - In **red** if query time is above slowms
 
-![Colorized Quertime](http://tylerbrock.github.com/mongo-hacker/screenshots/querytime.png)
-
 IndexParanoia
 - Automatically show information about index use -- to disable: `setIndexParanoia(false)`
-
-![Index Paranoia](http://tylerbrock.github.com/mongo-hacker/screenshots/index_paranoia.png)
 
 Default indent is 2 spaces instead of tab
   - Customizable by setting `__indent`
