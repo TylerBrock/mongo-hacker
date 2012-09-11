@@ -36,7 +36,7 @@ if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
   print(colorize("\nSorry! Mongo Shell version 2.2.x and above is required! Please upgrade.\n", "red", true));
 } 
 
-setVerboseShell(false);
+setVerboseShell(true);
 setIndexParanoia(true);
 setAutoMulti(true);
 
@@ -319,10 +319,10 @@ DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
     var serverstatus = db.serverStatus();
-    var host = serverstatus.host;
+    var host = serverstatus.host.split('.')[0];
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
-    return host + "(" + process + "-" + version + ")>";
+    return host + '(' + process + '-' + version + ') ' + db + '> ';
 }
 
 DBQuery.prototype.shellPrint = function(){
@@ -334,6 +334,9 @@ DBQuery.prototype.shellPrint = function(){
             print( s );
             n++;
         }
+
+        var output = []
+
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
             var slowms = this._db.setProfilingLevel().slowms;
@@ -343,7 +346,7 @@ DBQuery.prototype.shellPrint = function(){
             } else {
                 fetched += colorize(time + "ms", "green", true);
             }
-            print(fetched);
+            output.push(fetched);
         }
         if (typeof _indexParanoia !== 'undefined' && _indexParanoia) {
             var explain = this.clone();
@@ -352,18 +355,24 @@ DBQuery.prototype.shellPrint = function(){
             explain._limit = Math.abs(n._limit) * -1;
             var result = explain.next();
             var type = result.cursor;
+            var index_use = "Index["
             if (type == "BasicCursor") {
-                print( colorize("No index used!", "red", true) );
+                index_use += colorize( "none", "red", true);
             } else {
-                print( "Index: " + colorize(result.cursor.substring(12), "green", true ) );
+                index_use += colorize( result.cursor.substring(12), "green", true );
             }
+            index_use += "]";
+            output.push(index_use);
         }
-        if ( this.hasNext() ){
+        if ( this.hasNext() ) {
             ___it___  = this;
+            output.push("More[" + colorize("true", "green", true) + "]");
         }
         else {
             ___it___  = null;
+            output.push("More[" + colorize("false", "red", true) + "]");
         }
+        print(output.join(" -- "));
    }
     catch ( e ){
         print( e );
