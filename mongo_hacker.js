@@ -291,7 +291,7 @@ DBCollection.prototype.update = function( query , obj , upsert, multi ) {
 }
 
 // Override group because map/reduce style is deprecated
-DBCollection.prototype.group = function( name, group_field, operation, op_value, filter ) {
+DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
     var group_op = { $group: { _id: '$' + group_field } };
 
@@ -308,12 +308,12 @@ DBCollection.prototype.group = function( name, group_field, operation, op_value,
 
 // Function that groups and counts by group after applying filter
 DBCollection.prototype.gcount = function( group_field, filter ) {
-    return this.group('count', group_field, 'sum', 1, filter);
+    return this.agg_group('count', group_field, 'sum', 1, filter);
 }
 
 // Function that groups and sums sum_field after applying filter
 DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
-    return this.group('sum', group_field, 'sum', '$' + sum_field, filter);
+    return this.agg_group('sum', group_field, 'sum', '$' + sum_field, filter);
 }
 
 // Improve the default prompt with hostname, process type, and version
