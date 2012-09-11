@@ -22,7 +22,7 @@ Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
 
 Disable notfication of "Type 'it' for more"
 
-Custom prompt with `hostname(process-version)>` formating
+Custom prompt with `hostname(process-version) db>` formating
 
 ### Awesome
 
