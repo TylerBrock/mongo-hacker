@@ -316,6 +316,11 @@ DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
     return this.agg_group('sum', group_field, 'sum', '$' + sum_field, filter);
 }
 
+// Function that groups and averages avg_feld after applying filter
+DBCollection.prototype.gavg = function( group_field, avg_field, filter ) {
+    return this.agg_group('avg', group_field, 'avg', '$' + avg_field, filter);
+}
+
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
     var serverstatus = db.serverStatus();

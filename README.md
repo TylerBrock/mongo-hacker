@@ -59,6 +59,7 @@ Updated 4 existing record(s) in 1ms
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
 - Group and Sum: `gsum(group_field, sum_field, filter)`
+- Group and Average: `gavg(group_field, avg_field, filter)`
 
 ## Examples
 
@@ -134,6 +135,25 @@ db.users.gsum("first_name", "age")
     {
       "_id": "Tyler",
       "sum": 62
+    }
+  ],
+  "ok": 1
+}
+```
+
+### Group users by first name and average the age field
+
+```js
+db.users.gavg("first_name", "age")
+{
+  "result": [
+    {
+      "_id": "Jessica",
+      "avg": 30
+    },
+    {
+      "_id": "Tyler",
+      "avg": 31
     }
   ],
   "ok": 1
