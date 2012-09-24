@@ -8,10 +8,17 @@
 
 ## Usage
 
-Link mongo_hacker.js to `.mongorc.js` in your home directory:
+Update mongorc.js and set $HOME to be your home directory, then link mongorc.js
+to `.mongorc.js` in your home directory:
 
 ```
-ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
+ln -sf <mongo-hacker-dir>/mongorc.js ~/.mongorc.js
+```
+
+Link the hacker modules like so:
+
+```
+ln -sf <mongo-hacker-dir>/mongorc ~/.mongorc
 ```
 
 Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
@@ -75,7 +82,7 @@ db.users.insert([
     "last_name": "Brock",
     "updated": new Date()
   },
-  { 
+  {
     "age": 30,
     "first_name": "Jessica",
     "last_name": "Fake",

@@ -1,7 +1,6 @@
-/* 
+/*
  *
- * Mongo Hacker
- * MongoDB Shell Enhancements for Hackers 
+ * Colorize the shell
  *
  * Tyler J. Brock - 2012
  *
@@ -23,18 +22,9 @@ __ansi = {
         yellow: '3',
         blue: '4',
         magenta: '5',
-        cyan: '6'  
+        cyan: '6'
     }
 }
-
-if (_isWindows()) {
-  print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
-}
-
-var ver = db.version().split(".");
-if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
-  print(colorize("\nSorry! Mongo Shell version 2.2.x and above is required! Please upgrade.\n", "red", true));
-} 
 
 setVerboseShell(true);
 setIndexParanoia(true);
@@ -42,19 +32,19 @@ setAutoMulti(true);
 
 __indent = "  "
 
-function setIndexParanoia( value ) { 
-    if( value == undefined ) value = true; 
-    _indexParanoia = value; 
+function setIndexParanoia( value ) {
+    if( value == undefined ) value = true;
+    _indexParanoia = value;
 }
 
-function setAutoMulti( value ) { 
-    if( value == undefined ) value = true; 
-    _autoMulti = value; 
+function setAutoMulti( value ) {
+    if( value == undefined ) value = true;
+    _autoMulti = value;
 }
 
 function controlCode( parameters ) {
     if ( parameters == undefined ) {
-    	parameters = "";
+        parameters = "";
     }
     else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
         parameters = parameters.join(';');
@@ -148,15 +138,15 @@ Array.tojson = function( a , indent , nolint ){
 tojson = function( x, indent , nolint ) {
     if ( x === null )
         return colorize("null", "red", true);
-    
+
     if ( x === undefined )
         return colorize("undefined", "magenta", true);
 
     if ( x.isObjectId ) {
         return 'ObjectId(' + colorize('"' + x.str + '"', "green", false, true) + ')';
     }
-    
-    if (!indent) 
+
+    if (!indent)
         indent = "";
 
     switch ( typeof x ) {
@@ -186,7 +176,7 @@ tojson = function( x, indent , nolint ) {
         return colorize(s, "green", true);
     }
     case "number":
-        return colorize(x, "red") 
+        return colorize(x, "red")
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
@@ -201,22 +191,22 @@ tojson = function( x, indent , nolint ) {
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
-    
+
 }
 
 tojsonObject = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
-    
+
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
-    if (!indent) 
+    if (!indent)
         indent = "";
-    
+
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
         return x.tojson(indent,nolint);
     }
-    
+
     if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
         return x.constructor.tojson( x, indent , nolint );
     }
@@ -225,12 +215,12 @@ tojsonObject = function( x, indent , nolint ) {
         return "{ $maxKey : 1 }";
     if ( x.toString() == "[object MinKey]" )
         return "{ $minKey : 1 }";
-    
+
     var s = "{" + lineEnding;
 
     // push one level of indent
     indent += tabSpace;
-    
+
     var total = 0;
     for ( var k in x ) total++;
     if ( total == 0 ) {
@@ -242,7 +232,7 @@ tojsonObject = function( x, indent , nolint ) {
         keys = x._simpleKeys();
     var num = 1;
     for ( var k in keys ){
-        
+
         var val = x[k];
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
@@ -258,76 +248,6 @@ tojsonObject = function( x, indent , nolint ) {
     // pop one level of indent
     indent = indent.substring(__indent.length);
     return s + indent + "}";
-}
-
-// Hardcode multi update -- now you only need to remember upsert
-DBCollection.prototype.update = function( query , obj , upsert, multi ) {
-    assert( query , "need a query" );
-    assert( obj , "need an object" );
-
-    var firstKey = null;
-    for (var k in obj) { firstKey = k; break; }
-
-    if (firstKey != null && firstKey[0] == '$') {
-        // for mods we only validate partially, for example keys may have dots
-        this._validateObject( obj );
-    } else {
-        // we're basically inserting a brand new object, do full validation
-        this._validateForStorage( obj );
-    }
-
-    // can pass options via object for improved readability    
-    if ( typeof(upsert) === 'object' ) {
-        assert( multi === undefined, "Fourth argument must be empty when specifying upsert and multi with an object." );
-
-        opts = upsert;
-        multi = opts.multi;
-        upsert = opts.upsert;
-    }
-
-    this._db._initExtraInfo();
-    this._mongo.update( this._fullName , query , obj , upsert ? true : false , _autoMulti ? true : multi );
-    this._db._getExtraInfo("Updated");
-}
-
-// Override group because map/reduce style is deprecated
-DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
-    var ops = [];
-    var group_op = { $group: { _id: '$' + group_field } };
-
-    if (filter != undefined) {
-        ops.push({ '$match': filter })
-    }
-  
-    group_op['$group'][name] = { };
-    group_op['$group'][name]['$' + operation] = op_value
-    ops.push(group_op);
-
-    return this.aggregate(ops);
-}
-
-// Function that groups and counts by group after applying filter
-DBCollection.prototype.gcount = function( group_field, filter ) {
-    return this.agg_group('count', group_field, 'sum', 1, filter);
-}
-
-// Function that groups and sums sum_field after applying filter
-DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
-    return this.agg_group('sum', group_field, 'sum', '$' + sum_field, filter);
-}
-
-// Function that groups and averages avg_feld after applying filter
-DBCollection.prototype.gavg = function( group_field, avg_field, filter ) {
-    return this.agg_group('avg', group_field, 'avg', '$' + avg_field, filter);
-}
-
-// Improve the default prompt with hostname, process type, and version
-prompt = function() {
-    var serverstatus = db.serverStatus();
-    var host = serverstatus.host.split('.')[0];
-    var process = serverstatus.process;
-    var version = db.serverBuildInfo().version;
-    return host + '(' + process + '-' + version + ') ' + db + '> ';
 }
 
 DBQuery.prototype.shellPrint = function(){
