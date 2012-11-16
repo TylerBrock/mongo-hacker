@@ -83,11 +83,11 @@ ObjectId.prototype.toString = function() {
     return this.str;
 }
 
-ObjectId.prototype.tojson = function(indent, nolint) {
-    return tojson(this);
+ObjectId.prototype.tojson_c = function(indent, nolint) {
+    return tojson_c(this);
 }
 
-Date.prototype.tojson = function() {
+Date.prototype.tojson_c = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
 
@@ -115,7 +115,7 @@ Date.prototype.tojson = function() {
     return 'ISODate(' + date + ')';
 }
 
-Array.tojson = function( a , indent , nolint ){
+Array.tojson_c = function( a , indent , nolint ){
     var lineEnding = nolint ? " " : "\n";
 
     if (!indent)
@@ -131,7 +131,7 @@ Array.tojson = function( a , indent , nolint ){
     var s = "[" + lineEnding;
     indent += __indent;
     for ( var i=0; i<a.length; i++){
-        s += indent + tojson( a[i], indent , nolint );
+        s += indent + tojson_c( a[i], indent , nolint );
         if ( i < a.length - 1 ){
             s += "," + lineEnding;
         }
@@ -145,7 +145,8 @@ Array.tojson = function( a , indent , nolint ){
     return s;
 }
 
-tojson = function( x, indent , nolint ) {
+
+tojson_c = function( x, indent , nolint ) {
     if ( x === null )
         return colorize("null", "red", true);
     
@@ -190,7 +191,7 @@ tojson = function( x, indent , nolint ) {
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
-        var s = tojsonObject( x, indent , nolint );
+        var s = tojsonObject_c( x, indent , nolint );
         if ( ( nolint == null || nolint == true ) && s.length < 80 && ( indent == null || indent.length == 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
@@ -204,7 +205,7 @@ tojson = function( x, indent , nolint ) {
     
 }
 
-tojsonObject = function( x, indent , nolint ) {
+tojsonObject_c = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
     
@@ -213,12 +214,12 @@ tojsonObject = function( x, indent , nolint ) {
     if (!indent) 
         indent = "";
     
-    if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
-        return x.tojson(indent,nolint);
+    if ( typeof( x.tojson ) == "function" && x.tojson != tojson_c ) {
+        return x.tojson_c(indent,nolint);
     }
     
-    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
-        return x.constructor.tojson( x, indent , nolint );
+    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson_c ) {
+        return x.constructor.tojson_c( x, indent , nolint );
     }
 
     if ( x.toString() == "[object MaxKey]" )
@@ -247,7 +248,7 @@ tojsonObject = function( x, indent , nolint ) {
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
 
-        s += indent + colorize("\"" + k + "\"", "yellow") + ": " + tojson( val, indent , nolint );
+        s += indent + colorize("\"" + k + "\"", "yellow") + ": " + tojson_c( val, indent , nolint );
         if (num != total) {
             s += ",";
             num++;
@@ -335,7 +336,7 @@ DBQuery.prototype.shellPrint = function(){
         var start = new Date().getTime();
         var n = 0;
         while ( this.hasNext() && n < DBQuery.shellBatchSize ){
-            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
+            var s = this._prettyShell ? tojson_c( this.next() ) : tojson_c( this.next() , "" , true );
             print( s );
             n++;
         }
