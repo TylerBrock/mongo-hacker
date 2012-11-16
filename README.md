@@ -50,9 +50,6 @@ IndexParanoia
 Default indent is 2 spaces instead of tab
   - Customizable by setting `__indent`
 
-AutoMulti
-- Automatically use multi updates -- to disable: `setAutoMulti(false)`
-
 Tabular query output with `.t()`
 ![Colorized Output](http://f.dollyfish.net.nz/92be3c)
 
@@ -63,6 +60,9 @@ Tabular query output with `.t()`
   - undef: A string representing what should be shown when a value is undefined for a given document
 - Observe that you can still pass useful things to `.find()`, for example to ditch columns from the output
   - `db.survey.find(null, {questions: 0}).t({maxlen: 200})  // would hide the questions column`
+
+AutoMulti
+- Automatically use multi updates -- to disable: `setAutoMulti(false)`
 
 ``` js
 db.users.update({}, {$set: {awesome: true}})
