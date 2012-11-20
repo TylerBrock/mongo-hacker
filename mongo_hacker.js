@@ -9,6 +9,17 @@
  *
  */
 
+var _tabular_defaults = {
+    // How many rows to show by default
+    limit: 20,
+
+    // Columns longer than this will be truncated
+    maxlen: 50,
+
+    // Undefined field values will be output using this string
+    undef: '',
+};
+
 __ansi = {
     csi: String.fromCharCode(0x1B) + '[',
     reset: '0',
@@ -83,11 +94,11 @@ ObjectId.prototype.toString = function() {
     return this.str;
 }
 
-ObjectId.prototype.tojson = function(indent, nolint) {
-    return tojson(this);
+ObjectId.prototype.tojson_c = function(indent, nolint) {
+    return tojson_c(this);
 }
 
-Date.prototype.tojson = function() {
+Date.prototype.tojson_c = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
 
@@ -115,7 +126,7 @@ Date.prototype.tojson = function() {
     return 'ISODate(' + date + ')';
 }
 
-Array.tojson = function( a , indent , nolint ){
+Array.tojson_c = function( a , indent , nolint ){
     var lineEnding = nolint ? " " : "\n";
 
     if (!indent)
@@ -131,7 +142,7 @@ Array.tojson = function( a , indent , nolint ){
     var s = "[" + lineEnding;
     indent += __indent;
     for ( var i=0; i<a.length; i++){
-        s += indent + tojson( a[i], indent , nolint );
+        s += indent + tojson_c( a[i], indent , nolint );
         if ( i < a.length - 1 ){
             s += "," + lineEnding;
         }
@@ -145,7 +156,8 @@ Array.tojson = function( a , indent , nolint ){
     return s;
 }
 
-tojson = function( x, indent , nolint ) {
+
+tojson_c = function( x, indent , nolint ) {
     if ( x === null )
         return colorize("null", "red", true);
     
@@ -190,7 +202,7 @@ tojson = function( x, indent , nolint ) {
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
-        var s = tojsonObject( x, indent , nolint );
+        var s = tojsonObject_c( x, indent , nolint );
         if ( ( nolint == null || nolint == true ) && s.length < 80 && ( indent == null || indent.length == 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
@@ -204,7 +216,7 @@ tojson = function( x, indent , nolint ) {
     
 }
 
-tojsonObject = function( x, indent , nolint ) {
+tojsonObject_c = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
     
@@ -213,12 +225,12 @@ tojsonObject = function( x, indent , nolint ) {
     if (!indent) 
         indent = "";
     
-    if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
-        return x.tojson(indent,nolint);
+    if ( typeof( x.tojson ) == "function" && x.tojson != tojson_c ) {
+        return x.tojson_c(indent,nolint);
     }
     
-    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
-        return x.constructor.tojson( x, indent , nolint );
+    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson_c ) {
+        return x.constructor.tojson_c( x, indent , nolint );
     }
 
     if ( x.toString() == "[object MaxKey]" )
@@ -247,7 +259,7 @@ tojsonObject = function( x, indent , nolint ) {
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
 
-        s += indent + colorize("\"" + k + "\"", "yellow") + ": " + tojson( val, indent , nolint );
+        s += indent + colorize("\"" + k + "\"", "yellow") + ": " + tojson_c( val, indent , nolint );
         if (num != total) {
             s += ",";
             num++;
@@ -335,7 +347,7 @@ DBQuery.prototype.shellPrint = function(){
         var start = new Date().getTime();
         var n = 0;
         while ( this.hasNext() && n < DBQuery.shellBatchSize ){
-            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
+            var s = this._prettyShell ? tojson_c( this.next() ) : tojson_c( this.next() , "" , true );
             print( s );
             n++;
         }
@@ -384,3 +396,100 @@ DBQuery.prototype.shellPrint = function(){
     }
 
 }
+
+_tabular_encode = function(obj, opts, tojson) {
+    if ( obj === undefined ) {
+        return opts.undef;
+    }
+    if ( obj instanceof ObjectId ) {
+        return obj.valueOf();
+    }
+    ret = tojson(obj, false, true);
+
+    if ( ret.length > opts.maxlen ) {
+        ret = ret.slice(0, opts.maxlen - 3) + '...';
+        ret = ret.replace("\t", "", 'g')
+    }
+
+    return ret;
+};
+DBQuery.prototype.tabular = function(opts) {
+    if ( typeof(opts) == 'object' ) {
+        opts.limit  = (typeof(opts.limit)  != 'undefined') ? opts.limit  : _tabular_defaults.limit;
+        opts.maxlen = (typeof(opts.maxlen) != 'undefined') ? opts.maxlen : _tabular_defaults.maxlen;
+        opts.undef  = (typeof(opts.undef)  != 'undefined') ? opts.undef  : _tabular_defaults.undef;
+    }
+    else if ( typeof(opts) == 'number' ) {
+        opts.limit  = opts;
+        opts.maxlen = _tabular_defaults.maxlen;
+        opts.undef  = _tabular_defaults.undef;
+    }
+    else {
+        opts = _tabular_defaults;
+    }
+
+    var field_length = { '_id': 24 };
+
+    var docs = this.limit(opts.limit).toArray();
+
+    docs.forEach(function(doc) {
+        var field;
+        for ( field in doc ) {
+            var value = _tabular_encode(doc[field], opts, tojson);
+            if ( !field_length[field] ) {
+                field_length[field] = field.length;
+            }
+            if ( field_length[field] < value.length ) {
+                field_length[field] = value.length;
+            }
+        }
+    });
+
+    var field;
+    var fields = [];
+    var output = '';
+
+    for ( field in field_length ) {
+        fields.push(field);
+    }
+
+    // Divider
+    var divider = '+';
+    fields.forEach(function(field) {
+        var width = field_length[field];
+        divider += Array(width+3).join('-');
+        divider += '+';
+    });
+
+    var header = '| ';
+    // Title row
+    fields.forEach(function(field) {
+        var width = field_length[field];
+        var lpad = Math.floor((width - field.length)/2);
+        var rpad = width - lpad - field.length;
+        header += Array(lpad+1).join(' ') + field + Array(rpad+1).join(' ');
+        header += ' | ';
+    });
+
+    output += divider + "\n";
+    output += header + "\n";
+    output += divider + "\n";
+
+    // Rows
+    docs.forEach(function(doc) {
+        var row = '| ';
+        fields.forEach(function(field) {
+            var value    = _tabular_encode(doc[field], opts, tojson);
+            var rawvalue = _tabular_encode(doc[field], opts, tojson);
+            var width = field_length[field];
+            var rpad = Math.floor(width - rawvalue.length);
+            row += value + Array(rpad+1).join(' ');
+            row += ' | ';
+        });
+        output += row + "\n";
+    });
+
+    output += divider + "\n";
+    return output;
+};
+DBQuery.prototype.t = DBQuery.prototype.tabular;
