@@ -126,6 +126,10 @@ Date.prototype.tojson_c = function() {
     return 'ISODate(' + date + ')';
 }
 
+NumberLong.prototype.tojson_c = function(indent , nolint) {
+    return colorize(this.toNumber().toString()+"L", "red");
+}
+
 Array.tojson_c = function( a , indent , nolint ){
     var lineEnding = nolint ? " " : "\n";
 
