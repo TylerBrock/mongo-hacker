@@ -230,7 +230,7 @@ tojsonObject_c = function( x, indent , nolint ) {
         indent = "";
     
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson_c ) {
-        return x.tojson_c(indent,nolint);
+        return tojson(x, false, true); //x.tojson_c(indent,nolint);
     }
     
     if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson_c ) {
