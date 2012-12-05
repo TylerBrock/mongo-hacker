@@ -98,6 +98,10 @@ ObjectId.prototype.tojson_c = function(indent, nolint) {
     return tojson_c(this);
 }
 
+DBRef.prototype.tojson_c = function(indent, nolint) {
+    return 'DBRef(' + '"' + this.$ref + '", ' + colorize('"' + this.$id + '"', "green", false, true) + ')';
+}
+
 Date.prototype.tojson_c = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
