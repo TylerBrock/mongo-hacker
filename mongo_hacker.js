@@ -1,7 +1,7 @@
-/* 
+/*
  *
  * Mongo Hacker
- * MongoDB Shell Enhancements for Hackers 
+ * MongoDB Shell Enhancements for Hackers
  *
  * Tyler J. Brock - 2012
  *
@@ -17,7 +17,7 @@ var _tabular_defaults = {
     maxlen: 50,
 
     // Undefined field values will be output using this string
-    undef: '',
+    undef: ''
 };
 
 __ansi = {
@@ -34,38 +34,38 @@ __ansi = {
         yellow: '3',
         blue: '4',
         magenta: '5',
-        cyan: '6'  
+        cyan: '6'
     }
-}
+};
 
 if (_isWindows()) {
   print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
 var ver = db.version().split(".");
-if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
+if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
   print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
-} 
+}
 
 setVerboseShell(true);
 setIndexParanoia(true);
 setAutoMulti(true);
 
-__indent = "  "
+__indent = "  ";
 
-function setIndexParanoia( value ) { 
-    if( value == undefined ) value = true; 
-    _indexParanoia = value; 
+function setIndexParanoia( value ) {
+    if( value === undefined ) value = true;
+    _indexParanoia = value;
 }
 
-function setAutoMulti( value ) { 
-    if( value == undefined ) value = true; 
-    _autoMulti = value; 
+function setAutoMulti( value ) {
+    if( value === undefined ) value = true;
+    _autoMulti = value;
 }
 
 function controlCode( parameters ) {
-    if ( parameters == undefined ) {
-    	parameters = "";
+    if ( parameters === undefined ) {
+        parameters = "";
     }
     else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
         parameters = parameters.join(';');
@@ -84,23 +84,23 @@ function colorize( string, color, bright, underline ) {
 
     params.push(code);
 
-    if ( bright == true ) params.push(__ansi.bright);
-    if ( underline == true ) params.push(__ansi.underline);
+    if ( bright === true ) params.push(__ansi.bright);
+    if ( underline === true ) params.push(__ansi.underline);
 
     return applyColorCode( string, params );
 }
 
 ObjectId.prototype.toString = function() {
     return this.str;
-}
+};
 
 ObjectId.prototype.tojson_c = function(indent, nolint) {
     return tojson_c(this);
-}
+};
 
 DBRef.prototype.tojson_c = function(indent, nolint) {
     return 'DBRef(' + '"' + this.$ref + '", ' + colorize('"' + this.$id + '"', "green", false, true) + ')';
-}
+};
 
 Date.prototype.tojson_c = function() {
 
@@ -111,28 +111,28 @@ Date.prototype.tojson_c = function() {
     var date = this['get'+UTC+'Date']().zeroPad(2);
     var hour = this['get'+UTC+'Hours']().zeroPad(2);
     var minute = this['get'+UTC+'Minutes']().zeroPad(2);
-    var sec = this['get'+UTC+'Seconds']().zeroPad(2)
+    var sec = this['get'+UTC+'Seconds']().zeroPad(2);
 
     if (this['get'+UTC+'Milliseconds']())
-        sec += '.' + this['get'+UTC+'Milliseconds']().zeroPad(3)
+        sec += '.' + this['get'+UTC+'Milliseconds']().zeroPad(3);
 
     var ofs = 'Z';
     if (!Date.printAsUTC) {
         var ofsmin = this.getTimezoneOffset();
-        if (ofsmin != 0){
+        if (ofsmin !== 0){
             ofs = ofsmin > 0 ? '-' : '+'; // This is correct
-            ofs += (ofsmin/60).zeroPad(2)
-            ofs += (ofsmin%60).zeroPad(2)
+            ofs += (ofsmin/60).zeroPad(2);
+            ofs += (ofsmin%60).zeroPad(2);
         }
     }
 
-    var date =  colorize('"' + year + month + date + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
-    return 'ISODate(' + date + ')';
-}
+    var datestr = colorize('"' + year + month + date + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
+    return 'ISODate(' + datestr + ')';
+};
 
 NumberLong.prototype.tojson_c = function(indent , nolint) {
     return colorize(this.toNumber().toString()+"L", "red");
-}
+};
 
 Array.tojson_c = function( a , indent , nolint ){
     var lineEnding = nolint ? " " : "\n";
@@ -143,7 +143,7 @@ Array.tojson_c = function( a , indent , nolint ){
     if ( nolint )
         indent = "";
 
-    if (a.length == 0) {
+    if (a.length === 0) {
         return "[ ]";
     }
 
@@ -155,14 +155,14 @@ Array.tojson_c = function( a , indent , nolint ){
             s += "," + lineEnding;
         }
     }
-    if ( a.length == 0 ) {
+    if ( a.length === 0 ) {
         s += indent;
     }
 
     indent = indent.substring(__indent.length);
     s += lineEnding+indent+"]";
     return s;
-}
+};
 
 
 tojson_c = function( x, indent , nolint ) {
@@ -176,12 +176,12 @@ tojson_c = function( x, indent , nolint ) {
         return 'ObjectId(' + colorize('"' + x.str + '"', "green", false, true) + ')';
     }
     
-    if (!indent) 
+    if (!indent)
         indent = "";
 
     switch ( typeof x ) {
     case "string": {
-        var s = "\"";
+        s = "\"";
         for ( var i=0; i<x.length; i++ ){
             switch (x[i]){
                 case '"': s += '\\"'; break;
@@ -202,27 +202,26 @@ tojson_c = function( x, indent , nolint ) {
                 }
             }
         }
-        s += "\""
+        s += "\"";
         return colorize(s, "green", true);
-    }
+    } break;
     case "number":
-        return colorize(x, "red") 
+        return colorize(x, "red");
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
-        var s = tojsonObject_c( x, indent , nolint );
-        if ( ( nolint == null || nolint == true ) && s.length < 80 && ( indent == null || indent.length == 0 ) ){
+        s = tojsonObject_c( x, indent , nolint );
+        if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
         return s;
-    }
+    } break;
     case "function":
-        return colorize(x.toString(), "magenta")
+        return colorize(x.toString(), "magenta");
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
-    
-}
+};
 
 tojsonObject_c = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
@@ -230,7 +229,7 @@ tojsonObject_c = function( x, indent , nolint ) {
     
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
-    if (!indent) 
+    if (!indent)
         indent = "";
     
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson_c ) {
@@ -253,7 +252,7 @@ tojsonObject_c = function( x, indent , nolint ) {
     
     var total = 0;
     for ( var k in x ) total++;
-    if ( total == 0 ) {
+    if ( total === 0 ) {
         s += indent + lineEnding;
     }
 
@@ -261,7 +260,7 @@ tojsonObject_c = function( x, indent , nolint ) {
     if ( typeof( x._simpleKeys ) == "function" )
         keys = x._simpleKeys();
     var num = 1;
-    for ( var k in keys ){
+    for ( k in keys ){
         
         var val = x[k];
         if ( val == DB.prototype || val == DBCollection.prototype )
@@ -278,7 +277,7 @@ tojsonObject_c = function( x, indent , nolint ) {
     // pop one level of indent
     indent = indent.substring(__indent.length);
     return s + indent + "}";
-}
+};
 
 // Hardcode multi update -- now you only need to remember upsert
 DBCollection.prototype.update = function( query , obj , upsert, multi ) {
@@ -288,7 +287,7 @@ DBCollection.prototype.update = function( query , obj , upsert, multi ) {
     var firstKey = null;
     for (var k in obj) { firstKey = k; break; }
 
-    if (firstKey != null && firstKey[0] == '$') {
+    if (firstKey !== null && firstKey[0] == '$') {
         // for mods we only validate partially, for example keys may have dots
         this._validateObject( obj );
     } else {
@@ -296,7 +295,7 @@ DBCollection.prototype.update = function( query , obj , upsert, multi ) {
         this._validateForStorage( obj );
     }
 
-    // can pass options via object for improved readability    
+    // can pass options via object for improved readability
     if ( typeof(upsert) === 'object' ) {
         assert( multi === undefined, "Fourth argument must be empty when specifying upsert and multi with an object." );
 
@@ -308,38 +307,38 @@ DBCollection.prototype.update = function( query , obj , upsert, multi ) {
     this._db._initExtraInfo();
     this._mongo.update( this._fullName , query , obj , upsert ? true : false , _autoMulti ? true : multi );
     this._db._getExtraInfo("Updated");
-}
+};
 
 // Override group because map/reduce style is deprecated
 DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
     var group_op = { $group: { _id: '$' + group_field } };
 
-    if (filter != undefined) {
-        ops.push({ '$match': filter })
+    if (filter !== undefined) {
+        ops.push({ '$match': filter });
     }
   
     group_op['$group'][name] = { };
-    group_op['$group'][name]['$' + operation] = op_value
+    group_op['$group'][name]['$' + operation] = op_value;
     ops.push(group_op);
 
     return this.aggregate(ops);
-}
+};
 
 // Function that groups and counts by group after applying filter
 DBCollection.prototype.gcount = function( group_field, filter ) {
     return this.agg_group('count', group_field, 'sum', 1, filter);
-}
+};
 
 // Function that groups and sums sum_field after applying filter
 DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
     return this.agg_group('sum', group_field, 'sum', '$' + sum_field, filter);
-}
+};
 
 // Function that groups and averages avg_feld after applying filter
 DBCollection.prototype.gavg = function( group_field, avg_field, filter ) {
     return this.agg_group('avg', group_field, 'avg', '$' + avg_field, filter);
-}
+};
 
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
@@ -348,7 +347,7 @@ prompt = function() {
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
     return host + '(' + process + '-' + version + ') ' + db + '> ';
-}
+};
 
 DBQuery.prototype.shellPrint = function(){
     try {
@@ -360,7 +359,7 @@ DBQuery.prototype.shellPrint = function(){
             n++;
         }
 
-        var output = []
+        var output = [];
 
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
@@ -380,7 +379,7 @@ DBQuery.prototype.shellPrint = function(){
             explain._limit = Math.abs(n._limit) * -1;
             var result = explain.next();
             var type = result.cursor;
-            var index_use = "Index["
+            var index_use = "Index[";
             if (type == "BasicCursor") {
                 index_use += colorize( "none", "red", true);
             } else {
@@ -403,7 +402,7 @@ DBQuery.prototype.shellPrint = function(){
         print( e );
     }
 
-}
+};
 
 _tabular_encode = function(obj, opts, tojson) {
     if ( obj === undefined ) {
@@ -416,7 +415,7 @@ _tabular_encode = function(obj, opts, tojson) {
 
     if ( ret.length > opts.maxlen ) {
         ret = ret.slice(0, opts.maxlen - 3) + '...';
-        ret = ret.replace("\t", "", 'g')
+        ret = ret.replace("\t", "", 'g');
     }
 
     return ret;
