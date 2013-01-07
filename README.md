@@ -50,6 +50,17 @@ IndexParanoia
 Default indent is 2 spaces instead of tab
   - Customizable by setting `__indent`
 
+Tabular query output with `.t()`
+![Colorized Output](http://f.dollyfish.net.nz/92be3c)
+
+- Call `.t()` on any cursor to get tabular output, e.g. `db.mycollection.find().t()`
+- You can pass `.t()` a hash with the following keys:
+  - limit: Limits the number of rows in the output (which defaults to 20)
+  - maxlen: Values longer than this will be truncated to this length, to prevent stupidly long output (default 50)
+  - undef: A string representing what should be shown when a value is undefined for a given document
+- Observe that you can still pass useful things to `.find()`, for example to ditch columns from the output
+  - `db.survey.find(null, {questions: 0}).t({maxlen: 200})  // would hide the questions column`
+
 AutoMulti
 - Automatically use multi updates -- to disable: `setAutoMulti(false)`
 
