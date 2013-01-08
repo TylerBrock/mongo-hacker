@@ -30,9 +30,6 @@ IndexParanoia
 Default indent is 2 spaces instead of tab
   - Customizable by setting `__indent`
 
-AutoMulti
-- Automatically use multi updates -- to disable: `setAutoMulti(false)`
-
 ``` js
 db.users.update({}, {$set: {awesome: true}})
 Updated 4 existing record(s) in 1ms
@@ -46,9 +43,15 @@ Custom prompt with `hostname(process-version)[rs status] db>` formating
 
 ### API
 
+One for finding a single document:
+- `db.collection.find({ ... }).one()` == `db.collection.findOne({ ... })`
+
+Select for selecting fields to return (projection):
+- `db.collection.find({ ... }).select({ name: 1 })` -- only returns the name and _id fields
+
 Update, Upsert and Remove can be called on a DBQuery Object
-- `db.collection.find({ ... }).update({ ... })`
-- `db.collection.find({ ... }).upsert({ ... })`
+- `db.collection.find({ ... }).update({ ... })` -- multi update
+- `db.collection.find({ ... }).upsert({ ... })` -- single upsert
 - `db.collection.find({ ... }).remove()`
 
 Aggregation Framework Helpers -- on collections

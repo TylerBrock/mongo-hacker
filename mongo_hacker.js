@@ -375,36 +375,6 @@ tojsonObject = function( x, indent , nolint ) {
     return s + indent + "}";
 }
 
-// Hardcode multi update -- now you only need to remember upsert
-DBCollection.prototype.update = function( query , obj , upsert, multi ) {
-    assert( query , "need a query" );
-    assert( obj , "need an object" );
-
-    var firstKey = null;
-    for (var k in obj) { firstKey = k; break; }
-
-    if (firstKey != null && firstKey[0] == '$') {
-        // for mods we only validate partially, for example keys may have dots
-        this._validateObject( obj );
-    } else {
-        // we're basically inserting a brand new object, do full validation
-        this._validateForStorage( obj );
-    }
-
-    // can pass options via object for improved readability    
-    if ( typeof(upsert) === 'object' ) {
-        assert( multi === undefined, "Fourth argument must be empty when specifying upsert and multi with an object." );
-
-        opts = upsert;
-        multi = opts.multi;
-        upsert = opts.upsert;
-    }
-
-    this._db._initExtraInfo();
-    this._mongo.update( this._fullName , query , obj , upsert ? true : false , _autoMulti ? true : multi );
-    this._db._getExtraInfo("Updated");
-}
-
 // Override group because map/reduce style is deprecated
 DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
