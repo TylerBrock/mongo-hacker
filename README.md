@@ -6,7 +6,7 @@
 * Does not work in Windows (currently)
 * Does not work with shells or db servers < 2.2 (currently)
 
-## Usage
+## Installation
 
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
@@ -16,7 +16,7 @@ ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 
 Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
 
-## List of Enhancements
+## Enhancements
 
 ### Basic UX
 
@@ -29,11 +29,6 @@ IndexParanoia
 
 Default indent is 2 spaces instead of tab
   - Customizable by setting `__indent`
-
-``` js
-db.users.update({}, {$set: {awesome: true}})
-Updated 4 existing record(s) in 1ms
-```
 
 Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
 
