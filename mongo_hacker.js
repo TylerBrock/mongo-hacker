@@ -193,6 +193,11 @@ DBQuery.prototype.remove = function(){
     this._db._getExtraInfo("Removed");
 }
 
+DBQuery.prototype.select = function( fields ){
+    this._fields = fields;
+    return this;
+}
+
 Date.prototype.tojson = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
