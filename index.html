@@ -33,9 +33,6 @@
       <div id="header">
         <nav>
           <li class="fork"><a href="https://github.com/TylerBrock/mongo-hacker">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/TylerBrock/mongo-hacker/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/TylerBrock/mongo-hacker/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
 
@@ -67,6 +64,29 @@ $ ln -sf mongo_hacker.js ~/.mongorc.js
 
 <h4>Colorized Shell</h4>
 <img src="screenshots/colorized_shell.png"></img>
+
+<h4>API Extensions</h4>
+<h5>Filter for filtering a collection of documents</h5>
+<pre><code>db.collection.filter(<criteria>) -- accepts less parameters than find, simply matches</pre></code>
+
+<h5>One for finding a single document</h5>
+<pre><code>db.collection.filter({ ... }).one() # equivalent to db.collection.findOne({ ... })</pre></code>
+
+<h5>Select for projection</h5>
+<pre><code>db.collection.filter({ ... }).select({ name: 1 })  # only returns the name and _id fields</pre></code>
+
+<h5>Update, Replace, Upsert and Remove can be called on a DBQuery Object</h5>
+<pre><code>db.collection.filter({ ... }).update({ ... })           # multi update
+db.collection.filter({ ... }).replace({ ... })          # single replacement
+db.collection.filter({ ... }).upsert({ ... })            # single upsert
+db.collection.filter({ ... }).remove()                   # multi remove
+</pre></code>
+
+<h5>Sort, limit, and skip through multi updates and removes</h5>
+<pre><code>db.collection.filter({ ... }).limit(7).update({ ... })
+db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })
+db.collection.filter({ ... }).limit(3).remove()
+</pre></code>
 
 <h4>Aggregation Framework Helpers</h4>
 
