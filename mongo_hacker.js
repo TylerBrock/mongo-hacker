@@ -168,6 +168,16 @@ DB.prototype._getExtraInfo = function(action) {
     }
 } 
 
+DBQuery.prototype._checkMulti = function(){
+  if(this._limit > 0){
+    var ids = this.clone().select({_id: 1}).map(function(o){return o._id});
+    this._query['_id'] = {'$in': ids};
+    return true;
+  } else {
+    return false;
+  }
+}
+
 DBQuery.prototype.upsert = function( upsert ){
     assert( upsert , "need an upsert object" );
 
@@ -180,6 +190,7 @@ DBQuery.prototype.upsert = function( upsert ){
 DBQuery.prototype.update = function( update ){
     assert( update , "need an update object" );
 
+    this._checkMulti();
     this._validate(update);
     this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , update , false , true );
@@ -201,8 +212,10 @@ DBQuery.prototype.remove = function(){
             throw "can't have _id set to undefined in a remove expression"
         }
     }
+
+    this._checkMulti();
     this._db._initExtraInfo();
-    this._mongo.remove( this._ns , this._massageObject( this._query ) , false );
+    this._mongo.remove( this._ns , this._query , false );
     this._db._getExtraInfo("Removed");
 }
 
