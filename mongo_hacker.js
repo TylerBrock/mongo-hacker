@@ -426,7 +426,11 @@ prompt = function() {
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
     var repl_set = db.runCommand({"replSetGetStatus": 1})['ok'] != 0;
-    var rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
+    if(repl_set) {
+      var rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
+    } else {
+      var rs_state = '';
+    }
     var mongos = db.isMaster().msg == 'isdbgrid';
     var state = mongos ? '' : rs_state;
     return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
