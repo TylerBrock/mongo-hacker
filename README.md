@@ -53,6 +53,11 @@ Update, Replace, Upsert and Remove can be called on a DBQuery Object
 - `db.collection.filter({ ... }).upsert({ ... })`  -- single upsert
 - `db.collection.filter({ ... }).remove()`         -- multi remove
 
+Sort, limit, and skip through multi updates and removes
+- `db.collection.filter({ ... }).limit(7).update({ ... })`
+- `db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })`
+- `db.collection.filter({ ... }).limit(3).remove()`
+
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
 - Group and Sum: `gsum(group_field, sum_field, filter)`
