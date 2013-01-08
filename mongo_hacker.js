@@ -286,6 +286,14 @@ Array.tojson = function( a , indent , nolint ){
     return s;
 }
 
+NumberLong.prototype.tojson = function() {
+    return 'NumberLong(' + colorize(this.valueOf(), "red") + ')';
+}
+
+NumberInt.prototype.tojson = function() {
+    return 'NumberLong(' + colorize(this.valueOf(), "red") + ')';
+}
+
 tojson = function( x, indent , nolint ) {
     if ( x === null )
         return colorize("null", "red", true);
