@@ -79,6 +79,14 @@ function colorize( string, color, bright, underline ) {
     return applyColorCode( string, params );
 }
 
+function getEnv(env_var){
+    clearRawMongoProgramOutput();
+    run('env');
+    var env = rawMongoProgramOutput();
+    var env_regex = new RegExp(env_var + '=(.*)');
+    return env.match(env_regex)[1];
+}
+
 ObjectId.prototype.toString = function() {
     return this.str;
 }
