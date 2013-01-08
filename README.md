@@ -18,27 +18,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
 
 ## List of Enhancements
 
-### Basic
-
-Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
-
-Disable notfication of "Type 'it' for more"
-
-Custom prompt with `hostname(process-version) db>` formating
-
-### Awesome
-
-Colorized query output
-
-![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
-
-- ObjectId: Green(underlined)
-- null: Bright Red
-- String: Green
-- Number: Red
-- Key: Yellow
-- Boolean: Blue
-- Date: Cyan
+### Basic UX
 
 Highlight querytime if verboseShell is enabled
   - In **green** if querytime is at or below slowms
@@ -58,7 +38,35 @@ db.users.update({}, {$set: {awesome: true}})
 Updated 4 existing record(s) in 1ms
 ```
 
+Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
+
+Disable notfication of "Type 'it' for more"
+
+Custom prompt with `hostname(process-version) db>` formating
+
+### API
+
+Update, Upsert and Remove can be called on a DBQuery Object
+- `db.collection.find({ ... }).update({ ... })`
+- `db.collection.find({ ... }).upsert({ ... })`
+- `db.collection.find({ ... }).remove()`
+
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
 - Group and Sum: `gsum(group_field, sum_field, filter)`
 - Group and Average: `gavg(group_field, avg_field, filter)`
+
+### Colorization
+
+Colorized query output
+
+![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
+
+- ObjectId: Green(underlined)
+- null: Bright Red
+- String: Green
+- Number: Red
+- Key: Yellow
+- Boolean: Blue
+- Date: Cyan
+
