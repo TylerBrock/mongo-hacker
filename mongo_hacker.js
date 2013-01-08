@@ -95,6 +95,10 @@ ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
 }
 
+DBCollection.prototype.filter = function( filter ) {
+    return new DBQuery( this._mongo, this._db, this, this._fullName, this._massageObject( filter ) );
+}
+
 DBQuery.prototype._validate = function( o ){
     var firstKey = null;
     for (var k in o) { firstKey = k; break; }

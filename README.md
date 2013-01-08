@@ -43,16 +43,19 @@ Custom prompt with `hostname(process-version)[rs status] db>` formating
 
 ### API
 
+Filter for filtering a collection of documents
+- `db.collection.filter(<criteria>)` -- accepts less parameters than find, simply matches
+
 One for finding a single document:
-- `db.collection.find({ ... }).one()` == `db.collection.findOne({ ... })`
+- `db.collection.filter({ ... }).one()` == `db.collection.findOne({ ... })`
 
 Select for selecting fields to return (projection):
-- `db.collection.find({ ... }).select({ name: 1 })` -- only returns the name and _id fields
+- `db.collection.filter({ ... }).select({ name: 1 })` -- only returns the name and _id fields
 
 Update, Upsert and Remove can be called on a DBQuery Object
-- `db.collection.find({ ... }).update({ ... })` -- multi update
-- `db.collection.find({ ... }).upsert({ ... })` -- single upsert
-- `db.collection.find({ ... }).remove()`
+- `db.collection.filter({ ... }).update({ ... })`  -- multi update
+- `db.collection.filter({ ... }).upsert({ ... })`  -- single upsert
+- `db.collection.filter({ ... }).remove()`         -- multi remove
 
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
