@@ -87,6 +87,37 @@ ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
 }
 
+DB.prototype._getExtraInfo = function(action) {
+    if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
+        __callLastError = true;
+        return;
+    }
+
+    // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
+    var res = this.getLastErrorCmd(1); 
+    if (res) {
+        if (res.err != undefined && res.err != null) {
+            // error occurred, display it
+            print(res.err);
+            return;
+        }
+
+        var info = action + " ";  
+        // hack for inserted because res.n is 0
+        info += action != "Inserted" ? res.n : 1;
+        if (res.n > 0 && res.updatedExisting != undefined) info += " " + (res.updatedExisting ? "existing" : "new")  
+        info += " record(s) in ";  
+        var time = new Date().getTime() - this.startTime;  
+        var slowms = this.setProfilingLevel().slowms;
+        if (time > slowms) {
+            info += colorize(time + "ms", "red", true);
+        } else {
+            info += colorize(time + "ms", "green", true);
+        }        
+        print(info);
+    }
+} 
+
 Date.prototype.tojson = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
