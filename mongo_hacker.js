@@ -198,6 +198,10 @@ DBQuery.prototype.select = function( fields ){
     return this;
 }
 
+DBQuery.prototype.one = function(){
+    return this.limit(1)[0];
+}
+
 Date.prototype.tojson = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
