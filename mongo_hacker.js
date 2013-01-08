@@ -442,7 +442,11 @@ prompt = function() {
     var host = serverstatus.host.split('.')[0];
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
-    return host + '(' + process + '-' + version + ') ' + db + '> ';
+    var repl_set = db.runCommand({"replSetGetStatus": 1})['ok'] != 0;
+    var rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
+    var mongos = db.isMaster().msg == 'isdbgrid';
+    var state = mongos ? '' : rs_state;
+    return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
 }
 
 DBQuery.prototype.shellPrint = function(){
