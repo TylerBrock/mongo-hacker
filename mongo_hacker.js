@@ -186,6 +186,15 @@ DBQuery.prototype.update = function( update ){
     this._db._getExtraInfo("Updated");
 }
 
+DBQuery.prototype.replace = function( replacement ){
+   assert( replacement , "need an update object" );
+
+   this._validate(replacement);
+   this._db._initExtraInfo();
+   this._mongo.update( this._ns , this._query , replacement , false , false );
+   this._db._getExtraInfo("Replaced");
+}
+
 DBQuery.prototype.remove = function(){
     for ( var k in this._query ){
         if ( k == "_id" && typeof( this._query[k] ) == "undefined" ){

@@ -52,8 +52,9 @@ One for finding a single document:
 Select for selecting fields to return (projection):
 - `db.collection.filter({ ... }).select({ name: 1 })` -- only returns the name and _id fields
 
-Update, Upsert and Remove can be called on a DBQuery Object
+Update, Replace, Upsert and Remove can be called on a DBQuery Object
 - `db.collection.filter({ ... }).update({ ... })`  -- multi update
+- `db.collection.filter({ ... }).replace({ ... })` -- single replacement
 - `db.collection.filter({ ... }).upsert({ ... })`  -- single upsert
 - `db.collection.filter({ ... }).remove()`         -- multi remove
 
