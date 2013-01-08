@@ -87,6 +87,44 @@ ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
 }
 
+DBQuery.prototype._validate = function( o ){
+    var firstKey = null;
+    for (var k in o) { firstKey = k; break; }
+
+    if (firstKey != null && firstKey[0] == '$') {
+        // for mods we only validate partially, for example keys may have dots
+        this._validateObject( o );
+    } else {
+        // we're basically inserting a brand new object, do full validation
+        this._validateForStorage( o );
+    }
+}
+
+DBQuery.prototype._validateObject = function( o ){
+    if (typeof(o) != "object")
+        throw "attempted to save a " + typeof(o) + " value.  document expected.";
+
+    if ( o._ensureSpecial && o._checkModify )
+        throw "can't save a DBQuery object";
+}
+
+DBQuery.prototype._validateForStorage = function( o ){
+    this._validateObject( o );
+    for ( var k in o ){
+        if ( k.indexOf( "." ) >= 0 ) {
+            throw "can't have . in field names [" + k + "]" ;
+        }
+
+        if ( k.indexOf( "$" ) == 0 && ! DBCollection._allowedFields[k] ) {
+            throw "field names cannot start with $ [" + k + "]";
+        }
+
+        if ( o[k] !== null && typeof( o[k] ) === "object" ) {
+            this._validateForStorage( o[k] );
+        }
+    }
+}
+
 DB.prototype._getExtraInfo = function(action) {
     if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
         __callLastError = true;
@@ -117,6 +155,35 @@ DB.prototype._getExtraInfo = function(action) {
         print(info);
     }
 } 
+
+DBQuery.prototype.upsert = function( upsert ){
+    assert( upsert , "need an upsert object" );
+
+    this._validate(upsert);
+    this._db._initExtraInfo();
+    this._mongo.update( this._ns , this._query , upsert , true , false );
+    this._db._getExtraInfo("Upserted");
+}
+
+DBQuery.prototype.update = function( update ){
+    assert( update , "need an update object" );
+
+    this._validate(update);
+    this._db._initExtraInfo();
+    this._mongo.update( this._ns , this._query , update , false , true );
+    this._db._getExtraInfo("Updated");
+}
+
+DBQuery.prototype.remove = function(){
+    for ( var k in this._query ){
+        if ( k == "_id" && typeof( this._query[k] ) == "undefined" ){
+            throw "can't have _id set to undefined in a remove expression"
+        }
+    }
+    this._db._initExtraInfo();
+    this._mongo.remove( this._ns , this._massageObject( this._query ) , false );
+    this._db._getExtraInfo("Removed");
+}
 
 Date.prototype.tojson = function() {
 
