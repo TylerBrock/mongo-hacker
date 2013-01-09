@@ -357,7 +357,7 @@ tojson = function( x, indent , nolint ) {
 
 };
 
-tojsonObject = function( x, indent , nolint ) {
+tojsonObject = function( x, indent, nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
 
@@ -508,9 +508,8 @@ DBQuery.prototype.shellPrint = function(){
             output.push("More[" + colorize("false", "red", true) + "]");
         }
         print(output.join(" -- "));
-   }
+    }
     catch ( e ){
         print( e );
     }
-
 };
