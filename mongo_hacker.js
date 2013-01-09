@@ -25,14 +25,14 @@ __ansi = {
         magenta: '5',
         cyan: '6'
     }
-}
+};
 
 if (_isWindows()) {
     print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
 var ver = db.version().split(".");
-if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
+if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
     print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
 }
 
@@ -40,21 +40,21 @@ setVerboseShell(true);
 setIndexParanoia(true);
 setAutoMulti(true);
 
-__indent = "  "
+__indent = "  ";
 
 function setIndexParanoia( value ) {
-    if( value == undefined ) value = true;
+    if( value === undefined ) value = true;
     _indexParanoia = value;
 }
 
 function setAutoMulti( value ) {
-    if( value == undefined ) value = true;
+    if( value === undefined ) value = true;
     _autoMulti = value;
 }
 
 function controlCode( parameters ) {
-    if ( parameters == undefined ) {
-    	parameters = "";
+    if ( parameters === undefined ) {
+        parameters = "";
     }
     else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
         parameters = parameters.join(';');
@@ -73,8 +73,8 @@ function colorize( string, color, bright, underline ) {
 
     params.push(code);
 
-    if ( bright == true ) params.push(__ansi.bright);
-    if ( underline == true ) params.push(__ansi.underline);
+    if ( bright === true ) params.push(__ansi.bright);
+    if ( underline === true ) params.push(__ansi.underline);
 
     return applyColorCode( string, params );
 }
@@ -89,28 +89,28 @@ function getEnv(env_var){
 
 ObjectId.prototype.toString = function() {
     return this.str;
-}
+};
 
 ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
-}
+};
 
 DBCollection.prototype.filter = function( filter ) {
     return new DBQuery( this._mongo, this._db, this, this._fullName, this._massageObject( filter ) );
-}
+};
 
 DBQuery.prototype._validate = function( o ){
     var firstKey = null;
     for (var k in o) { firstKey = k; break; }
 
-    if (firstKey != null && firstKey[0] == '$') {
+    if (firstKey !== null && firstKey[0] == '$') {
         // for mods we only validate partially, for example keys may have dots
         this._validateObject( o );
     } else {
         // we're basically inserting a brand new object, do full validation
         this._validateForStorage( o );
     }
-}
+};
 
 DBQuery.prototype._validateObject = function( o ){
     if (typeof(o) != "object")
@@ -118,7 +118,7 @@ DBQuery.prototype._validateObject = function( o ){
 
     if ( o._ensureSpecial && o._checkModify )
         throw "can't save a DBQuery object";
-}
+};
 
 DBQuery.prototype._validateForStorage = function( o ){
     this._validateObject( o );
@@ -127,7 +127,7 @@ DBQuery.prototype._validateForStorage = function( o ){
             throw "can't have . in field names [" + k + "]" ;
         }
 
-        if ( k.indexOf( "$" ) == 0 && ! DBCollection._allowedFields[k] ) {
+        if ( k.indexOf( "$" ) === 0 && ! DBCollection._allowedFields[k] ) {
             throw "field names cannot start with $ [" + k + "]";
         }
 
@@ -135,7 +135,7 @@ DBQuery.prototype._validateForStorage = function( o ){
             this._validateForStorage( o[k] );
         }
     }
-}
+};
 
 DB.prototype._getExtraInfo = function(action) {
     if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
@@ -146,7 +146,7 @@ DB.prototype._getExtraInfo = function(action) {
     // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
     var res = this.getLastErrorCmd(1);
     if (res) {
-        if (res.err != undefined && res.err != null) {
+        if (res.err !== undefined && res.err !== null) {
             // error occurred, display it
             print(res.err);
             return;
@@ -155,7 +155,7 @@ DB.prototype._getExtraInfo = function(action) {
         var info = action + " ";
         // hack for inserted because res.n is 0
         info += action != "Inserted" ? res.n : 1;
-        if (res.n > 0 && res.updatedExisting != undefined) info += " " + (res.updatedExisting ? "existing" : "new")
+        if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
         var time = new Date().getTime() - this.startTime;
         var slowms = this.setProfilingLevel().slowms;
@@ -166,26 +166,26 @@ DB.prototype._getExtraInfo = function(action) {
         }
         print(info);
     }
-}
+};
 
 DB.prototype.rename = function(newName) {
-    if(newName == this.getName() || newName.length == 0)
+    if(newName == this.getName() || newName.length === 0)
         return;
 
     this.copyDatabase(this.getName(), newName, "localhost");
     this.dropDatabase();
     db = this.getSiblingDB(newName);
-}
+};
 
 DBQuery.prototype._checkMulti = function(){
   if(this._limit > 0){
-    var ids = this.clone().select({_id: 1}).map(function(o){return o._id});
+    var cursor = this.clone().select({_id: 1}).map(function(o){return o._id;});
     this._query['_id'] = {'$in': ids};
     return true;
   } else {
     return false;
   }
-}
+};
 
 DBQuery.prototype.upsert = function( upsert ){
     assert( upsert , "need an upsert object" );
@@ -194,7 +194,7 @@ DBQuery.prototype.upsert = function( upsert ){
     this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , upsert , true , false );
     this._db._getExtraInfo("Upserted");
-}
+};
 
 DBQuery.prototype.update = function( update ){
     assert( update , "need an update object" );
@@ -204,7 +204,7 @@ DBQuery.prototype.update = function( update ){
     this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , update , false , true );
     this._db._getExtraInfo("Updated");
-}
+};
 
 DBQuery.prototype.replace = function( replacement ){
    assert( replacement , "need an update object" );
@@ -213,12 +213,12 @@ DBQuery.prototype.replace = function( replacement ){
    this._db._initExtraInfo();
    this._mongo.update( this._ns , this._query , replacement , false , false );
    this._db._getExtraInfo("Replaced");
-}
+};
 
 DBQuery.prototype.remove = function(){
     for ( var k in this._query ){
         if ( k == "_id" && typeof( this._query[k] ) == "undefined" ){
-            throw "can't have _id set to undefined in a remove expression"
+            throw "can't have _id set to undefined in a remove expression";
         }
     }
 
@@ -226,16 +226,16 @@ DBQuery.prototype.remove = function(){
     this._db._initExtraInfo();
     this._mongo.remove( this._ns , this._query , false );
     this._db._getExtraInfo("Removed");
-}
+};
 
 DBQuery.prototype.select = function( fields ){
     this._fields = fields;
     return this;
-}
+};
 
 DBQuery.prototype.one = function(){
     return this.limit(1)[0];
-}
+};
 
 Date.prototype.tojson = function() {
 
@@ -246,24 +246,24 @@ Date.prototype.tojson = function() {
     var date = this['get'+UTC+'Date']().zeroPad(2);
     var hour = this['get'+UTC+'Hours']().zeroPad(2);
     var minute = this['get'+UTC+'Minutes']().zeroPad(2);
-    var sec = this['get'+UTC+'Seconds']().zeroPad(2)
+    var sec = this['get'+UTC+'Seconds']().zeroPad(2);
 
     if (this['get'+UTC+'Milliseconds']())
-        sec += '.' + this['get'+UTC+'Milliseconds']().zeroPad(3)
+        sec += '.' + this['get'+UTC+'Milliseconds']().zeroPad(3);
 
     var ofs = 'Z';
     if (!Date.printAsUTC) {
         var ofsmin = this.getTimezoneOffset();
-        if (ofsmin != 0){
+        if (ofsmin !== 0){
             ofs = ofsmin > 0 ? '-' : '+'; // This is correct
-            ofs += (ofsmin/60).zeroPad(2)
-            ofs += (ofsmin%60).zeroPad(2)
+            ofs += (ofsmin/60).zeroPad(2);
+            ofs += (ofsmin%60).zeroPad(2);
         }
     }
 
-    var date =  colorize('"' + year + month + date + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
-    return 'ISODate(' + date + ')';
-}
+    var isodate =  colorize('"' + year + month + date + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
+    return 'ISODate(' + isodate + ')';
+};
 
 Array.tojson = function( a , indent , nolint ){
     var lineEnding = nolint ? " " : "\n";
@@ -274,7 +274,7 @@ Array.tojson = function( a , indent , nolint ){
     if ( nolint )
         indent = "";
 
-    if (a.length == 0) {
+    if (a.length === 0) {
         return "[ ]";
     }
 
@@ -286,22 +286,22 @@ Array.tojson = function( a , indent , nolint ){
             s += "," + lineEnding;
         }
     }
-    if ( a.length == 0 ) {
+    if ( a.length === 0 ) {
         s += indent;
     }
 
     indent = indent.substring(__indent.length);
     s += lineEnding+indent+"]";
     return s;
-}
+};
 
 NumberLong.prototype.tojson = function() {
     return 'NumberLong(' + colorize(this.valueOf(), "red") + ')';
-}
+};
 
 NumberInt.prototype.tojson = function() {
     return 'NumberLong(' + colorize(this.valueOf(), "red") + ')';
-}
+};
 
 tojson = function( x, indent , nolint ) {
     if ( x === null )
@@ -317,9 +317,10 @@ tojson = function( x, indent , nolint ) {
     if (!indent)
         indent = "";
 
+    var s;
     switch ( typeof x ) {
     case "string": {
-        var s = "\"";
+        s = "\"";
         for ( var i=0; i<x.length; i++ ){
             switch (x[i]){
                 case '"': s += '\\"'; break;
@@ -340,27 +341,27 @@ tojson = function( x, indent , nolint ) {
                 }
             }
         }
-        s += "\""
+        s += "\"";
         return colorize(s, "green", true);
     }
     case "number":
-        return colorize(x, "red") 
+        return colorize(x, "red");
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
-        var s = tojsonObject( x, indent , nolint );
-        if ( ( nolint == null || nolint == true ) && s.length < 80 && ( indent == null || indent.length == 0 ) ){
+        s = tojsonObject( x, indent , nolint );
+        if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
         return s;
     }
     case "function":
-        return colorize(x.toString(), "magenta")
+        return colorize(x.toString(), "magenta");
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
 
-}
+};
 
 tojsonObject = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
@@ -391,7 +392,7 @@ tojsonObject = function( x, indent , nolint ) {
 
     var total = 0;
     for ( var k in x ) total++;
-    if ( total == 0 ) {
+    if ( total === 0 ) {
         s += indent + lineEnding;
     }
 
@@ -399,13 +400,13 @@ tojsonObject = function( x, indent , nolint ) {
     if ( typeof( x._simpleKeys ) == "function" )
         keys = x._simpleKeys();
     var num = 1;
-    for ( var k in keys ){
+    for ( var key in keys ){
 
-        var val = x[k];
+        var val = x[key];
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
 
-        s += indent + colorize("\"" + k + "\"", "yellow") + ": " + tojson( val, indent , nolint );
+        s += indent + colorize("\"" + key + "\"", "yellow") + ": " + tojson( val, indent , nolint );
         if (num != total) {
             s += ",";
             num++;
@@ -416,38 +417,38 @@ tojsonObject = function( x, indent , nolint ) {
     // pop one level of indent
     indent = indent.substring(__indent.length);
     return s + indent + "}";
-}
+};
 
 // Override group because map/reduce style is deprecated
 DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
     var group_op = { $group: { _id: '$' + group_field } };
 
-    if (filter != undefined) {
-        ops.push({ '$match': filter })
+    if (filter !== undefined) {
+        ops.push({ '$match': filter });
     }
 
     group_op['$group'][name] = { };
-    group_op['$group'][name]['$' + operation] = op_value
+    group_op['$group'][name]['$' + operation] = op_value;
     ops.push(group_op);
 
     return this.aggregate(ops);
-}
+};
 
 // Function that groups and counts by group after applying filter
 DBCollection.prototype.gcount = function( group_field, filter ) {
     return this.agg_group('count', group_field, 'sum', 1, filter);
-}
+};
 
 // Function that groups and sums sum_field after applying filter
 DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
     return this.agg_group('sum', group_field, 'sum', '$' + sum_field, filter);
-}
+};
 
 // Function that groups and averages avg_feld after applying filter
 DBCollection.prototype.gavg = function( group_field, avg_field, filter ) {
     return this.agg_group('avg', group_field, 'avg', '$' + avg_field, filter);
-}
+};
 
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
@@ -455,16 +456,15 @@ prompt = function() {
     var host = serverstatus.host.split('.')[0];
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
-    var repl_set = db.runCommand({"replSetGetStatus": 1})['ok'] != 0;
+    var repl_set = db.runCommand({"replSetGetStatus": 1}).ok !== 0;
+    var rs_state = '';
     if(repl_set) {
-      var rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
-    } else {
-      var rs_state = '';
+        rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
     }
     var mongos = db.isMaster().msg == 'isdbgrid';
     var state = mongos ? '' : rs_state;
     return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
-}
+};
 
 DBQuery.prototype.shellPrint = function(){
     try {
@@ -476,7 +476,7 @@ DBQuery.prototype.shellPrint = function(){
             n++;
         }
 
-        var output = []
+        var output = [];
 
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
@@ -496,7 +496,7 @@ DBQuery.prototype.shellPrint = function(){
             explain._limit = Math.abs(n._limit) * -1;
             var result = explain.next();
             var type = result.cursor;
-            var index_use = "Index["
+            var index_use = "Index[";
             if (type == "BasicCursor") {
                 index_use += colorize( "none", "red", true);
             } else {
@@ -519,4 +519,4 @@ DBQuery.prototype.shellPrint = function(){
         print( e );
     }
 
-}
+};
