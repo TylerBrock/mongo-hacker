@@ -38,18 +38,12 @@ if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
 
 setVerboseShell(true);
 setIndexParanoia(true);
-setAutoMulti(true);
 
 __indent = "  ";
 
 function setIndexParanoia( value ) {
     if( value === undefined ) value = true;
     _indexParanoia = value;
-}
-
-function setAutoMulti( value ) {
-    if( value === undefined ) value = true;
-    _autoMulti = value;
 }
 
 function controlCode( parameters ) {
