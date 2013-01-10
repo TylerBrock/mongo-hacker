@@ -290,11 +290,11 @@ Array.tojson = function( a , indent , nolint ){
 };
 
 NumberLong.prototype.tojson = function() {
-    return 'NumberLong("' + colorize(this.toString().match(/\d+/)[0], "red") + '")';
+    return 'NumberLong(' + colorize('"' + this.toString().match(/\d+/)[0] + '"', "red") + ')';
 };
 
 NumberInt.prototype.tojson = function() {
-    return 'NumberInt("' + colorize(this.toString().match(/\d+/)[0], "red") + '")';
+    return 'NumberInt(' + colorize('"' + this.toString().match(/\d+/)[0] + '"', "red") + ')';
 };
 
 tojson = function( x, indent , nolint ) {
