@@ -294,7 +294,7 @@ NumberLong.prototype.tojson = function() {
 };
 
 NumberInt.prototype.tojson = function() {
-    return 'NumberInt(' + colorize('"' + this.toString().match(/-\d+/)[0] + '"', "red") + ')';
+    return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
 };
 
 tojson = function( x, indent , nolint ) {
