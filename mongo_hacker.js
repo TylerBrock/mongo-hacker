@@ -44,20 +44,19 @@ function setIndexParanoia( value ) {
 load(homeDir + "/.mongo.rc/rendering.js");
 load(homeDir + "/.mongo.rc/settings.js");
 
+var loadPlugins = function(scanMsg, scanDir, fileTemplate, loggingMsg) {
+    print(scanMsg);
+    ls(scanDir).forEach(function (file){
+        if (file.match(fileTemplate)) {
+            print(loggingMsg(file));
+            load(file);
+        }
+    });
+};
+
 var systemPluginsDir = homeDir + "/.mongo.rc/";
-print("Scanning directory '" + systemPluginsDir + "' for system plugins...");
+loadPlugins("Scanning directory '" + systemPluginsDir + "' for system plugins...",
+    systemPluginsDir, /\/mongo\.[^/]+\.js$/, function (file) { return "Loading system plug-in '"  + file + "'...";});
 
-ls(systemPluginsDir).forEach(function (file){
-    if (file.match(/\/mongo\.[^/]+\.js/)) {
-        print("Loading plug-in file '"  + file + "'...");
-        load(file);
-    }
-});
-
-print("Scanning files '" + homeDir + "/.mongorc.*.js' for user defined plugins...");
-ls(homeDir).forEach(function (file){
-    if (file.match(/\/.mongorc\.[^/]+\.js$/)) {
-        print("Loading user defined plug-in '"  + file + "'...");
-        load(file);
-    }
-});
+loadPlugins("Scanning files '" + homeDir + "/.mongorc.*.js' for user defined plugins...",
+    homeDir, /\/.mongorc\.[^/]+\.js$/, function (file) { return "Loading user defined plug-in '"  + file + "'...";});
