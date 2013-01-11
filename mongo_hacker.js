@@ -32,7 +32,7 @@ prompt = function() {
 
 var homeDir = function () {
     clearRawMongoProgramOutput();
-    run("sh", "-c", "echo $HOME");
+    run("printenv", "HOME");
     return rawMongoProgramOutput().match(/\S+\| (.*)/)[1];
 }();
 
