@@ -1,4 +1,4 @@
-function jUUID(uuid) {
+function UUID(uuid) {
     var hex = uuid.replace(/[{}-]/g, ""); // remove extra characters
     var msb = hex.substr(0, 16);
     var lsb = hex.substr(16, 16);
