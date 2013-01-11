@@ -56,7 +56,7 @@ ls(systemPluginsDir).forEach(function (file){
 
 print("Scanning files '" + homeDir + "/.mongorc.*.js' for user defined plugins...");
 ls(homeDir).forEach(function (file){
-    if (file.match(/\/.mongorc\.[^/]+\.js/)) {
+    if (file.match(/\/.mongorc\.[^/]+\.js$/)) {
         print("Loading user defined plug-in '"  + file + "'...");
         load(file);
     }
