@@ -1,4 +1,4 @@
-function UUID(uuid) {
+function jUUID(uuid) {
     var hex = uuid.replace(/[{}-]/g, ""); // remove extra characters
     var msb = hex.substr(0, 16);
     var lsb = hex.substr(16, 16);
@@ -60,10 +60,10 @@ var uuidToString = function (uuid) {
     return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
 };
 
+var bd_super_tojson = BinData.prototype.tojson;
+
 BinData.prototype.tojson = function(indent , nolint) {
-    if (this.subtype() === 3) {
-        return 'UUID(' + colorize('"' + uuidToString(this) + '"', "cyan") + ')';
-    } else {
-        return 'BinData(' + this.subtype() + ', ' + this.base64() + ')';
-    }
+    return this.subtype() === 3
+        ? 'jUUID(' + colorize('"' + uuidToString(this) + '"', "cyan") + ')'
+        : bd_super_tojson.call(this, indent, nolint);
 };
