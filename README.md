@@ -11,8 +11,7 @@
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
 ```
-git clone <repository> ~/.mongo.rc/
-ln -sf ~/.mongo.rc/mongo_hacker.js ~/.mongorc.js
+ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
 
 Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
@@ -24,7 +23,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
 To support UUIDs serialized by Java driver you need explicitly enable plugin 'opt.mongo.java.uuid.js':
 
 ```
-ln -sf ~/.mongo.rc/opt.mongo.java.uuid.js ~/.mongorc.uuid.js
+ln -sf <mongo-hacker-dir>/opt.mongo.java.uuid.js ~/.mongorc.uuid.js
 ```
 
 ## Enhancements

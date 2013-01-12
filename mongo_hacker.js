@@ -20,13 +20,19 @@ var homeDir = function () {
     return rawMongoProgramOutput().match(/\S+\| (.*)/)[1];
 }();
 
+var scriptDir = function () {
+    clearRawMongoProgramOutput();
+    run("realpath", homeDir + "/.mongorc.js");
+    return rawMongoProgramOutput().match(/\S+\| (.*?)\/mongo_hacker\.js/)[1];
+}();
+
 function setIndexParanoia( value ) {
     if( value === undefined ) value = true;
     _indexParanoia = value;
 }
 
-load(homeDir + "/.mongo.rc/rendering.js");
-load(homeDir + "/.mongo.rc/settings.js");
+load(scriptDir + "/rendering.js");
+load(scriptDir + "/settings.js");
 
 var loadPlugins = function(scanMsg, scanDir, fileTemplate, loggingMsg) {
     print(scanMsg);
@@ -38,7 +44,7 @@ var loadPlugins = function(scanMsg, scanDir, fileTemplate, loggingMsg) {
     });
 };
 
-var systemPluginsDir = homeDir + "/.mongo.rc/";
+var systemPluginsDir = scriptDir + "/";
 loadPlugins("Scanning directory '" + systemPluginsDir + "' for system plugins...",
     systemPluginsDir, /\/mongo\.[^/]+\.js$/, function (file) { return "Loading system plug-in '"  + file + "'...";});
 
