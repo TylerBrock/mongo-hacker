@@ -44,9 +44,8 @@ var loadPlugins = function(scanMsg, scanDir, fileTemplate, loggingMsg) {
     });
 };
 
-var systemPluginsDir = scriptDir + "/";
-loadPlugins("Scanning directory '" + systemPluginsDir + "' for system plugins...",
-    systemPluginsDir, /\/mongo\.[^/]+\.js$/, function (file) { return "Loading system plug-in '"  + file + "'...";});
+loadPlugins("Scanning files '" + scriptDir + "/mongo.*.js' for system plugins...",
+    scriptDir, /\/mongo\.[^/]+\.js$/, function (file) { return "Loading system plug-in '"  + file + "'...";});
 
 loadPlugins("Scanning files '" + homeDir + "/.mongorc.*.js' for user defined plugins...",
     homeDir, /\/.mongorc\.[^/]+\.js$/, function (file) { return "Loading user defined plug-in '"  + file + "'...";});
