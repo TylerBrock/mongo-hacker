@@ -47,6 +47,14 @@ One for finding a single document:
 Select for selecting fields to return (projection):
 - `db.collection.filter({ ... }).select({ name: 1 })` -- only returns the name and _id fields
 
+Reverse for descending sort by insertion order (default) or arbitrary field:
+- `db.collection.filter({ ... }).reverse()`
+- `db.collection.filter({ ... }).reverse('createDate')`
+
+Last for finding last inserted document (default) or document last by given field:
+- `db.collection.filter({ ... }).last()`            -- return one doc only
+- `db.collection.filter({ ... }).last('createDate')`
+
 Update, Replace, Upsert and Remove can be called on a DBQuery Object
 - `db.collection.filter({ ... }).update({ ... })`  -- multi update
 - `db.collection.filter({ ... }).replace({ ... })` -- single replacement
