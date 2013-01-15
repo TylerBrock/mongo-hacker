@@ -255,7 +255,7 @@ Date.prototype.tojson = function() {
         }
     }
 
-    var isodate =  colorize('"' + year + month + date + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
+    var isodate =  colorize('"' + [year, month, date].join('-') + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
     return 'ISODate(' + isodate + ')';
 };
 
