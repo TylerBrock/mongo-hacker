@@ -231,6 +231,18 @@ DBQuery.prototype.one = function(){
     return this.limit(1)[0];
 };
 
+DBQuery.prototype.reverse = function( field ){
+    var field = field || "$natural";
+    var sortBy = {};
+    sortBy[field] = -1;
+    return this.sort(sortBy);
+}
+
+DBQuery.prototype.last = function( field ){
+    var field = field || "$natural";
+    return this.reverse(field).one();
+}
+
 Date.prototype.tojson = function() {
 
     var UTC = Date.printAsUTC ? 'UTC' : '';
