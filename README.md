@@ -5,6 +5,7 @@
 * These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit pull requests.
 * Does not work in Windows (currently)
 * Does not work with shells or db servers < 2.2 (currently)
+* Updates called on existing cursors are new and experimental (see notes in API secion)
 
 ## Installation
 
@@ -34,11 +35,14 @@ Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
 
 Disable notfication of "Type 'it' for more"
 
-Custom prompt with `hostname(process-version)[rs status] db>` formating
+Custom prompt
+```js
+hostname(process-version)[rs status] db>
+```
 
 ### API
 
-Filter for a collection of documents
+Filter for a collection of documents:
 ```js
 db.collection.filter(<criteria>)
 ```
@@ -65,7 +69,7 @@ db.collection.filter({ ... }).last()
 db.collection.filter({ ... }).last('createDate')
 ```
 
-Update, Replace, Upsert and Remove can be called on a DBQuery Object
+Update, Replace, Upsert and Remove can be called on a DBQuery Object:
 ```js
 db.collection.filter({ ... }).update({ ... })  // multi update
 db.collection.filter({ ... }).replace({ ... }) // single replacement
@@ -73,12 +77,13 @@ db.collection.filter({ ... }).upsert({ ... })  // single upsert
 db.collection.filter({ ... }).remove()         // multi remove
 ```
 
-Sort, limit, and skip through multi updates and removes
+Sort, limit, and skip through multi updates and removes:
 ```js
 db.collection.filter({ ... }).limit(7).update({ ... })
 db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })
 db.collection.filter({ ... }).limit(3).remove()
 ```
+**Note**: *The performance of multi updates involving a skip or limit may be worse than those without those specifications due to there being absolutely no native support for this feature in MongoDB itself. It should be understood by the user of this software that use of this feature (by calling update on a cursor rather than a collection) is advanced and experimental. The option to do this sort of operation is purely additive to the MongoDB experience with MongoHacker and usage of it is in no way required. Furthermore, its inclusion in this enhancement does not effect the operation of updates invoked through collections and, in practice, is insanely useful.*
 
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
@@ -90,7 +95,6 @@ Aggregation Framework Helpers -- on collections
 Colorized query output
 
 ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
-
 - ObjectId: Green(underlined)
 - null: Bright Red
 - String: Green
