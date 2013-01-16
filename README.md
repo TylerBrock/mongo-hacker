@@ -10,7 +10,7 @@
 
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
-```
+```sh
 ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
 
@@ -38,33 +38,47 @@ Custom prompt with `hostname(process-version)[rs status] db>` formating
 
 ### API
 
-Filter for filtering a collection of documents
-- `db.collection.filter(<criteria>)` -- accepts less parameters than find, simply matches
+Filter for a collection of documents
+```js
+db.collection.filter(<criteria>)
+```
 
 One for finding a single document:
-- `db.collection.filter({ ... }).one()` == `db.collection.findOne({ ... })`
+```js
+db.collection.filter({ ... }).one() == db.collection.findOne({ ... })
+```
 
 Select for selecting fields to return (projection):
-- `db.collection.filter({ ... }).select({ name: 1 })` -- only returns the name and _id fields
+```js
+db.collection.filter({ ... }).select({ name: 1 })
+```
 
 Reverse for descending sort by insertion order (default) or arbitrary field:
-- `db.collection.filter({ ... }).reverse()`
-- `db.collection.filter({ ... }).reverse('createDate')`
+```js
+db.collection.filter({ ... }).reverse()
+db.collection.filter({ ... }).reverse('createDate')
+```
 
 Last for finding last inserted document (default) or document last by given field:
-- `db.collection.filter({ ... }).last()`            -- return one doc only
-- `db.collection.filter({ ... }).last('createDate')`
+```js
+db.collection.filter({ ... }).last()
+db.collection.filter({ ... }).last('createDate')
+```
 
 Update, Replace, Upsert and Remove can be called on a DBQuery Object
-- `db.collection.filter({ ... }).update({ ... })`  -- multi update
-- `db.collection.filter({ ... }).replace({ ... })` -- single replacement
-- `db.collection.filter({ ... }).upsert({ ... })`  -- single upsert
-- `db.collection.filter({ ... }).remove()`         -- multi remove
+```js
+db.collection.filter({ ... }).update({ ... })  // multi update
+db.collection.filter({ ... }).replace({ ... }) // single replacement
+db.collection.filter({ ... }).upsert({ ... })  // single upsert
+db.collection.filter({ ... }).remove()         // multi remove
+```
 
 Sort, limit, and skip through multi updates and removes
-- `db.collection.filter({ ... }).limit(7).update({ ... })`
-- `db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })`
-- `db.collection.filter({ ... }).limit(3).remove()`
+```js
+db.collection.filter({ ... }).limit(7).update({ ... })
+db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })
+db.collection.filter({ ... }).limit(3).remove()
+```
 
 Aggregation Framework Helpers -- on collections
 - Group and Count: `gcount(group_field, filter)`
