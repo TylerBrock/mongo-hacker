@@ -172,7 +172,7 @@ DB.prototype.rename = function(newName) {
 };
 
 DBQuery.prototype._checkMulti = function(){
-  if(this._limit > 0){
+  if(this._limit > 0 || this._skip > 0){
     var ids = this.clone().select({_id: 1}).map(function(o){return o._id;});
     this._query['_id'] = {'$in': ids};
     return true;
