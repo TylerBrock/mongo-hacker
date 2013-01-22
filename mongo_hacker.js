@@ -31,10 +31,12 @@ if (_isWindows()) {
   print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
-var ver = db.version().split(".");
-if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
-  print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
-} 
+if(db){ // skip check optimistically, if the shell was started with --nodb
+    var ver = db.version().split(".");
+    if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
+      print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
+    } 
+}
 
 setVerboseShell(true);
 setIndexParanoia(true);
