@@ -9,13 +9,25 @@
 
 ## Installation
 
-Link mongo_hacker.js to `.mongorc.js` in your home directory:
+Create a `.mongorc.js` folder in your home directory and link 
+mongo_hacker.js to `~/mongorc.js/init.js`:
 
 ```sh
-ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
+mkdir ~/.mongorc.js/
+ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js/init.js
 ```
 
 Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
+
+## Configuring mongo_hacker.js
+
+To configure mongo_hacker.js copy the config.js template to ~/.mongorc.js/config.js and tweak the variables.
+
+
+## Add your own functions
+
+To extend mongo_hacker.js with your own enhancements, simply create ~/.mongorc.js/my.js
+and add your own functions there
 
 ## Enhancements
 
@@ -103,3 +115,5 @@ Colorized query output
 - Boolean: Blue
 - Date: Cyan
 
+
+###
