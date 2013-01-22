@@ -41,16 +41,130 @@ try {
     print(colorize("\nSorry! Can't load everything propertly as we don't have a db yet.\n", "red", true));
 }
 
-setVerboseShell(true);
-setIndexParanoia(true);
 
-__indent = "  ";
+try {
+    setVerboseShell(VERBOSE_SHELL);
+} catch(err) {
+    setVerboseShell(true);
+}
+try {
+    setIndexParanoia(INDEX_PARANOIA);
+} catch(err) {
+    setIndexParanoia(true);
+}
+try {
+    setIndent(INDENT);
+} catch(err) {
+    setIndent("    ");
+}
+try {
+    setNumberColor(COLOR_NUMBERS);
+} catch(err) {
+    setNumberColor("blue");
+}
+try {
+    setNullColor(COLOR_NULL);
+} catch(err) {
+    setNullColor("red");
+}
+try {
+    setUndefinedColor(COLOR_UNDEFINED);
+} catch(err) {
+    setUndefinedColor("magenta");
+}
+
+try {
+    setObjectIdColor(COLOR_OBJECTID);
+} catch(err) {
+    setObjectIdColor("green");
+}
+
+try {
+    setStringColor(COLOR_STRING);
+} catch(err) {
+    setStringColor("green");
+}
+
+try {
+    setBooleanColor(COLOR_BOOLEAN);
+} catch(err) {
+    setBooleanColor("blue");
+}
+
+try {
+    setFunctionColor(COLOR_FUNCTION);
+} catch(err) {
+    setFunctionColor("magenta");
+}
 
 function setIndexParanoia( value ) {
     if( value === undefined ) value = true;
     _indexParanoia = value;
 }
 
+function setIndent( value ) {
+    __indent = value;
+}
+function setNumberColor( value ) {
+    __c_number = _validateColor(value);
+}
+function getNumberColor() {
+    return __c_number;
+}
+function setNullColor( value ) {
+    __c_null = _validateColor(value);
+}
+function getNullColor() {
+    return __c_null;
+}
+function setUndefinedColor( value ) {
+    __c_undefined = _validateColor(value);
+}
+function getUndefinedColor() {
+    return __c_undefined;
+}
+function setObjectIdColor( value ) {
+    __c_objectid = _validateColor(value);
+}
+function getObjectIdColor() {
+    return __c_objectid;
+}
+function setStringColor( value ) {
+    __c_string = _validateColor(value);
+}
+function getStringColor() {
+    return __c_string;
+}
+function setBooleanColor( value ) {
+    __c_boolean = _validateColor(value);
+}
+function getBooleanColor() {
+    return __c_boolean;
+}
+function setFunctionColor( value ) {
+    __c_function = _validateColor( value );
+}
+function getFunctionColor() {
+    return __c_function;
+}
+function _validateColor( value ) {
+    switch( value ) {
+        case "red":
+        case "green":
+        case "yellow":
+        case "blue":
+        case "magenta":
+        case "cyan":
+            break;
+        default:
+            throw "Unknown color: " + value;
+    }
+    return value;
+}
+
+function getNumberColor() {
+    return __c_number;
+}
 function controlCode( parameters ) {
     if ( parameters === undefined ) {
         parameters = "";
@@ -307,22 +421,22 @@ Array.tojson = function( a , indent , nolint ){
 };
 
 NumberLong.prototype.tojson = function() {
-    return 'NumberLong(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
+    return 'NumberLong(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', getNumberColor()) + ')';
 };
 
 NumberInt.prototype.tojson = function() {
-    return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
+    return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', getNumberColor()) + ')';
 };
 
 tojson = function( x, indent , nolint ) {
     if ( x === null )
-        return colorize("null", "red", true);
+        return colorize("null", getNullColor(), true);
 
     if ( x === undefined )
-        return colorize("undefined", "magenta", true);
+        return colorize("undefined", getUndefinedColor(), true);
 
     if ( x.isObjectId ) {
-        return 'ObjectId(' + colorize('"' + x.str + '"', "green", false, true) + ')';
+        return 'ObjectId(' + colorize('"' + x.str + '"', getObjectIdColor(), false, true) + ')';
     }
 
     if (!indent)
@@ -353,12 +467,12 @@ tojson = function( x, indent , nolint ) {
             }
         }
         s += "\"";
-        return colorize(s, "green", true);
+        return colorize(s, getStringColor(), true);
     }
     case "number":
-        return colorize(x, "red");
+        return colorize(x, getNumberColor());
     case "boolean":
-        return colorize("" + x, "blue");
+        return colorize("" + x, getBooleanColor());
     case "object": {
         s = tojsonObject( x, indent , nolint );
         if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
@@ -367,7 +481,7 @@ tojson = function( x, indent , nolint ) {
         return s;
     }
     case "function":
-        return colorize(x.toString(), "magenta");
+        return colorize(x.toString(), getFunctionColor());
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
