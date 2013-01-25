@@ -40,7 +40,7 @@ Custom prompt
 hostname(process-version)[rs status] db>
 ```
 
-### API
+### API Additions
 
 Filter for a collection of documents:
 ```js
