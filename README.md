@@ -12,6 +12,12 @@
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
 ```sh
+make
+```
+
+or (the manual way)
+
+```sh
 ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
 
