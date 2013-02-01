@@ -39,6 +39,8 @@ if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
 setVerboseShell(true);
 setIndexParanoia(true);
 
+DBQuery.prototype._prettyShell = true
+
 __indent = "  ";
 // Type of function for legacy UUID objects (BinData with subtype = 3) rendering
 // Values: "java", "c#", and "default"
