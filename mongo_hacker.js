@@ -157,7 +157,7 @@ DB.prototype._getExtraInfo = function(action) {
         if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
         var time = new Date().getTime() - this.startTime;
-        var slowms = this.setProfilingLevel().slowms;
+        var slowms = this.getProfilingStatus().slowms;
         if (time > slowms) {
             info += colorize(time + "ms", "red", true);
         } else {
@@ -588,7 +588,7 @@ DBQuery.prototype.shellPrint = function(){
 
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
-            var slowms = this._db.setProfilingLevel().slowms;
+            var slowms = this._db.getProfilingStatus().slowms;
             var fetched = "Fetched " + n + " record(s) in ";
             if (time > slowms) {
                 fetched += colorize(time + "ms", "red", true);
