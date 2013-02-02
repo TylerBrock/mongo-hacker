@@ -143,6 +143,7 @@ DB.prototype._getExtraInfo = function(action) {
     }
 
     // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
+    var startTime = new Date().getTime();
     var res = this.getLastErrorCmd(1);
     if (res) {
         if (res.err !== undefined && res.err !== null) {
@@ -156,7 +157,7 @@ DB.prototype._getExtraInfo = function(action) {
         info += action != "Inserted" ? res.n : 1;
         if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
-        var time = new Date().getTime() - this.startTime;
+        var time = new Date().getTime() - startTime;
         var slowms = this.getProfilingStatus().slowms;
         if (time > slowms) {
             info += colorize(time + "ms", "red", true);
