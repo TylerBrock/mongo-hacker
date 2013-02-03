@@ -36,10 +36,8 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
     - Customizable by setting `__indent`
   - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
   - Disable notfication of "Type 'it' for more"
-  - Custom prompt
-```js
-hostname(process-version)[rs status] db>
-```
+  - Custom prompt: `hostname(process-version)[rs status] db>`
+  - Always pretty print
 
 ### API Additions
 
@@ -93,6 +91,11 @@ db.collection.filter({ ... }).limit(3).remove()
 ```
 
 **Note**: *The performance of multi updates involving a skip or limit may be worse than those without those specifications due to there being absolutely no native support for this feature in MongoDB itself. It should be understood by the user of this software that use of this feature (by calling update on a cursor rather than a collection) is advanced and experimental. The option to do this sort of operation is purely additive to the MongoDB experience with MongoHacker and usage of it is in no way required. Furthermore, its inclusion in this enhancement does not effect the operation of updates invoked through collections and, in practice, is insanely useful.*
+
+### Helpers
+
+General Shell Helpers
+  - `findCommand('search')` list commands that match the search string
 
 Aggregation Framework Helpers -- on collections
   - Group and Count: `gcount(group_field, filter)`
