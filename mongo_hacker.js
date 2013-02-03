@@ -51,6 +51,19 @@ function setIndexParanoia( value ) {
     _indexParanoia = value;
 }
 
+function findCommand(query){
+    var regexp = new RegExp(query, "i");
+    var result = db.runCommand("listCommands");
+
+    var matches = [ ];
+    for (var command in result.commands) {
+        if (regexp.test(command)) {
+            matches.push(command);
+        }
+    }
+    return matches;
+}
+
 function controlCode( parameters ) {
     if ( parameters === undefined ) {
         parameters = "";
