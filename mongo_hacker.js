@@ -31,9 +31,9 @@ if (_isWindows()) {
     print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
-var ver = db.version().split(".");
+var ver = version().split(".");
 if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
-    print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
+    print(colorize("\nSorry! MongoDB shell version 2.1+ required! Please upgrade.\n", "red", true));
 }
 
 setVerboseShell(true);
