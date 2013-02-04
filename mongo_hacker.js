@@ -31,11 +31,6 @@ if (_isWindows()) {
     print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
-var ver = version().split(".");
-if ( ver[0] <= parseInt("2", 10) && ver[1] < parseInt("2", 10) ) {
-    print(colorize("\nSorry! MongoDB shell version 2.1+ required! Please upgrade.\n", "red", true));
-}
-
 setVerboseShell(true);
 setIndexParanoia(true);
 
@@ -91,13 +86,22 @@ function colorize( string, color, bright, underline ) {
     return applyColorCode( string, params );
 }
 
-function getEnv(env_var){
+function runMatch(cmd, args, regexp) {
     clearRawMongoProgramOutput();
-    run('env');
-    var env = rawMongoProgramOutput();
-    var env_regex = new RegExp(env_var + '=(.*)');
-    return env.match(env_regex)[1];
+    run(cmd, args);
+    var output = rawMongoProgramOutput();
+    return output.match(regexp);
 }
+
+function getEnv(env_var) {
+    var env_regex = new RegExp(env_var + '=(.*)');
+    return runMatch('env', '', env_regex)[1];
+};
+
+function getVersion() {
+    var regexp = /version: (\d).(\d).(\d)/;
+    return runMatch('mongo', '--version', regexp).slice(1, 4);
+};
 
 ObjectId.prototype.toString = function() {
     return this.str;
