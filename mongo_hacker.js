@@ -103,6 +103,18 @@ function getVersion() {
     return runMatch('mongo', '--version', regexp).slice(1, 4);
 };
 
+function isMongos() {
+    return db.isMaster().msg == 'isdbgrid';
+};
+
+function getSlowms(){
+    if(!isMongos()){
+        return db.getProfilingStatus().slowms;
+    } else {
+        return 100;
+    }
+};
+
 ObjectId.prototype.toString = function() {
     return this.str;
 };
@@ -175,7 +187,7 @@ DB.prototype._getExtraInfo = function(action) {
         if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
         var time = new Date().getTime() - startTime;
-        var slowms = this.getProfilingStatus().slowms;
+        var slowms = getSlowms();
         if (time > slowms) {
             info += colorize(time + "ms", "red", true);
         } else {
@@ -592,8 +604,7 @@ prompt = function() {
             }
         };
     }
-    var mongos = db.isMaster().msg == 'isdbgrid';
-    var state = mongos ? '' : rs_state;
+    var state = isMongos() ? '[mongos]' : rs_state;
     return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
 };
 
@@ -611,7 +622,7 @@ DBQuery.prototype.shellPrint = function(){
 
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
-            var slowms = this._db.getProfilingStatus().slowms;
+            var slowms = getSlowms();
             var fetched = "Fetched " + n + " record(s) in ";
             if (time > slowms) {
                 fetched += colorize(time + "ms", "red", true);
