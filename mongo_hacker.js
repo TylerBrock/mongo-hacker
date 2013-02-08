@@ -585,7 +585,12 @@ prompt = function() {
     var repl_set = db._adminCommand({"replSetGetStatus": 1}).ok !== 0;
     var rs_state = '';
     if(repl_set) {
-        rs_state = db.isMaster().ismaster ? '[primary]' : '[secondary]';
+        members = rs.status().members;
+        for(var i = 0; i<members.length; i++){
+            if(members[i].self === true){
+                rs_state = '[' + members[i].stateStr + ']';
+            }
+        };
     }
     var mongos = db.isMaster().msg == 'isdbgrid';
     var state = mongos ? '' : rs_state;
