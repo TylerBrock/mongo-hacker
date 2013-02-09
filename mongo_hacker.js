@@ -56,17 +56,14 @@ shellHelper.find = function (query) {
     if (query !== "") {
         var regexp = new RegExp(query, "i");
         var result = db.runCommand("listCommands");
-        var l=0;
         for (var command in result.commands) {
             var commandObj = result.commands[command];
-            var help = commandObj.help.replace(/\n+$/, "");
+            var help = commandObj.help.substring(0, commandObj.help.indexOf('\n'));
             if (regexp.test(command) || regexp.test(help)) {
-                
-                var numSpaces = 28 - command.length;
-                print("\""+command+"\"", Array(numSpaces).join(" "), "-", help);
+                var numSpaces = 30 - command.length;
+                print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
             }
         }
-        return "";
     }
 };
 
