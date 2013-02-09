@@ -46,18 +46,29 @@ function setIndexParanoia( value ) {
     _indexParanoia = value;
 }
 
-function findCommand(query){
-    var regexp = new RegExp(query, "i");
-    var result = db.runCommand("listCommands");
+shellHelper.find = function (query) {
+    assert(typeof query == "string");
 
-    var matches = [ ];
-    for (var command in result.commands) {
-        if (regexp.test(command)) {
-            matches.push(command);
+    var args = query.split( /\s+/ );
+    query = args[0];
+    args = args.splice(1);
+
+    if (query !== "") {
+        var regexp = new RegExp(query, "i");
+        var result = db.runCommand("listCommands");
+        var l=0;
+        for (var command in result.commands) {
+            var commandObj = result.commands[command];
+            var help = commandObj.help.replace(/\n+$/, "");
+            if (regexp.test(command) || regexp.test(help)) {
+                
+                var numSpaces = 28 - command.length;
+                print("\""+command+"\"", Array(numSpaces).join(" "), "-", help);
+            }
         }
+        return "";
     }
-    return matches;
-}
+};
 
 function controlCode( parameters ) {
     if ( parameters === undefined ) {
