@@ -58,7 +58,10 @@ shellHelper.find = function (query) {
         var result = db.runCommand("listCommands");
         for (var command in result.commands) {
             var commandObj = result.commands[command];
-            var help = commandObj.help.substring(0, commandObj.help.indexOf('\n'));
+            var help = commandObj.help;
+            if (commandObj.help.indexOf('\n') != -1 ) {
+                help = commandObj.help.substring(0, commandObj.help.lastIndexOf('\n'));
+            }
             if (regexp.test(command) || regexp.test(help)) {
                 var numSpaces = 30 - command.length;
                 print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
