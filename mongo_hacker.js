@@ -99,7 +99,11 @@ function colorize( string, color, bright, underline ) {
 
 function runMatch(cmd, args, regexp) {
     clearRawMongoProgramOutput();
-    run(cmd, args);
+    if (args) {
+        run(cmd, args);
+    } else {
+        run(cmd);
+    }
     var output = rawMongoProgramOutput();
     return output.match(regexp);
 }
