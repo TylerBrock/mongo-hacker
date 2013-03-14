@@ -677,7 +677,7 @@ DBQuery.prototype.shellPrint = function(){
     }
 };
 
-// Better showdbs
+// Better show dbs
 shellHelper.show = function (what) {
     assert(typeof what == "string");
 
@@ -745,9 +745,9 @@ shellHelper.show = function (what) {
             var padding_size = max_name_size - n.length + 2;
             var padding = Array(padding_size).join(" ");
             if (size[n] > 1) {
-                print(n + padding + (size[n] / 1024 / 1024 / 1024).toFixed(3) + "GB");
+                print(n + padding + "\t" + (size[n] / 1024 / 1024 / 1024).toFixed(3) + "GB");
             } else {
-                print(n + padding + "(empty)");
+                print(n + padding + "\t(empty)");
             }
         });
         //db.getMongo().getDBNames().sort().forEach(function (x) { print(x) });
