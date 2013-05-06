@@ -38,6 +38,8 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
   - Disable notfication of "Type 'it' for more"
   - Custom prompt: `hostname(process-version)[rs status] db>`
   - Always pretty print
+  - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
+  - Nicer sh.status() output (remove lastmod, take up less space, colorize chunk's shard)
 
 ### API Additions
 
