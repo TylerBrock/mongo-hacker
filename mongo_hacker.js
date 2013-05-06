@@ -903,7 +903,7 @@ printShardingStatus = function( configDB , verbose ){
 
                             configDB.tags.find( { ns : coll._id } ).sort( { min : 1 } ).forEach(
                                 function( tag ) {
-                                    output( "\t\t\t tag: " + tag.tag + "  " + tojson( tag.min ) + " -->> " + tojson( tag.max ) );
+                                    output( "        tag: " + tag.tag + "  " + tojson( tag.min ) + " -> " + tojson( tag.max ) );
                                 }
                             )
                         }
