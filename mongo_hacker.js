@@ -874,12 +874,15 @@ printShardingStatus = function( configDB , verbose ){
                             output( "      shard key: " + tojson(coll.key, 0, true) );
                             output( "      chunks:" );
 
-                            res = configDB.chunks.group( { cond : { ns : coll._id } , key : { shard : 1 },
-                                reduce : function( doc , out ){ out.nChunks++; } , initial : { nChunks : 0 } } );
+                            res = configDB.chunks.aggregate(
+                                { "$match": { ns: coll._id } },
+                                { "$group": { _id: "$shard", nChunks: { "$sum": 1 } } }
+                            ).result
+
                             var totalChunks = 0;
                             res.forEach( function(z){
                                 totalChunks += z.nChunks;
-                                output( "        " + z.shard + "\t" + z.nChunks );
+                                output( "        " + z._id + ": " + z.nChunks );
                             } )
 
                             if ( totalChunks < 20 || verbose ){
