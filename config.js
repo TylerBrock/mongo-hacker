@@ -1,8 +1,9 @@
 mongo_hacker_config = {
-    verbose_shell:  true, // additional verbosity
-    index_paranoia: true, // querytime explain
-    enhance_api:    true, // additonal api extensions
-    indent:         2,    // number of spaces for indent
+    verbose_shell:  true,      // additional verbosity
+    index_paranoia: true,      // querytime explain
+    enhance_api:    true,      // additonal api extensions
+    indent:         2,         // number of spaces for indent
+    uuid_type:      'default', // 'java', 'c#', or 'default'
 
     // Shell Color Settings
     // [<color>, <bold>, <underline>]
@@ -16,3 +17,4 @@ mongo_hacker_config = {
         'date':       [ 'blue', false, false ]
     }
 }
+

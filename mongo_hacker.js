@@ -9,267 +9,148 @@
  *
  */
 
-__ansi = {
-    csi: String.fromCharCode(0x1B) + '[',
-    reset: '0',
-    text_prop: 'm',
-    foreground: '3',
-    bright: '1',
-    underline: '4',
-
-    colors: {
-        red: '1',
-        green: '2',
-        yellow: '3',
-        blue: '4',
-        magenta: '5',
-        cyan: '6'
-    }
-};
-
 if (_isWindows()) {
     print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
-setVerboseShell(true);
-setIndexParanoia(true);
+mongo_hacker_config = {
+    verbose_shell:  true,      // additional verbosity
+    index_paranoia: true,      // querytime explain
+    enhance_api:    true,      // additonal api extensions
+    indent:         2,         // number of spaces for indent
+    uuid_type:      'default', // 'java', 'c#', or 'default'
 
-DBQuery.prototype._prettyShell = true
-
-__indent = "  ";
-// Type of function for legacy UUID objects (BinData with subtype = 3) rendering
-// Values: "java", "c#", and "default"
-uuidType = "java";
-
-function setIndexParanoia( value ) {
-    if( value === undefined ) value = true;
-    _indexParanoia = value;
+    // Shell Color Settings
+    // [<color>, <bold>, <underline>]
+    colors: {
+        'number':     [ 'blue', false, false ],
+        'null':       [ 'red', false, false ],
+        'undefined':  [ 'magenta', false, false ],
+        'objectid':   [ 'green', false, false ],
+        'string':     [ 'green', false, false ],
+        'function':   [ 'magenta', false, false ],
+        'date':       [ 'blue', false, false ]
+    }
 }
 
-shellHelper.find = function (query) {
-    assert(typeof query == "string");
-
-    var args = query.split( /\s+/ );
-    query = args[0];
-    args = args.splice(1);
-
-    if (query !== "") {
-        var regexp = new RegExp(query, "i");
-        var result = db.runCommand("listCommands");
-        for (var command in result.commands) {
-            var commandObj = result.commands[command];
-            var help = commandObj.help;
-            if (commandObj.help.indexOf('\n') != -1 ) {
-                help = commandObj.help.substring(0, commandObj.help.lastIndexOf('\n'));
-            }
-            if (regexp.test(command) || regexp.test(help)) {
-                var numSpaces = 30 - command.length;
-                print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
-            }
-        }
-    }
-};
-
-function controlCode( parameters ) {
-    if ( parameters === undefined ) {
-        parameters = "";
-    }
-    else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
-        parameters = parameters.join(';');
-    }
-
-    return __ansi.csi + String(parameters) + String(__ansi.text_prop);
-}
-
-function applyColorCode( string, properties ) {
-    return controlCode(properties) + String(string) + controlCode();
-}
-
-function colorize( string, color, bright, underline ) {
-    var params = [];
-    var code = __ansi.foreground + __ansi.colors[color];
-
-    params.push(code);
-
-    if ( bright === true ) params.push(__ansi.bright);
-    if ( underline === true ) params.push(__ansi.underline);
-
-    return applyColorCode( string, params );
-}
-
-function runMatch(cmd, args, regexp) {
-    clearRawMongoProgramOutput();
-    if (args) {
-        run(cmd, args);
-    } else {
-        run(cmd);
-    }
-    var output = rawMongoProgramOutput();
-    return output.match(regexp);
-}
-
-function getEnv(env_var) {
-    var env_regex = new RegExp(env_var + '=(.*)');
-    return runMatch('env', '', env_regex)[1];
-};
-
-function getVersion() {
-    var regexp = /version: (\d).(\d).(\d)/;
-    return runMatch('mongo', '--version', regexp).slice(1, 4);
-};
-
-function isMongos() {
-    return db.isMaster().msg == 'isdbgrid';
-};
-
-function getSlowms(){
-    if(!isMongos()){
-        return db.getProfilingStatus().slowms;
-    } else {
-        return 100;
-    }
-};
-
-ObjectId.prototype.toString = function() {
-    return this.str;
-};
-
-ObjectId.prototype.tojson = function(indent, nolint) {
-    return tojson(this);
-};
-
-DBCollection.prototype.filter = function( filter ) {
-    return new DBQuery( this._mongo, this._db, this, this._fullName, this._massageObject( filter ) );
-};
-
-DBQuery.prototype._validate = function( o ){
-    var firstKey = null;
-    for (var k in o) { firstKey = k; break; }
-
-    if (firstKey !== null && firstKey[0] == '$') {
-        // for mods we only validate partially, for example keys may have dots
-        this._validateObject( o );
-    } else {
-        // we're basically inserting a brand new object, do full validation
-        this._validateForStorage( o );
-    }
-};
-
-DBQuery.prototype._validateObject = function( o ){
-    if (typeof(o) != "object")
-        throw "attempted to save a " + typeof(o) + " value.  document expected.";
-
-    if ( o._ensureSpecial && o._checkModify )
-        throw "can't save a DBQuery object";
-};
-
-DBQuery.prototype._validateForStorage = function( o ){
-    this._validateObject( o );
-    for ( var k in o ){
-        if ( k.indexOf( "." ) >= 0 ) {
-            throw "can't have . in field names [" + k + "]" ;
-        }
-
-        if ( k.indexOf( "$" ) === 0 && ! DBCollection._allowedFields[k] ) {
-            throw "field names cannot start with $ [" + k + "]";
-        }
-
-        if ( o[k] !== null && typeof( o[k] ) === "object" ) {
-            this._validateForStorage( o[k] );
-        }
-    }
-};
-
-DB.prototype._getExtraInfo = function(action) {
-    if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
-        __callLastError = true;
-        return;
-    }
-
-    // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
-    var startTime = new Date().getTime();
-    var res = this.getLastErrorCmd(1);
-    if (res) {
-        if (res.err !== undefined && res.err !== null) {
-            // error occurred, display it
-            print(res.err);
-            return;
-        }
-
-        var info = action + " ";
-        // hack for inserted because res.n is 0
-        info += action != "Inserted" ? res.n : 1;
-        if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
-        info += " record(s) in ";
-        var time = new Date().getTime() - startTime;
-        var slowms = getSlowms();
-        if (time > slowms) {
-            info += colorize(time + "ms", "red", true);
-        } else {
-            info += colorize(time + "ms", "green", true);
-        }
-        print(info);
-    }
-};
-
-DB.prototype.rename = function(newName) {
-    if(newName == this.getName() || newName.length === 0)
-        return;
-
-    this.copyDatabase(this.getName(), newName, "localhost");
-    this.dropDatabase();
-    db = this.getSiblingDB(newName);
-};
-
-DBQuery.prototype._checkMulti = function(){
-  if(this._limit > 0 || this._skip > 0){
-    var ids = this.clone().select({_id: 1}).map(function(o){return o._id;});
-    this._query['_id'] = {'$in': ids};
-    return true;
-  } else {
+function hasDollar(fields){
+    for (k in fields){
+        if(k.indexOf('$') !== -1){
+            return true;
+        };
+    };
     return false;
-  }
-};
+}
 
-DBQuery.prototype.upsert = function( upsert ){
-    assert( upsert , "need an upsert object" );
+// Aggregate extension to support alternate API
+DBCollection.prototype.aggregate = function( fields ){
+    if(arguments.length > 1 || hasDollar(fields) || hasDollar(fields[0])){
+        var arr = fields;
 
-    this._validate(upsert);
-    this._db._initExtraInfo();
-    this._mongo.update( this._ns , this._query , upsert , true , false );
-    this._db._getExtraInfo("Upserted");
-};
-
-DBQuery.prototype.update = function( update ){
-    assert( update , "need an update object" );
-
-    this._checkMulti();
-    this._validate(update);
-    this._db._initExtraInfo();
-    this._mongo.update( this._ns , this._query , update , false , true );
-    this._db._getExtraInfo("Updated");
-};
-
-DBQuery.prototype.replace = function( replacement ){
-   assert( replacement , "need an update object" );
-
-   this._validate(replacement);
-   this._db._initExtraInfo();
-   this._mongo.update( this._ns , this._query , replacement , false , false );
-   this._db._getExtraInfo("Replaced");
-};
-
-DBQuery.prototype.remove = function(){
-    for ( var k in this._query ){
-        if ( k == "_id" && typeof( this._query[k] ) == "undefined" ){
-            throw "can't have _id set to undefined in a remove expression";
+        if (!fields.length) {
+            arr = [];
+            for (var i=0; i<arguments.length; i++) {
+                arr.push(arguments[i]);
+            }
         }
-    }
 
-    this._checkMulti();
-    this._db._initExtraInfo();
-    this._mongo.remove( this._ns , this._query , false );
-    this._db._getExtraInfo("Removed");
+        var res = this.runCommand("aggregate", {pipeline: arr});
+        if (!res.ok) {
+            printStackTrace();
+            throw "aggregate failed: " + tojson(res);
+        }
+        return res;
+    } else {
+       return new AggHelper( this ).match( fields || {} );
+    }
+};
+
+// Aggregation Framework Helper
+AggHelper = function( collection, fields ){
+    this.collection = collection;
+    this.pipeline = [];
+};
+
+AggHelper.prototype.execute = function(){
+    var res = this.collection.runCommand("aggregate", {pipeline: this.pipeline});
+    if (!res.ok) {
+        printStackTrace();
+        throw "aggregate failed: " + tojson(res);
+    }
+    return res;
+};
+
+AggHelper.prototype.shellPrint = function(){
+    this.execute().result.forEach(function(result){
+        printjson(result);
+    });
+};
+
+AggHelper.prototype.project = function( fields ){
+    if(!fields){
+        throw "project needs fields";
+    }
+    this.pipeline.push({"$project" : fields});
+    return this;
+};
+
+AggHelper.prototype.match = function( criteria ){
+    if(!criteria){
+        throw "match needs a query object";
+    }
+    this.pipeline.push({"$match" : criteria});
+    return this;
+};
+
+AggHelper.prototype.limit = function( limit ){
+    if(!limit){
+        throw "limit needs an integer indicating the max number of documents to limit";
+    }
+    this.pipeline.push({"$limit" : limit});
+    return this;
+};
+
+AggHelper.prototype.skip = function( skip ){
+    if(!skip){
+        throw "skip needs an integer indicating the number of documents to skip";
+    }
+    this.pipeline.push({"$skip" : skip});
+    return this;
+};
+
+AggHelper.prototype.unwind = function( field ){
+    if(!field){
+        throw "unwind needs a string indicating the key of an array field to unwind";
+    }
+    this.pipeline.push({"$unwind" : "$" + field});
+    return this;
+};
+
+AggHelper.prototype.group = function( group, group_expression ){
+    if(!group_expression) group_expression = {};
+    if(!group){
+        throw "group needs an grouping key";
+    }
+    group_expression._id = "$" + group;
+    this.pipeline.push({"$group" : group_expression});
+    return this;
+};
+
+AggHelper.prototype.sort = function( sort ){
+    this.pipeline.push({"$sort" : sort});
+    return this;
+};
+//----------------------------------------------------------------------------
+// API Additions
+//----------------------------------------------------------------------------
+DBCollection.prototype.filter = function( filter ) {
+    return new DBQuery(
+        this._mongo,
+        this._db,
+        this,
+        this._fullName,
+        this._massageObject( filter ) 
+    );
 };
 
 DBQuery.prototype.select = function( fields ){
@@ -299,6 +180,144 @@ DBQuery.prototype.last = function( field ){
     var field = field || "$natural";
     return this.reverse(field).one();
 }
+
+DB.prototype.rename = function(newName) {
+    if(newName == this.getName() || newName.length === 0)
+        return;
+
+    this.copyDatabase(this.getName(), newName, "localhost");
+    this.dropDatabase();
+    db = this.getSiblingDB(newName);
+};
+
+//----------------------------------------------------------------------------
+// API Modifications (additions and changes)
+//----------------------------------------------------------------------------
+
+// Add upsert method which has upsert set as true and multi as false
+DBQuery.prototype.upsert = function( upsert ){
+    assert( upsert , "need an upsert object" );
+
+    this._validate(upsert);
+    this._db._initExtraInfo();
+    this._mongo.update( this._ns , this._query , upsert , true , false );
+    this._db._getExtraInfo("Upserted");
+};
+
+// Updates are always multi and never an upsert
+DBQuery.prototype.update = function( update ){
+    assert( update , "need an update object" );
+
+    this._checkMulti();
+    this._validate(update);
+    this._db._initExtraInfo();
+    this._mongo.update( this._ns , this._query , update , false , true );
+    this._db._getExtraInfo("Updated");
+};
+
+// Replace one document
+DBQuery.prototype.replace = function( replacement ){
+   assert( replacement , "need an update object" );
+
+   this._validate(replacement);
+   this._db._initExtraInfo();
+   this._mongo.update( this._ns , this._query , replacement , false , false );
+   this._db._getExtraInfo("Replaced");
+};
+
+// Remove is always multi
+DBQuery.prototype.remove = function(){
+    for ( var k in this._query ){
+        if ( k == "_id" && typeof( this._query[k] ) == "undefined" ){
+            throw "can't have _id set to undefined in a remove expression";
+        }
+    }
+
+    this._checkMulti();
+    this._db._initExtraInfo();
+    this._mongo.remove( this._ns , this._query , false );
+    this._db._getExtraInfo("Removed");
+};
+shellHelper.find = function (query) {
+    assert(typeof query == "string");
+
+    var args = query.split( /\s+/ );
+    query = args[0];
+    args = args.splice(1);
+
+    if (query !== "") {
+        var regexp = new RegExp(query, "i");
+        var result = db.runCommand("listCommands");
+        for (var command in result.commands) {
+            var commandObj = result.commands[command];
+            var help = commandObj.help;
+            if (commandObj.help.indexOf('\n') != -1 ) {
+                help = commandObj.help.substring(0, commandObj.help.lastIndexOf('\n'));
+            }
+            if (regexp.test(command) || regexp.test(help)) {
+                var numSpaces = 30 - command.length;
+                print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
+            }
+        }
+    }
+};
+
+//----------------------------------------------------------------------------
+// Color Functions
+//----------------------------------------------------------------------------
+__ansi = {
+    csi: String.fromCharCode(0x1B) + '[',
+    reset: '0',
+    text_prop: 'm',
+    foreground: '3',
+    bright: '1',
+    underline: '4',
+
+    colors: {
+        red: '1',
+        green: '2',
+        yellow: '3',
+        blue: '4',
+        magenta: '5',
+        cyan: '6'
+    }
+};
+
+function controlCode( parameters ) {
+    if ( parameters === undefined ) {
+        parameters = "";
+    }
+    else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
+        parameters = parameters.join(';');
+    }
+
+    return __ansi.csi + String(parameters) + String(__ansi.text_prop);
+};
+
+function applyColorCode( string, properties ) {
+    return controlCode(properties) + String(string) + controlCode();
+};
+
+function colorize( string, color, bright, underline ) {
+    var params = [];
+    var code = __ansi.foreground + __ansi.colors[color];
+
+    params.push(code);
+
+    if ( bright === true ) params.push(__ansi.bright);
+    if ( underline === true ) params.push(__ansi.underline);
+
+    return applyColorCode( string, params );
+};
+__indent = Array(mongo_hacker_config.indent + 1).join(' ');
+
+ObjectId.prototype.toString = function() {
+    return this.str;
+};
+
+ObjectId.prototype.tojson = function(indent, nolint) {
+    return tojson(this);
+};
 
 Date.prototype.tojson = function() {
 
@@ -366,86 +385,6 @@ NumberInt.prototype.tojson = function() {
     return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
 };
 
-function base64ToHex(base64) {
-    var base64Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var hexDigits = "0123456789abcdef";
-    var hex = "";
-    for (var i = 0; i < 24; ) {
-        var e1 = base64Digits.indexOf(base64[i++]);
-        var e2 = base64Digits.indexOf(base64[i++]);
-        var e3 = base64Digits.indexOf(base64[i++]);
-        var e4 = base64Digits.indexOf(base64[i++]);
-        var c1 = (e1 << 2) | (e2 >> 4);
-        var c2 = ((e2 & 15) << 4) | (e3 >> 2);
-        var c3 = ((e3 & 3) << 6) | e4;
-        hex += hexDigits[c1 >> 4];
-        hex += hexDigits[c1 & 15];
-        if (e3 != 64) {
-            hex += hexDigits[c2 >> 4];
-            hex += hexDigits[c2 & 15];
-        }
-        if (e4 != 64) {
-            hex += hexDigits[c3 >> 4];
-            hex += hexDigits[c3 & 15];
-        }
-    }
-    return hex;
-}
-
-function hexToBase64(hex) {
-    var base64Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    var base64 = "";
-    var group;
-    for (var i = 0; i < 30; i += 6) {
-        group = parseInt(hex.substr(i, 6), 16);
-        base64 += base64Digits[(group >> 18) & 0x3f];
-        base64 += base64Digits[(group >> 12) & 0x3f];
-        base64 += base64Digits[(group >> 6) & 0x3f];
-        base64 += base64Digits[group & 0x3f];
-    }
-    group = parseInt(hex.substr(30, 2), 16);
-    base64 += base64Digits[(group >> 2) & 0x3f];
-    base64 += base64Digits[(group << 4) & 0x3f];
-    base64 += "==";
-    return base64;
-}
-
-var platformSpecificUuidModifications = {
-    "java": function (hex) {
-        var msb = hex.substr(0, 16);
-        var lsb = hex.substr(16, 16);
-        msb = msb.substr(14, 2) + msb.substr(12, 2) + msb.substr(10, 2) + msb.substr(8, 2)
-            + msb.substr(6, 2) + msb.substr(4, 2) + msb.substr(2, 2) + msb.substr(0, 2);
-        lsb = lsb.substr(14, 2) + lsb.substr(12, 2) + lsb.substr(10, 2) + lsb.substr(8, 2)
-            + lsb.substr(6, 2) + lsb.substr(4, 2) + lsb.substr(2, 2) + lsb.substr(0, 2);
-        return msb + lsb;
-    },
-    "c#": function (hex) {
-        return hex.substr(6, 2) + hex.substr(4, 2) + hex.substr(2, 2) + hex.substr(0, 2)
-            + hex.substr(10, 2) + hex.substr(8, 2) + hex.substr(14, 2) + hex.substr(12, 2)
-            + hex.substr(16, 16);
-    },
-    "default": function (hex) {
-        return hex;
-    }
-};
-
-function UUID(uuid, type) {
-    var hex = uuid.replace(/[{}-]/g, "");
-    var typeNum = 4;
-    if (type != undefined) {
-        typeNum = 3;
-        hex = platformSpecificUuidModifications[type](hex);
-    }
-    return new BinData(typeNum, hexToBase64(hex));
-}
-
-function uuidToString(uuid, uuidType) {
-    var hex = platformSpecificUuidModifications[uuidType](base64ToHex(uuid.base64()));
-    return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4)
-        + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
-}
-
 BinData.prototype.tojson = function(indent , nolint) {
     if (this.subtype() === 3) {
         return 'UUID(' + colorize('"' + uuidToString(this, uuidType) + '"', "cyan") + ', ' + colorize('"' + uuidType + '"', "cyan") +')'
@@ -455,6 +394,121 @@ BinData.prototype.tojson = function(indent , nolint) {
         return 'BinData(' + colorize(this.subtype(), "red") + ', ' + colorize('"' + this.base64() + '"', "green", true) + ')';
     }
 };
+
+DBQuery.prototype.shellPrint = function(){
+    try {
+        var start = new Date().getTime();
+        var n = 0;
+        while ( this.hasNext() && n < DBQuery.shellBatchSize ){
+            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
+            print( s );
+            n++;
+        }
+
+        var output = [];
+
+        if (typeof _verboseShell !== 'undefined' && _verboseShell) {
+            var time = new Date().getTime() - start;
+            var slowms = getSlowms();
+            var fetched = "Fetched " + n + " record(s) in ";
+            if (time > slowms) {
+                fetched += colorize(time + "ms", "red", true);
+            } else {
+                fetched += colorize(time + "ms", "green", true);
+            }
+            output.push(fetched);
+        }
+
+        var paranoia = mongo_hacker_config.index_paranoia;
+
+        if (typeof paranoia !== 'undefined' && paranoia) {
+            var explain = this.clone();
+            explain._ensureSpecial();
+            explain._query.$explain = true;
+            explain._limit = Math.abs(n._limit) * -1;
+            var result = explain.next();
+            var type = result.cursor;
+            var index_use = "Index[";
+            if (type == "BasicCursor") {
+                index_use += colorize( "none", "red", true);
+            } else {
+                index_use += colorize( result.cursor.substring(12), "green", true );
+            }
+            index_use += "]";
+            output.push(index_use);
+        }
+
+        if ( this.hasNext() ) {
+            ___it___  = this;
+            output.push("More[" + colorize("true", "green", true) + "]");
+        }
+        else {
+            ___it___  = null;
+            output.push("More[" + colorize("false", "red", true) + "]");
+        }
+        print(output.join(" -- "));
+    }
+    catch ( e ){
+        print( e );
+    }
+};
+
+tojsonObject = function( x, indent, nolint ) {
+    var lineEnding = nolint ? " " : "\n";
+    var tabSpace = nolint ? "" : __indent;
+
+    assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
+
+    if (!indent) 
+        indent = "";
+
+    if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
+        return x.tojson(indent,nolint);
+    }
+
+    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
+        return x.constructor.tojson( x, indent , nolint );
+    }
+
+    if ( x.toString() == "[object MaxKey]" )
+        return "{ $maxKey : 1 }";
+    if ( x.toString() == "[object MinKey]" )
+        return "{ $minKey : 1 }";
+
+    var s = "{" + lineEnding;
+
+    // push one level of indent
+    indent += tabSpace;
+
+    var total = 0;
+    for ( var k in x ) total++;
+    if ( total === 0 ) {
+        s += indent + lineEnding;
+    }
+
+    var keys = x;
+    if ( typeof( x._simpleKeys ) == "function" )
+        keys = x._simpleKeys();
+    var num = 1;
+    for ( var key in keys ){
+
+        var val = x[key];
+        if ( val == DB.prototype || val == DBCollection.prototype )
+            continue;
+
+        s += indent + colorize("\"" + key + "\"", "yellow") + ": " + tojson( val, indent , nolint );
+        if (num != total) {
+            s += ",";
+            num++;
+        }
+        s += lineEnding;
+    }
+
+    // pop one level of indent
+    indent = indent.substring(__indent.length);
+    return s + indent + "}";
+};
+
 
 tojson = function( x, indent , nolint ) {
     if ( x === null )
@@ -516,62 +570,86 @@ tojson = function( x, indent , nolint ) {
 
 };
 
-tojsonObject = function( x, indent, nolint ) {
-    var lineEnding = nolint ? " " : "\n";
-    var tabSpace = nolint ? "" : __indent;
 
-    assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
+DBQuery.prototype._validate = function( o ){
+    var firstKey = null;
+    for (var k in o) { firstKey = k; break; }
 
-    if (!indent) 
-        indent = "";
-
-    if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
-        return x.tojson(indent,nolint);
+    if (firstKey !== null && firstKey[0] == '$') {
+        // for mods we only validate partially, for example keys may have dots
+        this._validateObject( o );
+    } else {
+        // we're basically inserting a brand new object, do full validation
+        this._validateForStorage( o );
     }
-
-    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
-        return x.constructor.tojson( x, indent , nolint );
-    }
-
-    if ( x.toString() == "[object MaxKey]" )
-        return "{ $maxKey : 1 }";
-    if ( x.toString() == "[object MinKey]" )
-        return "{ $minKey : 1 }";
-
-    var s = "{" + lineEnding;
-
-    // push one level of indent
-    indent += tabSpace;
-
-    var total = 0;
-    for ( var k in x ) total++;
-    if ( total === 0 ) {
-        s += indent + lineEnding;
-    }
-
-    var keys = x;
-    if ( typeof( x._simpleKeys ) == "function" )
-        keys = x._simpleKeys();
-    var num = 1;
-    for ( var key in keys ){
-
-        var val = x[key];
-        if ( val == DB.prototype || val == DBCollection.prototype )
-            continue;
-
-        s += indent + colorize("\"" + key + "\"", "yellow") + ": " + tojson( val, indent , nolint );
-        if (num != total) {
-            s += ",";
-            num++;
-        }
-        s += lineEnding;
-    }
-
-    // pop one level of indent
-    indent = indent.substring(__indent.length);
-    return s + indent + "}";
 };
 
+DBQuery.prototype._validateObject = function( o ){
+    if (typeof(o) != "object")
+        throw "attempted to save a " + typeof(o) + " value.  document expected.";
+
+    if ( o._ensureSpecial && o._checkModify )
+        throw "can't save a DBQuery object";
+};
+
+DBQuery.prototype._validateForStorage = function( o ){
+    this._validateObject( o );
+    for ( var k in o ){
+        if ( k.indexOf( "." ) >= 0 ) {
+            throw "can't have . in field names [" + k + "]" ;
+        }
+
+        if ( k.indexOf( "$" ) === 0 && ! DBCollection._allowedFields[k] ) {
+            throw "field names cannot start with $ [" + k + "]";
+        }
+
+        if ( o[k] !== null && typeof( o[k] ) === "object" ) {
+            this._validateForStorage( o[k] );
+        }
+    }
+};
+
+DBQuery.prototype._checkMulti = function(){
+  if(this._limit > 0 || this._skip > 0){
+    var ids = this.clone().select({_id: 1}).map(function(o){return o._id;});
+    this._query['_id'] = {'$in': ids};
+    return true;
+  } else {
+    return false;
+  }
+};
+function runMatch(cmd, args, regexp) {
+    clearRawMongoProgramOutput();
+    if (args) {
+        run(cmd, args);
+    } else {
+        run(cmd);
+    }
+    var output = rawMongoProgramOutput();
+    return output.match(regexp);
+};
+
+function getEnv(env_var) {
+    var env_regex = new RegExp(env_var + '=(.*)');
+    return runMatch('env', '', env_regex)[1];
+};
+
+function getVersion() {
+    var regexp = /version: (\d).(\d).(\d)/;
+    return runMatch('mongo', '--version', regexp).slice(1, 4);
+};
+
+function isMongos() {
+    return db.isMaster().msg == 'isdbgrid';
+};
+
+function getSlowms(){
+    if(!isMongos()){
+        return db.getProfilingStatus().slowms;
+    } else {
+        return 100;
+    }
+};
 // Override group because map/reduce style is deprecated
 DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
@@ -602,7 +680,6 @@ DBCollection.prototype.gsum = function( group_field, sum_field, filter ) {
 DBCollection.prototype.gavg = function( group_field, avg_field, filter ) {
     return this.agg_group('avg', group_field, 'avg', '$' + avg_field, filter);
 };
-
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
     var serverstatus = db.serverStatus();
@@ -623,60 +700,85 @@ prompt = function() {
     return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
 };
 
-DBQuery.prototype.shellPrint = function(){
-    try {
-        var start = new Date().getTime();
-        var n = 0;
-        while ( this.hasNext() && n < DBQuery.shellBatchSize ){
-            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
-            print( s );
-            n++;
-        }
+printShardingStatus = function( configDB , verbose ){
+    if (configDB === undefined)
+        configDB = db.getSisterDB('config')
 
-        var output = [];
-
-        if (typeof _verboseShell !== 'undefined' && _verboseShell) {
-            var time = new Date().getTime() - start;
-            var slowms = getSlowms();
-            var fetched = "Fetched " + n + " record(s) in ";
-            if (time > slowms) {
-                fetched += colorize(time + "ms", "red", true);
-            } else {
-                fetched += colorize(time + "ms", "green", true);
-            }
-            output.push(fetched);
-        }
-        if (typeof _indexParanoia !== 'undefined' && _indexParanoia) {
-            var explain = this.clone();
-            explain._ensureSpecial();
-            explain._query.$explain = true;
-            explain._limit = Math.abs(n._limit) * -1;
-            var result = explain.next();
-            var type = result.cursor;
-            var index_use = "Index[";
-            if (type == "BasicCursor") {
-                index_use += colorize( "none", "red", true);
-            } else {
-                index_use += colorize( result.cursor.substring(12), "green", true );
-            }
-            index_use += "]";
-            output.push(index_use);
-        }
-        if ( this.hasNext() ) {
-            ___it___  = this;
-            output.push("More[" + colorize("true", "green", true) + "]");
-        }
-        else {
-            ___it___  = null;
-            output.push("More[" + colorize("false", "red", true) + "]");
-        }
-        print(output.join(" -- "));
+    var version = configDB.getCollection( "version" ).findOne();
+    if ( version == null ){
+        print( "printShardingStatus: this db does not have sharding enabled. be sure you are connecting to a mongos from the shell and not to a mongod." );
+        return;
     }
-    catch ( e ){
-        print( e );
-    }
-};
 
+    var raw = "";
+    var output = function(s){
+        raw += s + "\n";
+    }
+    output( "--- Sharding Status --- " );
+    output( "  sharding version: " + tojson( configDB.getCollection( "version" ).findOne(), "  " ) );
+
+    output( "  shards:" );
+    configDB.shards.find().sort( { _id : 1 } ).forEach(
+        function(z){
+            output( "    " + tojsononeline( z ) );
+        }
+    );
+
+    output( "  databases:" );
+    configDB.databases.find().sort( { name : 1 } ).forEach(
+        function(db){
+            output( "    " + tojsononeline(db,"",true) );
+
+            if (db.partitioned){
+                configDB.collections.find( { _id : new RegExp( "^" +
+                    RegExp.escape(db._id) + "\\." ) } ).
+                    sort( { _id : 1 } ).forEach( function( coll ){
+                        if ( coll.dropped == false ){
+                            output( "    " + coll._id );
+                            output( "      shard key: " + tojson(coll.key, 0, true) );
+                            output( "      chunks:" );
+
+                            res = configDB.chunks.aggregate(
+                                { "$match": { ns: coll._id } },
+                                { "$group": { _id: "$shard", nChunks: { "$sum": 1 } } }
+                            ).result
+
+                            var totalChunks = 0;
+                            res.forEach( function(z){
+                                totalChunks += z.nChunks;
+                                output( "        " + z._id + ": " + z.nChunks );
+                            } )
+
+                            if ( totalChunks < 20 || verbose ){
+                                configDB.chunks.find( { "ns" : coll._id } ).sort( { min : 1 } ).forEach(
+                                    function(chunk){
+                                        output( "        " +
+                                            tojson( chunk.min, 0, true) + " -> " +
+                                            tojson( chunk.max, 0, true ) +
+                                            " on: " + colorize(chunk.shard, "cyan") + " " +
+                                            ( chunk.jumbo ? "jumbo " : "" )
+                                        );
+                                    }
+                                );
+                            }
+                            else {
+                                output( "\t\t\ttoo many chunks to print, use verbose if you want to force print" );
+                            }
+
+                            configDB.tags.find( { ns : coll._id } ).sort( { min : 1 } ).forEach(
+                                function( tag ) {
+                                    output( "        tag: " + tag.tag + "  " + tojson( tag.min ) + " -> " + tojson( tag.max ) );
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    );
+
+    print( raw );
+}
 // Better show dbs
 shellHelper.show = function (what) {
     assert(typeof what == "string");
@@ -835,192 +937,118 @@ shellHelper.show = function (what) {
     throw "don't know how to show [" + what + "]";
 
 }
+function base64ToHex(base64) {
+    var base64Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var hexDigits = "0123456789abcdef";
+    var hex = "";
+    for (var i = 0; i < 24; ) {
+        var e1 = base64Digits.indexOf(base64[i++]);
+        var e2 = base64Digits.indexOf(base64[i++]);
+        var e3 = base64Digits.indexOf(base64[i++]);
+        var e4 = base64Digits.indexOf(base64[i++]);
+        var c1 = (e1 << 2) | (e2 >> 4);
+        var c2 = ((e2 & 15) << 4) | (e3 >> 2);
+        var c3 = ((e3 & 3) << 6) | e4;
+        hex += hexDigits[c1 >> 4];
+        hex += hexDigits[c1 & 15];
+        if (e3 != 64) {
+            hex += hexDigits[c2 >> 4];
+            hex += hexDigits[c2 & 15];
+        }
+        if (e4 != 64) {
+            hex += hexDigits[c3 >> 4];
+            hex += hexDigits[c3 & 15];
+        }
+    }
+    return hex;
+}
 
-printShardingStatus = function( configDB , verbose ){
-    if (configDB === undefined)
-        configDB = db.getSisterDB('config')
+function hexToBase64(hex) {
+    var base64Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    var base64 = "";
+    var group;
+    for (var i = 0; i < 30; i += 6) {
+        group = parseInt(hex.substr(i, 6), 16);
+        base64 += base64Digits[(group >> 18) & 0x3f];
+        base64 += base64Digits[(group >> 12) & 0x3f];
+        base64 += base64Digits[(group >> 6) & 0x3f];
+        base64 += base64Digits[group & 0x3f];
+    }
+    group = parseInt(hex.substr(30, 2), 16);
+    base64 += base64Digits[(group >> 2) & 0x3f];
+    base64 += base64Digits[(group << 4) & 0x3f];
+    base64 += "==";
+    return base64;
+}
 
-    var version = configDB.getCollection( "version" ).findOne();
-    if ( version == null ){
-        print( "printShardingStatus: this db does not have sharding enabled. be sure you are connecting to a mongos from the shell and not to a mongod." );
+var platformSpecificUuidModifications = {
+    "java": function (hex) {
+        var msb = hex.substr(0, 16);
+        var lsb = hex.substr(16, 16);
+        msb = msb.substr(14, 2) + msb.substr(12, 2) + msb.substr(10, 2) + msb.substr(8, 2)
+            + msb.substr(6, 2) + msb.substr(4, 2) + msb.substr(2, 2) + msb.substr(0, 2);
+        lsb = lsb.substr(14, 2) + lsb.substr(12, 2) + lsb.substr(10, 2) + lsb.substr(8, 2)
+            + lsb.substr(6, 2) + lsb.substr(4, 2) + lsb.substr(2, 2) + lsb.substr(0, 2);
+        return msb + lsb;
+    },
+    "c#": function (hex) {
+        return hex.substr(6, 2) + hex.substr(4, 2) + hex.substr(2, 2) + hex.substr(0, 2)
+            + hex.substr(10, 2) + hex.substr(8, 2) + hex.substr(14, 2) + hex.substr(12, 2)
+            + hex.substr(16, 16);
+    },
+    "default": function (hex) {
+        return hex;
+    }
+};
+
+function UUID(uuid, type) {
+    var hex = uuid.replace(/[{}-]/g, "");
+    var typeNum = 4;
+    if (type != undefined) {
+        typeNum = 3;
+        hex = platformSpecificUuidModifications[type](hex);
+    }
+    return new BinData(typeNum, hexToBase64(hex));
+}
+
+function uuidToString(uuid, uuidType) {
+    var uuidType = uuidType || mongo_hacker_config['uuid_type'];
+    var hex = platformSpecificUuidModifications[uuidType](base64ToHex(uuid.base64()));
+    return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4)
+        + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+}
+setVerboseShell(true);
+
+DBQuery.prototype._prettyShell = true
+
+DB.prototype._getExtraInfo = function(action) {
+    if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
+        __callLastError = true;
         return;
     }
 
-    var raw = "";
-    var output = function(s){
-        raw += s + "\n";
-    }
-    output( "--- Sharding Status --- " );
-    output( "  sharding version: " + tojson( configDB.getCollection( "version" ).findOne(), "  " ) );
-
-    output( "  shards:" );
-    configDB.shards.find().sort( { _id : 1 } ).forEach(
-        function(z){
-            output( "    " + tojsononeline( z ) );
-        }
-    );
-
-    output( "  databases:" );
-    configDB.databases.find().sort( { name : 1 } ).forEach(
-        function(db){
-            output( "    " + tojsononeline(db,"",true) );
-
-            if (db.partitioned){
-                configDB.collections.find( { _id : new RegExp( "^" +
-                    RegExp.escape(db._id) + "\\." ) } ).
-                    sort( { _id : 1 } ).forEach( function( coll ){
-                        if ( coll.dropped == false ){
-                            output( "    " + coll._id );
-                            output( "      shard key: " + tojson(coll.key, 0, true) );
-                            output( "      chunks:" );
-
-                            res = configDB.chunks.aggregate(
-                                { "$match": { ns: coll._id } },
-                                { "$group": { _id: "$shard", nChunks: { "$sum": 1 } } }
-                            ).result
-
-                            var totalChunks = 0;
-                            res.forEach( function(z){
-                                totalChunks += z.nChunks;
-                                output( "        " + z._id + ": " + z.nChunks );
-                            } )
-
-                            if ( totalChunks < 20 || verbose ){
-                                configDB.chunks.find( { "ns" : coll._id } ).sort( { min : 1 } ).forEach(
-                                    function(chunk){
-                                        output( "        " +
-                                            tojson( chunk.min, 0, true) + " -> " +
-                                            tojson( chunk.max, 0, true ) +
-                                            " on: " + colorize(chunk.shard, "cyan") + " " +
-                                            ( chunk.jumbo ? "jumbo " : "" )
-                                        );
-                                    }
-                                );
-                            }
-                            else {
-                                output( "\t\t\ttoo many chunks to print, use verbose if you want to force print" );
-                            }
-
-                            configDB.tags.find( { ns : coll._id } ).sort( { min : 1 } ).forEach(
-                                function( tag ) {
-                                    output( "        tag: " + tag.tag + "  " + tojson( tag.min ) + " -> " + tojson( tag.max ) );
-                                }
-                            )
-                        }
-                    }
-                )
-            }
-        }
-    );
-
-    print( raw );
-}
-
-function hasDollar(fields){
-    for (k in fields){
-        if(k.indexOf('$') !== -1){
-            return true;
-        };
-    };
-    return false;
-}
-
-// Aggregate extension to support alternate API
-DBCollection.prototype.aggregate = function( fields ){
-    if(arguments.length > 1 || hasDollar(fields) || hasDollar(fields[0])){
-        var arr = fields;
-
-        if (!fields.length) {
-            arr = [];
-            for (var i=0; i<arguments.length; i++) {
-                arr.push(arguments[i]);
-            }
+    // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
+    var startTime = new Date().getTime();
+    var res = this.getLastErrorCmd(1);
+    if (res) {
+        if (res.err !== undefined && res.err !== null) {
+            // error occurred, display it
+            print(res.err);
+            return;
         }
 
-        var res = this.runCommand("aggregate", {pipeline: arr});
-        if (!res.ok) {
-            printStackTrace();
-            throw "aggregate failed: " + tojson(res);
+        var info = action + " ";
+        // hack for inserted because res.n is 0
+        info += action != "Inserted" ? res.n : 1;
+        if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
+        info += " record(s) in ";
+        var time = new Date().getTime() - startTime;
+        var slowms = getSlowms();
+        if (time > slowms) {
+            info += colorize(time + "ms", "red", true);
+        } else {
+            info += colorize(time + "ms", "green", true);
         }
-        return res;
-    } else {
-       return new AggHelper( this ).match( fields || {} );
+        print(info);
     }
 };
-
-// Aggregation Framework Helper
-AggHelper = function( collection, fields ){
-    this.collection = collection;
-    this.pipeline = [];
-};
-
-AggHelper.prototype.execute = function(){
-    var res = this.collection.runCommand("aggregate", {pipeline: this.pipeline});
-    if (!res.ok) {
-        printStackTrace();
-        throw "aggregate failed: " + tojson(res);
-    }
-    return res;
-};
-
-AggHelper.prototype.shellPrint = function(){
-    this.execute().result.forEach(function(result){
-        printjson(result);
-    });
-};
-
-AggHelper.prototype.project = function( fields ){
-    if(!fields){
-        throw "project needs fields";
-    }
-    this.pipeline.push({"$project" : fields});
-    return this;
-};
-
-AggHelper.prototype.match = function( criteria ){
-    if(!criteria){
-        throw "match needs a query object";
-    }
-    this.pipeline.push({"$match" : criteria});
-    return this;
-};
-
-AggHelper.prototype.limit = function( limit ){
-    if(!limit){
-        throw "limit needs an integer indicating the max number of documents to limit";
-    }
-    this.pipeline.push({"$limit" : limit});
-    return this;
-};
-
-AggHelper.prototype.skip = function( skip ){
-    if(!skip){
-        throw "skip needs an integer indicating the number of documents to skip";
-    }
-    this.pipeline.push({"$skip" : skip});
-    return this;
-};
-
-AggHelper.prototype.unwind = function( field ){
-    if(!field){
-        throw "unwind needs a string indicating the key of an array field to unwind";
-    }
-    this.pipeline.push({"$unwind" : "$" + field});
-    return this;
-};
-
-AggHelper.prototype.group = function( group, group_expression ){
-    if(!group_expression) group_expression = {};
-    if(!group){
-        throw "group needs an grouping key";
-    }
-    group_expression._id = "$" + group;
-    this.pipeline.push({"$group" : group_expression});
-    return this;
-};
-
-AggHelper.prototype.sort = function( sort ){
-    this.pipeline.push({"$sort" : sort});
-    return this;
-};
-
