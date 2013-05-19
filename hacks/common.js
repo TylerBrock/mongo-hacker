@@ -134,10 +134,6 @@ DBQuery.prototype.shellPrint = function(){
             ___it___  = this;
             output.push("More[" + colorize("true", "green", true) + "]");
         }
-        else {
-            ___it___  = null;
-            output.push("More[" + colorize("false", "red", true) + "]");
-        }
         print(output.join(" -- "));
     }
     catch ( e ){
