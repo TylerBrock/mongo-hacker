@@ -117,14 +117,17 @@ DBQuery.prototype.shellPrint = function(){
             explain._limit = Math.abs(n._limit) * -1;
             var result = explain.next();
             var type = result.cursor;
-            var index_use = "Index[";
-            if (type == "BasicCursor") {
-                index_use += colorize( "none", "red", true);
-            } else {
-                index_use += colorize( result.cursor.substring(12), "green", true );
+
+            if (type !== undefined) {
+                var index_use = "Index[";
+                if (type == "BasicCursor") {
+                    index_use += colorize( "none", "red", true);
+                } else {
+                    index_use += colorize( result.cursor.substring(12), "green", true );
+                }
+                index_use += "]";
+                output.push(index_use);
             }
-            index_use += "]";
-            output.push(index_use);
         }
 
         if ( this.hasNext() ) {
