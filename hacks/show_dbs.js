@@ -83,9 +83,9 @@ shellHelper.show = function (what) {
             var sizePadding = maxGbDigits   - db.gb_digits;
             var padding = Array(namePadding + sizePadding + 3).join(" ");
             if (db.size > 1) {
-                print(db.name + padding + db.size_str + "GB");
+                print(colorize(db.name, "green", true) + padding + db.size_str + "GB");
             } else {
-                print(db.name + padding + "(empty)");
+                print(colorize(db.name, "green", true) + padding + "(empty)");
             }
         });
 
