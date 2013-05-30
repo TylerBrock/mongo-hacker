@@ -76,7 +76,7 @@ NumberInt.prototype.tojson = function() {
 
 BinData.prototype.tojson = function(indent , nolint) {
     if (this.subtype() === 3) {
-        return 'UUID(' + colorize('"' + uuidToString(this, uuidType) + '"', "cyan") + ', ' + colorize('"' + uuidType + '"', "cyan") +')'
+        return 'UUID(' + colorize('"' + uuidToString(this) + '"', "cyan") + ', ' + colorize('"' + mongo_hacker_config['uuid_type'] + '"', "cyan") + ')'
     } else if (this.subtype() === 4) {
         return 'UUID(' + colorize('"' + uuidToString(this, "default") + '"', "cyan") + ')'
     } else {
