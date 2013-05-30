@@ -3,7 +3,7 @@ mongo_hacker_config = {
     index_paranoia: true,      // querytime explain
     enhance_api:    true,      // additonal api extensions
     indent:         2,         // number of spaces for indent
-    uuid_type:      'default', // 'java', 'c#', or 'default'
+    uuid_type:      'default', // 'java', 'c#', 'python' or 'default'
 
     // Shell Color Settings
     // [<color>, <bold>, <underline>]

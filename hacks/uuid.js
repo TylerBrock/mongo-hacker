@@ -57,6 +57,9 @@ var platformSpecificUuidModifications = {
             + hex.substr(10, 2) + hex.substr(8, 2) + hex.substr(14, 2) + hex.substr(12, 2)
             + hex.substr(16, 16);
     },
+    "python": function (hex) {
+        return hex;
+    },
     "default": function (hex) {
         return hex;
     }
