@@ -141,6 +141,11 @@ DBQuery.prototype.shellPrint = function(){
     }
 };
 
+DBQuery.prototype.ugly = function(){
+    this._prettyShell = false;
+    return this;
+}
+
 tojsonObject = function( x, indent, nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
