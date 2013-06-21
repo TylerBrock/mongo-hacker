@@ -5,159 +5,107 @@
 * These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit pull requests.
 * Does not work in Windows (currently)
 * Does not work with shells or db servers < 2.2 (currently)
+* Updates called on existing cursors are new and experimental (see notes in API secion)
 
-## Usage
+## Installation
 
 Link mongo_hacker.js to `.mongorc.js` in your home directory:
 
+```sh
+make
 ```
+
+or (the manual way)
+
+```sh
 ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
 
 Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
 
-## List of Enhancements
+## Enhancements
 
-### Basic
+### Basic UX
 
-Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
+  - Highlight querytime if verboseShell is enabled
+    - In **green** if querytime is at or below slowms
+    - In **red** if query time is above slowms
+  - IndexParanoia
+    - Automatically show information about index use -- to disable: `setIndexParanoia(false)`
+  - Default indent is 2 spaces instead of tab
+    - Customizable by setting `__indent`
+  - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
+  - Disable notfication of "Type 'it' for more"
+  - Custom prompt: `hostname(process-version)[rs status] db>`
+  - Always pretty print
+  - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
+  - Nicer sh.status() output (remove lastmod, take up less space, colorize chunk's shard)
 
-Disable notfication of "Type 'it' for more"
+### API Additions
 
-Custom prompt with `hostname(process-version) db>` formating
+Filter for a collection of documents:
 
-### Awesome
+```js
+db.collection.filter(<criteria>)
+```
+
+One for finding a single document:
+
+```js
+db.collection.filter({ ... }).one() == db.collection.findOne({ ... })
+```
+
+Select for selecting fields to return (projection):
+
+```js
+db.collection.filter({ ... }).select({ name: 1 })
+```
+
+Reverse for descending sort by insertion order (default) or arbitrary field:
+
+```js
+db.collection.filter({ ... }).reverse()
+db.collection.filter({ ... }).reverse('createDate')
+```
+
+Last for finding last inserted document (default) or document last by given field:
+
+```js
+db.collection.filter({ ... }).last()
+db.collection.filter({ ... }).last('createDate')
+```
+
+Update, Replace, Upsert and Remove can be called on a DBQuery Object:
+
+```js
+db.collection.filter({ ... }).update({ ... })  // multi update
+db.collection.filter({ ... }).replace({ ... }) // single replacement
+db.collection.filter({ ... }).upsert({ ... })  // single upsert
+db.collection.filter({ ... }).remove()         // multi remove
+```
+
+Sort, limit, and skip through multi updates and removes:
+
+```js
+db.collection.filter({ ... }).limit(7).update({ ... })
+db.collection.filter({ ... }).sort({ ... }).skip(1).limit(3).update({ ... })
+db.collection.filter({ ... }).limit(3).remove()
+```
+
+**Note**: *The performance of multi updates involving a skip or limit may be worse than those without those specifications due to there being absolutely no native support for this feature in MongoDB itself. It should be understood by the user of this software that use of this feature (by calling update on a cursor rather than a collection) is advanced and experimental. The option to do this sort of operation is purely additive to the MongoDB experience with MongoHacker and usage of it is in no way required. Furthermore, its inclusion in this enhancement does not effect the operation of updates invoked through collections and, in practice, is insanely useful.*
+
+### Helpers
+
+General Shell Helpers
+  - `findCommand('search')` list commands that match the search string
+
+Aggregation Framework Helpers -- on collections
+  - Group and Count: `gcount(group_field, filter)`
+  - Group and Sum: `gsum(group_field, sum_field, filter)`
+  - Group and Average: `gavg(group_field, avg_field, filter)`
+
+### Colorization
 
 Colorized query output
 
 ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
-
-- ObjectId: Green(underlined)
-- null: Bright Red
-- String: Green
-- Number: Red
-- Key: Yellow
-- Boolean: Blue
-- Date: Cyan
-
-Highlight querytime if verboseShell is enabled
-  - In **green** if querytime is at or below slowms
-  - In **red** if query time is above slowms
-
-IndexParanoia
-- Automatically show information about index use -- to disable: `setIndexParanoia(false)`
-
-Default indent is 2 spaces instead of tab
-  - Customizable by setting `__indent`
-
-AutoMulti
-- Automatically use multi updates -- to disable: `setAutoMulti(false)`
-
-``` js
-db.users.update({}, {$set: {awesome: true}})
-Updated 4 existing record(s) in 1ms
-```
-
-Aggregation Framework Helpers -- on collections
-- Group and Count: `gcount(group_field, filter)`
-- Group and Sum: `gsum(group_field, sum_field, filter)`
-- Group and Average: `gavg(group_field, avg_field, filter)`
-
-## Examples
-
-### Insert some data
-
-``` js
-db.users.insert([
-  {
-    "age": 27,
-    "first_name": "Tyler",
-    "last_name": "Brock",
-    "updated": new Date()
-  },
-  { 
-    "age": 30,
-    "first_name": "Jessica",
-    "last_name": "Fake",
-    "updated": new Date()
-  },
-  {
-    "age": 35,
-    "first_name": "Tyler",
-    "last_name": "Durden",
-    "updated": new Date()
-  }
-])
-```
-
-### Group and count users by the first_name field
-
-``` js
-db.users.gcount("first_name")
-{
-  "result": [
-    {
-      "_id": "Jessica",
-      "count": 1
-    },
-    {
-      "_id": "Tyler",
-      "count": 2
-    }
-  ],
-  "ok": 1
-}
-```
-
-### Group and count users having first_name of Tyler
-
-``` js
-db.users.gcount("first_name", {first_name: "Tyler"})
-{
-  "result": [
-    {
-      "_id": "Tyler",
-      "count": 2
-    }
-  ],
-  "ok": 1
-}
-```
-
-### Group users by first name and sum the age field
-
-```js
-db.users.gsum("first_name", "age")
-{
-  "result": [
-    {
-      "_id": "Jessica",
-      "sum": 30
-    },
-    {
-      "_id": "Tyler",
-      "sum": 62
-    }
-  ],
-  "ok": 1
-}
-```
-
-### Group users by first name and average the age field
-
-```js
-db.users.gavg("first_name", "age")
-{
-  "result": [
-    {
-      "_id": "Jessica",
-      "avg": 30
-    },
-    {
-      "_id": "Tyler",
-      "avg": 31
-    }
-  ],
-  "ok": 1
-}
-```
