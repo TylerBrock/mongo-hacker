@@ -306,3 +306,8 @@ DBQuery.prototype._checkMulti = function(){
     return false;
   }
 };
+
+DBQuery.prototype.ugly = function(){
+    this._prettyShell = false;
+    return this;
+}
