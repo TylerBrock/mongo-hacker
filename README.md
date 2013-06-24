@@ -41,6 +41,12 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
   - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
   - Nicer sh.status() output (remove lastmod, take up less space, colorize chunk's shard)
 
+#### Colorization
+
+Colorized query output
+
+![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
+
 ### API Additions
 
 #### General
@@ -127,7 +133,7 @@ db.collection.aggregate({<match>}).group({<group>}).sort({<sort>})
 db.test.aggregate().group({_id: '$a', 'sum': {'$sum': 1}}).sort({sum: -1})
 ```
 
-### Helpers
+#### Helpers
 
 General Shell Helpers
   - `findCommand('search')` list commands that match the search string
@@ -137,8 +143,3 @@ Aggregation Framework Helpers -- on collections
   - Group and Sum: `gsum(group_field, sum_field, filter)`
   - Group and Average: `gavg(group_field, avg_field, filter)`
 
-### Colorization
-
-Colorized query output
-
-![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
