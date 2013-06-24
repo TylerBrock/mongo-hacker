@@ -8,11 +8,11 @@ function hasDollar(fields){
 }
 
 // Aggregate extension to support alternate API
-DBCollection.prototype.aggregate = function( fields ){
-    if(arguments.length > 1 || hasDollar(fields) || hasDollar(fields[0])){
-        var arr = fields;
+DBCollection.prototype.aggregate = function( ops ){
+    if(arguments.length >= 1 && (hasDollar(ops) || hasDollar(ops[0]))){
+        var arr = ops;
 
-        if (!fields.length) {
+        if (!ops.length) {
             arr = [];
             for (var i=0; i<arguments.length; i++) {
                 arr.push(arguments[i]);
@@ -26,7 +26,7 @@ DBCollection.prototype.aggregate = function( fields ){
         }
         return res;
     } else {
-       return new AggHelper( this ).match( fields || {} );
+       return new AggHelper( this ).match( ops || {} );
     }
 };
 
@@ -91,12 +91,10 @@ AggHelper.prototype.unwind = function( field ){
     return this;
 };
 
-AggHelper.prototype.group = function( group, group_expression ){
-    if(!group_expression) group_expression = {};
-    if(!group){
-        throw "group needs an grouping key";
+AggHelper.prototype.group = function( group_expression ){
+    if(!group_expression){
+        throw "group needs an group expression";
     }
-    group_expression._id = "$" + group;
     this.pipeline.push({"$group" : group_expression});
     return this;
 };
