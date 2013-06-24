@@ -1,4 +1,4 @@
-# MongoDB Shell Enhancements for Hackers
+# MongoDB Shell Enhancements
 
 ## Warnings
 
