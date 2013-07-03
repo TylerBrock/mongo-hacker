@@ -4,7 +4,7 @@ mongo_hacker_config = {
     enhance_api:    true,      // additonal api extensions
     indent:         2,         // number of spaces for indent
     uuid_type:      'default', // 'java', 'c#', 'python' or 'default'
-    banner_message: 'Shell Enhanced by MongoHacker Ver. ' //banner message to show on mongo shell load
+    banner_message: 'Shell Enhanced by MongoHacker Ver. ', //banner message to show on mongo shell load
     version:        '0.0.3',    // current mongo-hacker version
     show_banner:     true,      // show mongo-hacker version banner on startup
 
