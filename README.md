@@ -9,15 +9,16 @@
 
 ## Installation
 
-Link mongo_hacker.js to `.mongorc.js` in your home directory:
+Make:
 
 ```sh
 make
 ```
 
-or (the manual way)
+Manual:
 
 ```sh
+cat base.js config.js hacks/*.js >> mongo_hacker.js
 ln -sf <mongo-hacker-dir>/mongo_hacker.js ~/.mongorc.js
 ```
 
