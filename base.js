@@ -13,9 +13,11 @@ if (_isWindows()) {
     print("\nSorry! MongoDB Shell Enhancements for Hackers isn't compatible with Windows.\n");
 }
 
-var current_version = parseFloat(db.serverBuildInfo().version).toFixed(2)
+if (typeof db !== 'undefined') {
+    var current_version = parseFloat(db.serverBuildInfo().version).toFixed(2)
 
-if (current_version < 2.2) {
-    print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with Mongo 2.2+\n");
+    if (current_version < 2.2) {
+        print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with Mongo 2.2+\n");
+    }
 }
 
