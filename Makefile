@@ -10,4 +10,9 @@ mongo_hacker.js: ${base} ${config} ${hacks}
 install:
 	@echo "INSTALLATION"
 	@echo "Linking MongoHacker to .mongorc.js in your home directory:"
-	rm -f ~/.mongorc.js && ln -sf "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
+
+	@$(MAKE) uninstall
+	ln -sf "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
+
+uninstall:
+	rm -f ~/.mongorc.js
