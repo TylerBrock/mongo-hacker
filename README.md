@@ -5,7 +5,7 @@
 * These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit pull requests.
 * Does not work in Windows (currently)
 * Does not work with shells or db servers < 2.2 (currently)
-* Updates called on existing cursors are new and experimental (see notes in API secion)
+* Updates called on existing cursors are new and experimental (see notes in API section)
 
 ## Installation
 
