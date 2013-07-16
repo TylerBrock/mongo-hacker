@@ -111,6 +111,14 @@ Aggregation.prototype.project = function( fields ) {
     return this;
 };
 
+Aggregation.prototype.find = function( criteria ) {
+    if ( ! criteria ) {
+        throw "match needs a query object";
+    }
+    this._pipeline.push({ "$match": criteria });
+    return this;
+};
+
 Aggregation.prototype.match = function( criteria ) {
     if ( ! criteria ) {
         throw "match needs a query object";
