@@ -91,3 +91,19 @@ DBQuery.prototype.remove = function(){
     this._mongo.remove( this._ns , this._query , false );
     this._db._getExtraInfo("Removed");
 };
+
+//----------------------------------------------------------------------------
+// Full Text Search
+//----------------------------------------------------------------------------
+DBQuery.prototype.textSearch = function( search ) {
+    var text = {
+        text: this._collection.getName(),
+        search: search,
+        filter: this._query,
+        project: this._fields,
+        limit: this._limit
+    }
+
+    var result = this._db.runCommand( text );
+    return result.results;
+};
