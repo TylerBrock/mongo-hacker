@@ -1,14 +1,9 @@
 //----------------------------------------------------------------------------
 // API Additions
 //----------------------------------------------------------------------------
-DBCollection.prototype.filter = function( filter ) {
-    return new DBQuery(
-        this._mongo,
-        this._db,
-        this,
-        this._fullName,
-        this._massageObject( filter ) 
-    );
+DBQuery.prototype.fields = function( fields ) {
+    this._fields = fields;
+    return this;
 };
 
 DBQuery.prototype.select = function( fields ){
