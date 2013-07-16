@@ -25,26 +25,22 @@ DBQuery.prototype._findAndModify = function( options ) {
 //----------------------------------------------------------------------------
 // findAndModify Terminal Variants
 //----------------------------------------------------------------------------
-DBQuery.prototype.updateOneAndGet = function( update ) {
-    // TODO: ensure only $ keys
+DBQuery.prototype.updateAndGet = function( update ) {
     return this._findAndModify({ 'update': update });
 };
 
-DBQuery.prototype.getOneAndUpdate = function( update ) {
-    // TODO: ensure only $ keys
+DBQuery.prototype.getAndUpdate = function( update ) {
     return this._findAndModify({ 'update': update, 'new': false });
 };
 
-DBQuery.prototype.replaceOneAndGet = function( replacement ) {
-    // TODO: ensure no $ keys
+DBQuery.prototype.replaceAndGet = function( replacement ) {
     return this._findAndModify({ 'update': replacement });
 };
 
-DBQuery.prototype.getOneAndReplace = function( replacement ) {
-    // TODO: ensure no $ keys
+DBQuery.prototype.getAndReplace = function( replacement ) {
     return this._findAndModify({ 'update': replacement, 'new': false });
 };
 
-DBQuery.prototype.getOneAndRemove = function() {
+DBQuery.prototype.getAndRemove = function() {
     return this._findAndModify({ 'remove': true })
 };
