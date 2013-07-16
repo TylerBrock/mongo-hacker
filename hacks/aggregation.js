@@ -25,7 +25,7 @@ DBCollection.prototype.aggregate = function( ops ){
     }
 };
 
-// Helper method for determinine if parameter has dollar signs
+// Helper method for determining if parameter has dollar signs
 function hasDollar(fields){
     for (k in fields){
         if(k.indexOf('$') !== -1){
