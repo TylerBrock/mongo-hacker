@@ -1,13 +1,8 @@
-function hasDollar(fields){
-    for (k in fields){
-        if(k.indexOf('$') !== -1){
-            return true;
-        };
-    };
-    return false;
-}
+//----------------------------------------------------------------------------
+// Aggregation API Extensions
+//----------------------------------------------------------------------------
 
-// Aggregate extension to support alternate API
+// Inject aggregation extension while supporting base API
 DBCollection.prototype.aggregate = function( ops ){
     if(arguments.length >= 1 && (hasDollar(ops) || hasDollar(ops[0]))){
         var arr = ops;
@@ -26,80 +21,166 @@ DBCollection.prototype.aggregate = function( ops ){
         }
         return res;
     } else {
-       return new AggHelper( this ).match( ops || {} );
+       return new Aggregation( this ).match( ops || {} );
     }
 };
 
-// Aggregation Framework Helper
-AggHelper = function( collection, fields ){
-    this.collection = collection;
-    this.pipeline = [];
+// Helper method for determining if parameter has dollar signs
+function hasDollar(fields){
+    for (k in fields){
+        if(k.indexOf('$') !== -1){
+            return true;
+        };
+    };
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Aggregation Object
+//----------------------------------------------------------------------------
+Aggregation = function( collection, fields ){
+    this._collection = collection;
+    this._pipeline = [];
+    this._shellBatchSize = 20;
 };
 
-AggHelper.prototype.execute = function(){
-    var res = this.collection.runCommand("aggregate", {pipeline: this.pipeline});
-    if (!res.ok) {
+Aggregation.prototype.has_next = function() {
+    return (this._index < this._results.length);
+};
+
+Aggregation.prototype.next = function() {
+    var next = this._results[this._index];
+    this._index += 1;
+    return next
+};
+
+Aggregation.prototype.execute = function() {
+    // build the command
+    var aggregation = { pipeline: this._pipeline };
+    if ( this._readPreference ) {
+        aggregation["$readPreference"] = this.readPreference;
+    }
+
+    // run the command
+    var res = this._collection.runCommand(
+        "aggregate", aggregation
+    );
+
+    // check result
+    if ( ! res.ok ) {
         printStackTrace();
-        throw "aggregate failed: " + tojson(res);
+        throw "aggregation failed: " + tojson(res);
     }
-    return res;
+
+    // setup results as pseudo cursor
+    this._index = 0;
+    this._results = res.result;
+
+    return this._results;
 };
 
-AggHelper.prototype.shellPrint = function(){
-    this.execute().result.forEach(function(result){
-        printjson(result);
-    });
+Aggregation.prototype.shellPrint = function() {
+    if (this._results == undefined) {
+        this.execute();
+    }
+    try {
+        var i = 0;
+        while (this.has_next() && i < this._shellBatchSize) {
+            var result = this.next();
+            printjson( result );
+            i++;
+        }
+        if ( this.has_next() ) {
+            print ( "Type \"it\" for more" );
+            ___it___ = this;
+        }
+        else {
+            ___it___ = null;
+        }
+    }
+    catch ( e ) {
+        print( e );
+    }
 };
 
-AggHelper.prototype.project = function( fields ){
-    if(!fields){
+Aggregation.prototype.project = function( fields ) {
+    if ( ! fields ) {
         throw "project needs fields";
     }
-    this.pipeline.push({"$project" : fields});
+    this._pipeline.push({ "$project": fields });
     return this;
 };
 
-AggHelper.prototype.match = function( criteria ){
-    if(!criteria){
+Aggregation.prototype.find = function( criteria ) {
+    if ( ! criteria ) {
         throw "match needs a query object";
     }
-    this.pipeline.push({"$match" : criteria});
+    this._pipeline.push({ "$match": criteria });
     return this;
 };
 
-AggHelper.prototype.limit = function( limit ){
-    if(!limit){
-        throw "limit needs an integer indicating the max number of documents to limit";
+Aggregation.prototype.match = function( criteria ) {
+    if ( ! criteria ) {
+        throw "match needs a query object";
     }
-    this.pipeline.push({"$limit" : limit});
+    this._pipeline.push({ "$match": criteria });
     return this;
 };
 
-AggHelper.prototype.skip = function( skip ){
-    if(!skip){
-        throw "skip needs an integer indicating the number of documents to skip";
+Aggregation.prototype.limit = function( limit ) {
+    if ( ! limit ) {
+        throw "limit needs an integer indicating the limit";
     }
-    this.pipeline.push({"$skip" : skip});
+    this._pipeline.push({ "$limit": limit });
     return this;
 };
 
-AggHelper.prototype.unwind = function( field ){
-    if(!field){
-        throw "unwind needs a string indicating the key of an array field to unwind";
+Aggregation.prototype.skip = function( skip ) {
+    if ( ! skip ) {
+        throw "skip needs an integer indicating the number to skip";
     }
-    this.pipeline.push({"$unwind" : "$" + field});
+    this._pipeline.push({ "$skip": skip });
     return this;
 };
 
-AggHelper.prototype.group = function( group_expression ){
-    if(!group_expression){
+Aggregation.prototype.unwind = function( field ) {
+    if ( ! field ) {
+        throw "unwind needs the key of an array field to unwind";
+    }
+    this._pipeline.push({ "$unwind": "$" + field });
+    return this;
+};
+
+Aggregation.prototype.group = function( group_expression ) {
+    if ( ! group_expression ) {
         throw "group needs an group expression";
     }
-    this.pipeline.push({"$group" : group_expression});
+    this._pipeline.push({ "$group": group_expression });
     return this;
 };
 
-AggHelper.prototype.sort = function( sort ){
-    this.pipeline.push({"$sort" : sort});
+Aggregation.prototype.sort = function( sort ) {
+    if ( ! sort ) {
+        throw "sort needs a sort document";
+    }
+    this._pipeline.push({ "$sort": sort });
     return this;
+};
+
+Aggregation.prototype.geoNear = function( options ) {
+    if ( ! options ) {
+        throw "geo near requires options"
+    }
+    this._pipeline.push({ "$geoNear": options });
+    return this;
+};
+
+Aggregation.prototype.readPreference = function( mode ) {
+    this._readPreference = mode;
+    return this;
+};
+
+Aggregation.prototype.explain = function() {
+    // TODO: https://jira.mongodb.org/browse/SERVER-4504
+    throw "not possible yet"
 };
