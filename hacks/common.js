@@ -8,32 +8,15 @@ ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
 };
 
+var isoDateRegExp = /ISODate\((.*)\)/;
+var dateToJson = Date.prototype.tojson;
+
 Date.prototype.tojson = function() {
+  var isoDateString = dateToJson.call(this);
+  var dateString = isoDateString.match(isoDateRegExp)[1];
 
-    var UTC = Date.printAsUTC ? 'UTC' : '';
-
-    var year = this['get'+UTC+'FullYear']().zeroPad(4);
-    var month = (this['get'+UTC+'Month']() + 1).zeroPad(2);
-    var date = this['get'+UTC+'Date']().zeroPad(2);
-    var hour = this['get'+UTC+'Hours']().zeroPad(2);
-    var minute = this['get'+UTC+'Minutes']().zeroPad(2);
-    var sec = this['get'+UTC+'Seconds']().zeroPad(2);
-
-    if (this['get'+UTC+'Milliseconds']())
-        sec += '.' + this['get'+UTC+'Milliseconds']().zeroPad(3);
-
-    var ofs = 'Z';
-    if (!Date.printAsUTC) {
-        var ofsmin = this.getTimezoneOffset();
-        if (ofsmin !== 0){
-            ofs = ofsmin > 0 ? '-' : '+'; // This is correct
-            ofs += (ofsmin/60).zeroPad(2);
-            ofs += (ofsmin%60).zeroPad(2);
-        }
-    }
-
-    var isodate =  colorize('"' + [year, month, date].join('-') + 'T' + hour +':' + minute + ':' + sec + ofs + '"', "cyan");
-    return 'ISODate(' + isodate + ')';
+  var isodate = colorize(dateString, 'cyan');
+  return 'ISODate(' + isodate + ')';
 };
 
 Array.tojson = function( a , indent , nolint ){
