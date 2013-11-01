@@ -8,12 +8,11 @@ ObjectId.prototype.tojson = function(indent, nolint) {
     return tojson(this);
 };
 
-var isoDateRegExp = /ISODate\((.*)\)/;
 var dateToJson = Date.prototype.tojson;
 
 Date.prototype.tojson = function() {
   var isoDateString = dateToJson.call(this);
-  var dateString = isoDateString.match(isoDateRegExp)[1];
+  var dateString = isoDateString.substring(8, isoDateString.length-1);
 
   var isodate = colorize(dateString, 'cyan');
   return 'ISODate(' + isodate + ')';
