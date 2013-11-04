@@ -16,3 +16,4 @@ install:
 
 uninstall:
 	rm -f ~/.mongorc.js
+
