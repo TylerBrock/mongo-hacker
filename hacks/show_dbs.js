@@ -50,7 +50,15 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        db.getCollectionNames().forEach(function (x) { print(x) });
+        db.getCollectionNames().forEach(function (collectionName) {
+					var stats = db[collectionName].stats();
+					while(collectionName.length < 25)
+						collectionName = collectionName + " ";
+					var size = (stats.size / 1024 / 1024).toFixed(3),
+							storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+
+					print(colorize(collectionName, "green", true) + size + "MB / " + storageSize + "MB")
+				});
         return "";
     }
 
