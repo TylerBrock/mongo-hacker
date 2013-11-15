@@ -8,6 +8,7 @@
     "update": "make all",
     "postuninstall": "make uninstall"
   },
+  "preferGlobal": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:TylerBrock/mongo-hacker.git"

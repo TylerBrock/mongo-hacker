@@ -9,7 +9,13 @@
 
 ## Installation
 
-Link mongo_hacker.js to `.mongorc.js` in your home directory:
+Install as a global module from npm:
+
+```sh
+npm install -g mongo-hacker
+```
+
+Or clone this repository and link mongo_hacker.js to `.mongorc.js` in your home directory:
 
 ```sh
 make
