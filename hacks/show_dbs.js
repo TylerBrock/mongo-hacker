@@ -50,7 +50,22 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        db.getCollectionNames().forEach(function (x) { print(x) });
+        var maxNameLength = 0;
+        var paddingLength = 20;
+        db.getCollectionNames().forEach(function (collectionName) {
+          if (collectionName.length < maxNameLength) {
+            maxNameLength = collectionName.length;
+          }
+        });
+        db.getCollectionNames().forEach(function (collectionName) {
+          var stats = db[collectionName].stats();
+          while(collectionName.length < maxNameLength + paddingLength)
+            collectionName = collectionName + " ";
+          var size = (stats.size / 1024 / 1024).toFixed(3),
+              storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+
+          print(colorize(collectionName, "green", true) + size + "MB / " + storageSize + "MB")
+        });
         return "";
     }
 
