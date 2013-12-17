@@ -10,7 +10,7 @@ function runMatch(cmd, args, regexp) {
 };
 
 function getEnv(env_var) {
-    var env_regex = new RegExp(env_var + '=(.*)');
+    var env_regex = new RegExp(' ' + env_var + '=(.*)');
     return runMatch('env', '', env_regex)[1];
 };
 
