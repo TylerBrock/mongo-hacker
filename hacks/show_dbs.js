@@ -51,9 +51,9 @@ shellHelper.show = function (what) {
 
     if (what == "collections" || what == "tables") {
         var maxNameLength = 0;
-        var paddingLength = 20;
+        var paddingLength = 2;
         db.getCollectionNames().forEach(function (collectionName) {
-          if (collectionName.length < maxNameLength) {
+          if (collectionName.length > maxNameLength) {
             maxNameLength = collectionName.length;
           }
         });

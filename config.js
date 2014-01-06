@@ -5,7 +5,7 @@ mongo_hacker_config = {
     indent:         2,         // number of spaces for indent
     uuid_type:      'default', // 'java', 'c#', 'python' or 'default'
     banner_message: 'Mongo-Hacker ', //banner message
-    version:        '0.0.3',    // current mongo-hacker version
+    version:        '0.0.4',    // current mongo-hacker version
     show_banner:     true,      // show mongo-hacker version banner on startup
 
     // Shell Color Settings
