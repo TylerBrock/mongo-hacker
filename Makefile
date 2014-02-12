@@ -5,7 +5,7 @@ config = config.js
 all: mongo_hacker.js install
 
 mongo_hacker.js: ${base} ${config} ${hacks}
-	cat > $@ $^
+	cat $^ > $@
 
 install:
 	@echo "INSTALLATION"
