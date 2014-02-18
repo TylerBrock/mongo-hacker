@@ -14,7 +14,7 @@ Date.prototype.tojson = function() {
   var isoDateString = dateToJson.call(this);
   var dateString = isoDateString.substring(8, isoDateString.length-1);
 
-  var isodate = colorize(dateString, 'cyan');
+  var isodate = colorize(dateString, mongo_hacker_config.colors.date);
   return 'ISODate(' + isodate + ')';
 };
 
@@ -48,21 +48,38 @@ Array.tojson = function( a , indent , nolint ){
     return s;
 };
 
+function surround(name, inside) {
+    return [name, '(', inside, ')'].join('');
+}
+
 NumberLong.prototype.tojson = function() {
-    return 'NumberLong(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
+    var color = mongo_hacker_config.colors.number;
+    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
+    return surround('NumberLong', output);
 };
 
 NumberInt.prototype.tojson = function() {
-    return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
+    var color = mongo_hacker_config.colors.number;
+    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
+    return surround('NumberInt', output);
 };
 
 BinData.prototype.tojson = function(indent , nolint) {
+    var uuidType = mongo_hacker_config.uuid_type;
+    var uuidColor = mongo_hacker_config.colors.uuid;
+    var binDataColor = mongo_hacker_config.colors.binData;
+
     if (this.subtype() === 3) {
-        return 'UUID(' + colorize('"' + uuidToString(this) + '"', "cyan") + ', ' + colorize('"' + mongo_hacker_config['uuid_type'] + '"', "cyan") + ')'
+        var ouput = colorize('"' + uuidToString(this) + '"', color) + ', '
+        output += colorize('"' + uuidType + '"', uuidColor)
+        return surround('UUID', output);
     } else if (this.subtype() === 4) {
-        return 'UUID(' + colorize('"' + uuidToString(this, "default") + '"', "cyan") + ')'
+        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor) + ')'
+        return surround('UUID', output);
     } else {
-        return 'BinData(' + colorize(this.subtype(), "red") + ', ' + colorize('"' + this.base64() + '"', "green", true) + ')';
+        var output = colorize(this.subtype(), {color: 'red'}) + ', '
+        output += colorize('"' + this.base64() + '"', binDataColor)
+        return surround('BinData', output);
     }
 };
 
@@ -83,9 +100,9 @@ DBQuery.prototype.shellPrint = function(){
             var slowms = getSlowms();
             var fetched = "Fetched " + n + " record(s) in ";
             if (time > slowms) {
-                fetched += colorize(time + "ms", "red", true);
+                fetched += colorize(time + "ms", { color: "red", bright: true });
             } else {
-                fetched += colorize(time + "ms", "green", true);
+                fetched += colorize(time + "ms", { color: "green", bright: true });
             }
             output.push(fetched);
         }
@@ -103,9 +120,9 @@ DBQuery.prototype.shellPrint = function(){
             if (type !== undefined) {
                 var index_use = "Index[";
                 if (type == "BasicCursor") {
-                    index_use += colorize( "none", "red", true);
+                    index_use += colorize( "none", { color: "red", bright: true });
                 } else {
-                    index_use += colorize( result.cursor.substring(12), "green", true );
+                    index_use += colorize( result.cursor.substring(12), { color: "green", bright: true });
                 }
                 index_use += "]";
                 output.push(index_use);
@@ -114,7 +131,7 @@ DBQuery.prototype.shellPrint = function(){
 
         if ( this.hasNext() ) {
             ___it___  = this;
-            output.push("More[" + colorize("true", "green", true) + "]");
+            output.push("More[" + colorize("true", { color: "green", bright: true }) + "]");
         }
         print(output.join(" -- "));
     }
@@ -166,7 +183,8 @@ tojsonObject = function( x, indent, nolint ) {
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
 
-        s += indent + colorize("\"" + key + "\"", "yellow") + ": " + tojson( val, indent , nolint );
+        var color = mongo_hacker_config.colors.key;
+        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint );
         if (num != total) {
             s += ",";
             num++;
@@ -182,13 +200,14 @@ tojsonObject = function( x, indent, nolint ) {
 
 tojson = function( x, indent , nolint ) {
     if ( x === null )
-        return colorize("null", "red", true);
+        return colorize("null", mongo_hacker_config.colors['null']);
 
     if ( x === undefined )
-        return colorize("undefined", "magenta", true);
+        return colorize("undefined", mongo_hacker_config.colors['undefined']);
 
     if ( x.isObjectId ) {
-        return 'ObjectId(' + colorize('"' + x.str + '"', "green", false, true) + ')';
+        var color = mongo_hacker_config.colors['objectid'];
+        return surround('ObjectId', colorize('"' + x.str + '"', color));
     }
 
     if (!indent)
@@ -219,12 +238,12 @@ tojson = function( x, indent , nolint ) {
             }
         }
         s += "\"";
-        return colorize(s, "green", true);
+        return colorize(s, mongo_hacker_config.colors.string);
     }
     case "number":
-        return colorize(x, "red");
+        return colorize(x, mongo_hacker_config.colors.number);
     case "boolean":
-        return colorize("" + x, "blue");
+        return colorize("" + x, mongo_hacker_config.colors['boolean']);
     case "object": {
         s = tojsonObject( x, indent , nolint );
         if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
@@ -233,7 +252,7 @@ tojson = function( x, indent , nolint ) {
         return s;
     }
     case "function":
-        return colorize(x.toString(), "magenta");
+        return colorize(x.toString(), mongo_hacker_config.colors['function']);
     default:
         throw "tojson can't handle type " + ( typeof x );
     }

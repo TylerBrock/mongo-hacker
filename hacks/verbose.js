@@ -26,9 +26,9 @@ DB.prototype._getExtraInfo = function(action) {
         var time = new Date().getTime() - startTime;
         var slowms = getSlowms();
         if (time > slowms) {
-            info += colorize(time + "ms", "red", true);
+            info += colorize(time + "ms", { color: 'red', bright: true });
         } else {
-            info += colorize(time + "ms", "green", true);
+            info += colorize(time + "ms", { color: 'green', bright: true });
         }
         print(info);
     }

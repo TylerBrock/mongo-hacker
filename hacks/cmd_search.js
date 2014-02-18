@@ -16,7 +16,7 @@ shellHelper.find = function (query) {
             }
             if (regexp.test(command) || regexp.test(help)) {
                 var numSpaces = 30 - command.length;
-                print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
+                print(colorize(command, {color: 'green'}), Array(numSpaces).join(" "), "-", help);
             }
         }
     }

@@ -64,7 +64,7 @@ shellHelper.show = function (what) {
           var size = (stats.size / 1024 / 1024).toFixed(3),
               storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
 
-          print(colorize(collectionName, "green", true) + size + "MB / " + storageSize + "MB")
+          print(colorize(collectionName, { color: 'green', bright: true }) + size + "MB / " + storageSize + "MB")
         });
         return "";
     }
@@ -98,9 +98,9 @@ shellHelper.show = function (what) {
             var sizePadding = maxGbDigits   - db.gb_digits;
             var padding = Array(namePadding + sizePadding + 3).join(" ");
             if (db.size > 1) {
-                print(colorize(db.name, "green", true) + padding + db.size_str + "GB");
+                print(colorize(db.name, { color: 'green', bright: true }) + padding + db.size_str + "GB");
             } else {
-                print(colorize(db.name, "green", true) + padding + "(empty)");
+                print(colorize(db.name, { color: 'green', bright: true }) + padding + "(empty)");
             }
         });
 

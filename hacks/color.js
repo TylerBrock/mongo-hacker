@@ -34,14 +34,14 @@ function applyColorCode( string, properties ) {
     return controlCode(properties) + String(string) + controlCode();
 };
 
-function colorize( string, color, bright, underline ) {
+function colorize( string, color ) {
     var params = [];
-    var code = __ansi.foreground + __ansi.colors[color];
+    var code = __ansi.foreground + __ansi.colors[color.color];
 
     params.push(code);
 
-    if ( bright === true ) params.push(__ansi.bright);
-    if ( underline === true ) params.push(__ansi.underline);
+    if ( color.bright === true ) params.push(__ansi.bright);
+    if ( color.underline === true ) params.push(__ansi.underline);
 
     return applyColorCode( string, params );
 };

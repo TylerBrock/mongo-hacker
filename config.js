@@ -9,17 +9,19 @@ mongo_hacker_config = {
     show_banner:     true,      // show mongo-hacker version banner on startup
 
     // Shell Color Settings
-    // [<color>, <bold>, <underline>]
     // Colors available: red, green, yellow, blue, magenta, cyan
     colors: {
-        'number':     [ 'blue', false, false ],
-        'null':       [ 'red', false, false ],
-        'undefined':  [ 'magenta', false, false ],
-        'objectid':   [ 'green', false, false ],
-        'string':     [ 'green', false, false ],
-        'function':   [ 'magenta', false, false ],
-        'date':       [ 'blue', false, false ],
-        'uuid':       [ 'cyan', false, false]
+        'key':       { color: 'yellow' },
+        'number':    { color: 'red' },
+        'boolean':   { color: 'blue', bright: true },
+        'null':      { color: 'red', bright: true },
+        'undefined': { color: 'magenta', bright: true },
+        'objectid':  { color: 'green', underline: true },
+        'string':    { color: 'green' },
+        'binData':   { color: 'green', bright: true },
+        'function':  { color: 'magenta' },
+        'date':      { color: 'blue' },
+        'uuid':      { color: 'cyan' }
     }
 }
 
