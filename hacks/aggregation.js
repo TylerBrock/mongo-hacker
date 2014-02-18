@@ -4,7 +4,7 @@
 
 // Inject aggregation extension while supporting base API
 DBCollection.prototype.aggregate = function( ops ){
-    if(arguments.length >= 1 && (hasDollar(ops) || hasDollar(ops[0]))){
+    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))){
         var arr = ops;
 
         if (!ops.length) {
