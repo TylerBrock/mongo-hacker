@@ -312,3 +312,26 @@ DBQuery.prototype.ugly = function(){
     this._prettyShell = false;
     return this;
 }
+
+DB.prototype.shutdownServer = function(opts) {
+    if( "admin" != this._name ){
+        return "shutdown command only works with the admin database; try 'use admin'";
+    }
+
+    cmd = {"shutdown" : 1};
+    opts = opts || {};
+    for (var o in opts) {
+        cmd[o] = opts[o];
+    }
+
+    try {
+        var res = this.runCommand(cmd);
+        if( res )
+            throw "shutdownServer failed: " + res.errmsg;
+        throw "shutdownServer failed";
+    }
+    catch ( e ){
+        assert( e.message.indexOf( "error doing query: failed" ) >= 0 , "unexpected error: " + tojson( e ) );
+        print( "server should be down..." );
+    }
+}
