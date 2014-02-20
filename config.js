@@ -1,6 +1,6 @@
 mongo_hacker_config = {
     verbose_shell:  true,      // additional verbosity
-    index_paranoia: true,      // querytime explain
+    index_paranoia: false,     // querytime explain
     enhance_api:    true,      // additonal api extensions
     indent:         2,         // number of spaces for indent
     uuid_type:      'default', // 'java', 'c#', 'python' or 'default'
