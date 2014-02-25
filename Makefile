@@ -11,7 +11,7 @@ install:
 	@echo "INSTALLATION"
 	@echo "Linking MongoHacker to .mongorc.js in your home directory:"
 
-	ln -s "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
+	ln -fs "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
 
 uninstall:
 	rm -f ~/.mongorc.js
