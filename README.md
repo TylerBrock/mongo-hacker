@@ -33,6 +33,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
 
 ### Basic UX
 
+  - Sort document keys by default
   - Highlight querytime if verboseShell is enabled
     - In **green** if querytime is at or below slowms
     - In **red** if query time is above slowms
