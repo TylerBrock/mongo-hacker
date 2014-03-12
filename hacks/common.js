@@ -146,7 +146,7 @@ tojsonObject = function( x, indent, nolint ) {
 
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
-    if (!indent) 
+    if (!indent)
         indent = "";
 
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
@@ -177,7 +177,18 @@ tojsonObject = function( x, indent, nolint ) {
     if ( typeof( x._simpleKeys ) == "function" )
         keys = x._simpleKeys();
     var num = 1;
-    for ( var key in keys ){
+
+    var keylist=[];
+
+    for(var key in keys)
+        keylist.push(key);
+
+    if ( mongo_hacker_config.sort_keys ) {
+      keylist.sort();
+    }
+
+    for ( var i=0; i<keylist.length; i++) {
+        var key=keylist[i];
 
         var val = x[key];
         if ( val == DB.prototype || val == DBCollection.prototype )
