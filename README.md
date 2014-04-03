@@ -18,7 +18,7 @@ npm install -g mongo-hacker
 Or clone this repository and link `mongo_hacker.js` to `.mongorc.js` in your home directory:
 
 ```sh
-rm -rf ~/mongorc.js # may be needed as we don't force the link anymore
+rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
 make
 ```
 
