@@ -195,7 +195,7 @@ tojsonObject = function( x, indent, nolint ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint );
+        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint, key );
         if (num != total) {
             s += ",";
             num++;
@@ -209,16 +209,17 @@ tojsonObject = function( x, indent, nolint ) {
 };
 
 
-tojson = function( x, indent , nolint ) {
+tojson = function( x, indent , nolint, key ) {
     if ( x === null )
         return colorize("null", mongo_hacker_config.colors['null']);
 
     if ( x === undefined )
         return colorize("undefined", mongo_hacker_config.colors['undefined']);
 
-    if ( x.isObjectId ) {
+    if ( x.isObjectId || key === "_id") {
         var color = mongo_hacker_config.colors['objectid'];
-        return surround('ObjectId', colorize('"' + x.str + '"', color));
+        return x.isObjectId ? surround('ObjectId', colorize('"' + x.str + '"', color)) :
+                colorize('"' + x + '"', color);
     }
 
     if (!indent)
