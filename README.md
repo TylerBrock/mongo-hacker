@@ -33,7 +33,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
     - In **green** if querytime is at or below slowms
     - In **red** if query time is above slowms
   - IndexParanoia
-    - Automatically show information about index use -- to disable: `setIndexParanoia(false)`
+    - Automatically show information about index use after each query (takes extra time) -- to enable: `setIndexParanoia(true)`
   - Default indent is 2 spaces instead of tab
     - Customizable by setting `__indent`
   - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
