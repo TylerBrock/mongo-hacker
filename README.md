@@ -20,6 +20,7 @@ Or clone this repository and run `make`. It will link `mongo_hacker.js` to `.mon
 ```sh
 git clone https://github.com/TylerBrock/mongo-hacker.git
 rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
+cd mongo-hacker
 make
 ```
 
