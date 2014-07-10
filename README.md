@@ -15,9 +15,10 @@ Install as a global module from npm:
 npm install -g mongo-hacker
 ```
 
-Or clone this repository and link `mongo_hacker.js` to `.mongorc.js` in your home directory:
+Or clone this repository and run `make`. It will link `mongo_hacker.js` to `.mongorc.js` in your home directory:
 
 ```sh
+git clone https://github.com/TylerBrock/mongo-hacker.git
 rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
 make
 ```
