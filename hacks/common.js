@@ -70,7 +70,7 @@ BinData.prototype.tojson = function(indent , nolint) {
     var binDataColor = mongo_hacker_config.colors.binData;
 
     if (this.subtype() === 3) {
-        var ouput = colorize('"' + uuidToString(this) + '"', color) + ', '
+        var output = colorize('"' + uuidToString(this) + '"', uuidColor) + ', '
         output += colorize('"' + uuidType + '"', uuidColor)
         return surround('UUID', output);
     } else if (this.subtype() === 4) {
