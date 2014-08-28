@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------
 
 // Inject aggregation extension while supporting base API
-DBCollection.prototype.aggregate = function( ops ){
+DBCollection.prototype.aggregate = function( ops, extraOpts ){
     if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))){
         var arr = ops;
 
@@ -14,7 +14,14 @@ DBCollection.prototype.aggregate = function( ops ){
             }
         }
 
-        var res = this.runCommand("aggregate", {pipeline: arr});
+        if (extraOpts === undefined) {
+            extraOpts = {};
+        }
+
+        var cmd = {pipeline: arr};
+        Object.extend(cmd, extraOpts);
+
+        var res = this.runCommand("aggregate", cmd);
         if (!res.ok) {
             printStackTrace();
             throw "aggregate failed: " + tojson(res);
