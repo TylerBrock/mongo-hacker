@@ -41,6 +41,7 @@ function hasDollar(fields){
 Aggregation = function( collection, fields ){
     this._collection = collection;
     this._pipeline = [];
+    this._options = {};
     this._shellBatchSize = 20;
 };
 
@@ -60,6 +61,7 @@ Aggregation.prototype.execute = function() {
     if ( this._readPreference ) {
         aggregation["$readPreference"] = this.readPreference;
     }
+    Object.extend(aggregation, this._options);
 
     // run the command
     var res = this._collection.runCommand(
@@ -74,7 +76,12 @@ Aggregation.prototype.execute = function() {
 
     // setup results as pseudo cursor
     this._index = 0;
-    this._results = res.result;
+
+    if (this._options["explain"] === true) {
+        this._results = res.stages
+    } else {
+        this._results = res.result;
+    }
 
     return this._results;
 };
@@ -180,7 +187,7 @@ Aggregation.prototype.readPreference = function( mode ) {
     return this;
 };
 
-Aggregation.prototype.explain = function() {
-    // TODO: https://jira.mongodb.org/browse/SERVER-4504
-    throw "not possible yet"
+Aggregation.prototype.explain = function( ) {
+    this._options['explain'] = true;
+    return this;
 };
