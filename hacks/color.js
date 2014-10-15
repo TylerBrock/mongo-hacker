@@ -31,7 +31,7 @@ function controlCode( parameters ) {
 };
 
 function applyColorCode( string, properties ) {
-    return controlCode(properties) + String(string) + controlCode();
+    return __colorize ? controlCode(properties) + String(string) + controlCode() : String(string);
 };
 
 function colorize( string, color ) {

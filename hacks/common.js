@@ -1,4 +1,5 @@
 __indent = Array(mongo_hacker_config.indent + 1).join(' ');
+__colorize = (_isWindows() && !mongo_hacker_config['force_color']) ? false : true;
 
 ObjectId.prototype.toString = function() {
     return this.str;

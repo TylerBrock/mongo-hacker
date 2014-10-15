@@ -1,3 +1,14 @@
+/*
+ *
+ * Mongo-Hacker
+ * MongoDB Shell Enhancements for Hackers
+ *
+ * Tyler J. Brock - 2013
+ *
+ * http://tylerbrock.github.com/mongo-hacker
+ *
+ */
+
 mongo_hacker_config = {
   verbose_shell:  true,             // additional verbosity
   index_paranoia: false,            // querytime explain
@@ -8,6 +19,8 @@ mongo_hacker_config = {
   banner_message: 'Mongo-Hacker ',  // banner message
   version:        '0.0.4',          // current mongo-hacker version
   show_banner:     true,            // show mongo-hacker version banner on startup
+  windows_warning: true,            // show warning banner for windows
+  force_color:     false,           // force color highlighting for Windows users
 
   // Shell Color Settings
   // Colors available: red, green, yellow, blue, magenta, cyan
