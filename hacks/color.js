@@ -30,11 +30,15 @@ function controlCode( parameters ) {
     return __ansi.csi + String(parameters) + String(__ansi.text_prop);
 };
 
-function applyColorCode( string, properties ) {
-    return __colorize ? controlCode(properties) + String(string) + controlCode() : String(string);
+function applyColorCode( string, properties, nocolor ) {
+    // Allow global __colorize default to be overriden
+    var applyColor = (null == nocolor) ? __colorize : !nocolor;
+
+    return applyColor ? controlCode(properties) + String(string) + controlCode() : String(string);
 };
 
-function colorize( string, color ) {
+function colorize( string, color, nocolor ) {
+
     var params = [];
     var code = __ansi.foreground + __ansi.colors[color.color];
 
@@ -43,5 +47,5 @@ function colorize( string, color ) {
     if ( color.bright === true ) params.push(__ansi.bright);
     if ( color.underline === true ) params.push(__ansi.underline);
 
-    return applyColorCode( string, params );
+    return applyColorCode( string, params, nocolor );
 };
