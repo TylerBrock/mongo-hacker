@@ -4,7 +4,7 @@ config = config.js
 
 all: mongo_hacker.js install
 
-mongo_hacker.js: ${base} ${config} ${hacks}
+mongo_hacker.js: ${config} ${base} ${hacks}
 	cat $^ > $@
 
 install:

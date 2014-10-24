@@ -47,7 +47,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
 
 #### Colorization
 
-Colorized query output
+Colorized query output for console/terminal windows supporting ANSI color codes.
 
 ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
