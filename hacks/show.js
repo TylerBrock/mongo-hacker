@@ -58,7 +58,7 @@ shellHelper.show = function (what) {
           }
         });
         db.getCollectionNames().forEach(function (collectionName) {
-          var stats = db[collectionName].stats();
+          var stats = db.getCollection(collectionName).stats();
           while(collectionName.length < maxNameLength + paddingLength)
             collectionName = collectionName + " ";
           var size = (stats.size / 1024 / 1024).toFixed(3),
