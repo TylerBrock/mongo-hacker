@@ -20,4 +20,4 @@ install:
 
 uninstall:
 	rm -f ~/.mongorc.js
-
+	-mv ~/.mongorc.js.orig ~/.mongorc.js
