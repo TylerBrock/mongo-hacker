@@ -3,21 +3,21 @@
 //----------------------------------------------------------------------------
 __ansi = {
     csi: String.fromCharCode(0x1B) + '[',
-    reset: '0',
-    text_prop: 'm',
+    reset:      '0',
+    text_prop:  'm',
     foreground: '3',
-    bright: '1',
-    underline: '4',
+    bright:     '1',
+    underline:  '4',
 
     colors: {
-        black: '0',
-        red: '1',
-        green: '2',
-        yellow: '3',
-        blue: '4',
+        black:   '0',
+        red:     '1',
+        green:   '2',
+        yellow:  '3',
+        blue:    '4',
         magenta: '5',
-        cyan: '6',
-        gray: '7',
+        cyan:    '6',
+        gray:    '7',
     }
 };
 
