@@ -37,10 +37,10 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
   - IndexParanoia
     - Automatically show information about index use after each query (takes extra time) -- to enable: `setIndexParanoia(true)`
   - Default indent is 2 spaces instead of tab
-    - Customizable by setting `__indent`
+    - Customizable by setting `indent` key of config
   - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
   - Disable notfication of "Type 'it' for more"
-  - Custom prompt: `hostname(process-version)[rs status] db>`
+  - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
   - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
   - Nicer sh.status() output (remove lastmod, take up less space, colorize chunk's shard)
