@@ -141,10 +141,14 @@ DBQuery.prototype.shellPrint = function(){
     }
 };
 
-tojsonObject = function( x, indent, nolint, nocolor ) {
+function isInArray(array, value) {
+    return array.indexOf(value) > -1;
+}
 
+tojsonObject = function( x, indent, nolint, nocolor, sort_keys ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
+    var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
@@ -152,7 +156,7 @@ tojsonObject = function( x, indent, nolint, nocolor ) {
         indent = "";
 
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
-        return x.tojson(indent,nolint);
+        return x.tojson( indent, nolint );
     }
 
     if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
@@ -185,8 +189,13 @@ tojsonObject = function( x, indent, nolint, nocolor ) {
     for(var key in keys)
         keylist.push(key);
 
-    if ( mongo_hacker_config.sort_keys ) {
-      keylist.sort();
+    if ( sortKeys ) {
+        // Disable sorting if this object looks like an index spec
+        if ( (isInArray(keylist, "v") && isInArray(keylist, "key") && isInArray(keylist, "name") && isInArray(keylist, "ns")) ) {
+           sortKeys = false;
+        } else {
+           keylist.sort();
+        }
     }
 
     for ( var i=0; i<keylist.length; i++) {
@@ -197,7 +206,7 @@ tojsonObject = function( x, indent, nolint, nocolor ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor );
+        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
         if (num != total) {
             s += ",";
             num++;
@@ -210,13 +219,14 @@ tojsonObject = function( x, indent, nolint, nocolor ) {
     return s + indent + "}";
 };
 
+tojson = function( x, indent , nolint, nocolor, sort_keys ) {
 
-tojson = function( x, indent , nolint, nocolor ) {
+    var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
-	if (null == tojson.caller) {
-		// Unknonwn caller context, so assume this is from C++ code
-		nocolor = true;
-	}
+    if (null == tojson.caller) {
+        // Unknonwn caller context, so assume this is from C++ code
+        nocolor = true;
+    }
 
     if ( x === null )
         return colorize("null", mongo_hacker_config.colors['null'], nocolor);
@@ -264,7 +274,7 @@ tojson = function( x, indent , nolint, nocolor ) {
     case "boolean":
         return colorize("" + x, mongo_hacker_config.colors['boolean'], nocolor);
     case "object": {
-        s = tojsonObject( x, indent , nolint, nocolor );
+        s = tojsonObject( x, indent , nolint, nocolor, sortKeys );
         if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
