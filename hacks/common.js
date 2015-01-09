@@ -114,7 +114,7 @@ DBQuery.prototype.shellPrint = function(){
             var explain = this.clone();
             explain._ensureSpecial();
             explain._query.$explain = true;
-            explain._limit = Math.abs(n._limit) * -1;
+            explain._limit = Math.abs(n) * -1;
             var result = explain.next();
             var type = result.cursor;
 
