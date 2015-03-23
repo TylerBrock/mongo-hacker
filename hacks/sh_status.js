@@ -20,10 +20,10 @@ sh.getRecentMigrations = function () {
 
 printShardingStatus = function( configDB , verbose ){
     if (configDB === undefined)
-        configDB = db.getSisterDB('config')
+        configDB = db.getSisterDB("config");
 
     var version = configDB.getCollection( "version" ).findOne();
-    if ( version == null ){
+    if ( version === null ) {
         print( "printShardingStatus: this db does not have sharding enabled. be sure you are connecting to a mongos from the shell and not to a mongod." );
         return;
     }
@@ -31,7 +31,7 @@ printShardingStatus = function( configDB , verbose ){
     var raw = "";
     var output = function(s){
         raw += s + "\n";
-    }
+    };
     output( "--- Sharding Status --- " );
     output( "  sharding version: " + tojson( configDB.getCollection( "version" ).findOne(), "  " ) );
 
@@ -126,23 +126,23 @@ printShardingStatus = function( configDB , verbose ){
                 configDB.collections.find( { _id : new RegExp( "^" +
                     RegExp.escape(db._id) + "\\." ) } ).
                     sort( { _id : 1 } ).forEach( function( coll ){
-                        if ( coll.dropped == false ){
+                        if ( coll.dropped === false ){
                             output( "    " + coll._id );
                             output( "      shard key: " + tojson(coll.key, 0, true) );
                             output( "      chunks:" );
 
-                            res = configDB.chunks.aggregate(
+                            var res = configDB.chunks.aggregate(
                                 { "$match": { ns: coll._id } },
                                 { "$group": { _id: "$shard", nChunks: { "$sum": 1 } } },
                                 { "$project" : { _id : 0 , shard : "$_id" , nChunks : "$nChunks" } },
                                 { "$sort" : { shard : 1 } }
-                            ).result
+                            ).result;
 
                             var totalChunks = 0;
                             res.forEach( function(z){
                                 totalChunks += z.nChunks;
                                 output( "        " + z.shard + ": " + z.nChunks );
-                            } )
+                            } );
 
                             if ( totalChunks < 20 || verbose ){
                                 configDB.chunks.find( { "ns" : coll._id } ).sort( { min : 1 } ).forEach(
@@ -150,7 +150,7 @@ printShardingStatus = function( configDB , verbose ){
                                         output( "        " +
                                             tojson( chunk.min, 0, true) + " -> " +
                                             tojson( chunk.max, 0, true ) +
-                                            " on: " + colorize(chunk.shard, {color: 'cyan'}) + " " + tojson( chunk.lastmod ) + " " +
+                                            " on: " + colorize(chunk.shard, {color: "cyan"}) + " " + tojson( chunk.lastmod ) + " " +
                                             ( chunk.jumbo ? "jumbo " : "" )
                                         );
                                     }
@@ -164,13 +164,13 @@ printShardingStatus = function( configDB , verbose ){
                                 function( tag ) {
                                     output( "        tag: " + tag.tag + "  " + tojson( tag.min ) + " -> " + tojson( tag.max ) );
                                 }
-                            )
+                            );
                         }
                     }
-                )
+                );
             }
         }
     );
 
     print( raw );
-}
+};
