@@ -23,7 +23,7 @@ function isMongos() {
     return db.isMaster().msg === "isdbgrid";
 }
 
-function getSlowms(){
+function getSlowms() {
     if(!isMongos()){
         return db.getProfilingStatus().slowms;
     } else {
