@@ -3,8 +3,8 @@
 //----------------------------------------------------------------------------
 
 // Inject aggregation extension while supporting base API
-DBCollection.prototype.aggregate = function( ops, extraOpts ){
-    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))){
+DBCollection.prototype.aggregate = function( ops, extraOpts ) {
+    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))) {
         var arr = ops;
 
         if (!ops.length) {
@@ -33,9 +33,9 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ){
 };
 
 // Helper method for determining if parameter has dollar signs
-function hasDollar(fields){
-    for (k in fields){
-        if(k.indexOf("$") !== -1){
+function hasDollar(fields) {
+    for (k in fields) {
+        if(k.indexOf("$") !== -1) {
             return true;
         }
     }
@@ -45,7 +45,7 @@ function hasDollar(fields){
 //----------------------------------------------------------------------------
 // Aggregation Object
 //----------------------------------------------------------------------------
-Aggregation = function( collection, fields ){
+Aggregation = function( collection, fields ) {
     this._collection = collection;
     this._pipeline = [];
     this._options = {};
