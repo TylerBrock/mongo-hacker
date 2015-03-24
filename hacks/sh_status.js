@@ -24,7 +24,8 @@ printShardingStatus = function( configDB , verbose ){
 
     var version = configDB.getCollection( "version" ).findOne();
     if ( version == null ){
-        print( "printShardingStatus: this db does not have sharding enabled. be sure you are connecting to a mongos from the shell and not to a mongod." );
+        print( "printShardingStatus: this db does not have sharding enabled. be sure you are",
+                "connecting to a mongos from the shell and not to a mongod." );
         return;
     }
 
@@ -48,22 +49,28 @@ printShardingStatus = function( configDB , verbose ){
         output( "  balancer:" );
 
         //Is the balancer currently enabled
-        output( "\tCurrently enabled:  " + ( sh.getBalancerState() ? colorize("yes", {color: "cyan"}) : colorize("no", {color: "red"}) ) );
+        output( "\tCurrently enabled:  " + ( sh.getBalancerState() ?
+            colorize("yes", {color: "cyan"}) :
+            colorize("no",  {color: "red"}) ) );
 
         //Is the balancer currently active
-        output( "\tCurrently running:  " + colorize(( sh.isBalancerRunning() ? "yes" : "no" ), {color: "gray"}) );
+        output( "\tCurrently running:  " +
+            colorize(( sh.isBalancerRunning() ? "yes" : "no" ), {color: "gray"}) );
 
         //Output details of the current balancer round
         var balLock = sh.getBalancerLockDetails();
         if ( balLock ) {
-            output( "\t\tBalancer lock taken at " + colorize(balLock.when, {color: "gray"}) + " by " + colorize(balLock.who, {color: "cyan"}) );
+            output( "\t\tBalancer lock taken at " +
+                colorize(balLock.when, {color: "gray"}) + " by " +
+                colorize(balLock.who,  {color: "cyan"}) );
         }
 
         //Output the balancer window
         var balSettings = sh.getBalancerWindow();
         if ( balSettings ) {
             output( "\t\tBalancer active window is set between " +
-                colorize(balSettings.start, {color: "gray"}) + " and " + colorize(balSettings.stop, {color: "gray"}) + " server local time");
+                colorize(balSettings.start, {color: "gray"}) + " and " +
+                colorize(balSettings.stop,  {color: "gray"}) + " server local time");
         }
 
         //Output the list of active migrations
@@ -71,7 +78,9 @@ printShardingStatus = function( configDB , verbose ){
         if (activeMigrations.length > 0 ){
             output("\tCollections with active migrations: ");
             activeMigrations.forEach( function(migration){
-                output("\t\t"+colorize(migration._id, {color: "cyan"})+ " started at " + colorize(migration.when, {color: "gray"}) );
+                output("\t\t" + 
+                    colorize(migration._id,  {color: "cyan"})+ " started at " + 
+                    colorize(migration.when, {color: "gray"}) );
             });
         }
 
@@ -92,11 +101,12 @@ printShardingStatus = function( configDB , verbose ){
             //Review config.actionlog for errors
             var actionReport = sh.getRecentFailedRounds();
             //Always print the number of failed rounds
-            output( "\tFailed balancer rounds in last 5 attempts:  " + colorize(actionReport.count, {color: "red"}) );
+            output( "\tFailed balancer rounds in last 5 attempts:  " + 
+                colorize(actionReport.count, {color: "red"}) );
 
             //Only print the errors if there are any
             if ( actionReport.count > 0 ){
-                output( "\tLast reported error:  " + actionReport.lastErr );
+                output( "\tLast reported error:  "    + actionReport.lastErr );
                 output( "\tTime of Reported error:  " + actionReport.lastTime );
             }
 
@@ -105,9 +115,11 @@ printShardingStatus = function( configDB , verbose ){
             if(migrations.length > 0) {
                 migrations.forEach( function(x) {
                     if (x._id === "Success"){
-                        output( "\t\t" + colorize(x.count, {color: "gray"}) + " : " + colorize(x._id, {color: "cyan"}));
+                        output( "\t\t" + colorize(x.count, {color: "gray"}) + 
+                            " : "+ colorize(x._id, {color: "cyan"}));
                     } else {
-                        output( "\t\t" + colorize(x.count, {color: "gray"}) + " : Failed with error '" + colorize(x._id, {color: "red"}) +
+                        output( "\t\t" + colorize(x.count, {color: "gray"}) + 
+                            " : Failed with error '" + colorize(x._id, {color: "red"}) +
                         "', from " + x.from + " to " + x.to );
                     }
                 });
