@@ -2,6 +2,16 @@
 // Aggregation API Extensions
 //----------------------------------------------------------------------------
 
+// Helper method for determining if parameter has dollar signs
+function hasDollar(fields) {
+    for (k in fields) {
+        if(k.indexOf("$") !== -1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Inject aggregation extension while supporting base API
 DBCollection.prototype.aggregate = function( ops, extraOpts ) {
     if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))) {
@@ -31,16 +41,6 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ) {
        return new Aggregation( this ).match( ops || {} );
     }
 };
-
-// Helper method for determining if parameter has dollar signs
-function hasDollar(fields) {
-    for (k in fields) {
-        if(k.indexOf("$") !== -1) {
-            return true;
-        }
-    }
-    return false;
-}
 
 //----------------------------------------------------------------------------
 // Aggregation Object
