@@ -1,5 +1,5 @@
 shellHelper.find = function (query) {
-    assert(typeof query == "string");
+    assert(typeof query === "string");
 
     var args = query.split( /\s+/ );
     query = args[0];
@@ -11,12 +11,13 @@ shellHelper.find = function (query) {
         for (var command in result.commands) {
             var commandObj = result.commands[command];
             var help = commandObj.help;
-            if (commandObj.help.indexOf("\n") != -1 ) {
+            if (commandObj.help.indexOf("\n") !== -1 ) {
                 help = commandObj.help.substring(0, commandObj.help.lastIndexOf("\n"));
             }
             if (regexp.test(command) || regexp.test(help)) {
                 var numSpaces = 30 - command.length;
-                print(colorize(command, {color: "green"}), Array(numSpaces).join(" "), "-", help);
+                print(colorize(command, {color: "green"}),
+                    new Array(numSpaces).join(" "), "-", help);
             }
         }
     }
