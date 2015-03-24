@@ -35,7 +35,7 @@ DBQuery.prototype.last = function( field ) {
 };
 
 DB.prototype.rename = function( newName ) {
-    if(newName == this.getName() || newName.length === 0)
+    if(newName === this.getName() || newName.length === 0)
         return;
 
     this.copyDatabase(this.getName(), newName, "localhost");
@@ -81,7 +81,7 @@ DBQuery.prototype.replace = function( replacement ) {
 // Remove is always multi
 DBQuery.prototype.remove = function() {
     for ( var k in this._query ) {
-        if ( k == "_id" && typeof( this._query[k] ) == "undefined" ) {
+        if ( k === "_id" && typeof( this._query[k] ) === "undefined" ) {
             throw "can't have _id set to undefined in a remove expression";
         }
     }
