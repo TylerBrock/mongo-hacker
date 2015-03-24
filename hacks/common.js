@@ -1,5 +1,5 @@
-__indent = Array(mongo_hacker_config.indent + 1).join(' ');
-__colorize = (_isWindows() && !mongo_hacker_config['force_color']) ? false : true;
+__indent = new Array(mongo_hacker_config.indent + 1).join(" ");
+__colorize = (_isWindows() && !mongo_hacker_config["force_color"]) ? false : true;
 
 ObjectId.prototype.toString = function() {
     return this.str;
@@ -16,10 +16,10 @@ Date.prototype.tojson = function() {
   var dateString = isoDateString.substring(8, isoDateString.length-1);
 
   var isodate = colorize(dateString, mongo_hacker_config.colors.date);
-  return 'ISODate(' + isodate + ')';
+  return "ISODate(" + isodate + ")";
 };
 
-Array.tojson = function( a , indent , nolint ){
+Array.tojson = function( a , indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
 
     if (!indent)
@@ -34,9 +34,9 @@ Array.tojson = function( a , indent , nolint ){
 
     var s = "[" + lineEnding;
     indent += __indent;
-    for ( var i=0; i<a.length; i++){
+    for ( var i = 0; i < a.length; i++) {
         s += indent + tojson( a[i], indent , nolint );
-        if ( i < a.length - 1 ){
+        if ( i < a.length - 1 ) {
             s += "," + lineEnding;
         }
     }
@@ -50,19 +50,19 @@ Array.tojson = function( a , indent , nolint ){
 };
 
 function surround(name, inside) {
-    return [name, '(', inside, ')'].join('');
+    return [name, "(", inside, ")"].join("");
 }
 
 NumberLong.prototype.tojson = function() {
     var color = mongo_hacker_config.colors.number;
-    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
-    return surround('NumberLong', output);
+    var output = colorize("'" + this.toString().match(/-?\d+/)[0] + "'", color);
+    return surround("NumberLong", output);
 };
 
 NumberInt.prototype.tojson = function() {
     var color = mongo_hacker_config.colors.number;
-    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
-    return surround('NumberInt', output);
+    var output = colorize("'" + this.toString().match(/-?\d+/)[0] + "'", color);
+    return surround("NumberInt", output);
 };
 
 BinData.prototype.tojson = function(indent , nolint) {
@@ -71,24 +71,24 @@ BinData.prototype.tojson = function(indent , nolint) {
     var binDataColor = mongo_hacker_config.colors.binData;
 
     if (this.subtype() === 3) {
-        var output = colorize('"' + uuidToString(this) + '"', uuidColor) + ', '
-        output += colorize('"' + uuidType + '"', uuidColor)
-        return surround('UUID', output);
+        var output = colorize("'" + uuidToString(this) + "'", uuidColor) + ", ";
+        output += colorize("'" + uuidType + "'", uuidColor);
+        return surround("UUID", output);
     } else if (this.subtype() === 4) {
-        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor) + ')'
-        return surround('UUID', output);
+        var output = colorize("'" + uuidToString(this, "default") + "'", uuidColor) + ")";
+        return surround("UUID", output);
     } else {
-        var output = colorize(this.subtype(), {color: 'red'}) + ', '
-        output += colorize('"' + this.base64() + '"', binDataColor)
-        return surround('BinData', output);
+        var output = colorize(this.subtype(), {color: "red"}) + ", ";
+        output += colorize("'" + this.base64() + "'", binDataColor);
+        return surround("BinData", output);
     }
 };
 
-DBQuery.prototype.shellPrint = function(){
+DBQuery.prototype.shellPrint = function() {
     try {
         var start = new Date().getTime();
         var n = 0;
-        while ( this.hasNext() && n < DBQuery.shellBatchSize ){
+        while ( this.hasNext() && n < DBQuery.shellBatchSize ) {
             var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
             print( s );
             n++;
@@ -96,7 +96,7 @@ DBQuery.prototype.shellPrint = function(){
 
         var output = [];
 
-        if (typeof _verboseShell !== 'undefined' && _verboseShell) {
+        if (typeof _verboseShell !== "undefined" && _verboseShell) {
             var time = new Date().getTime() - start;
             var slowms = getSlowms();
             var fetched = "Fetched " + n + " record(s) in ";
@@ -110,7 +110,7 @@ DBQuery.prototype.shellPrint = function(){
 
         var paranoia = mongo_hacker_config.index_paranoia;
 
-        if (typeof paranoia !== 'undefined' && paranoia) {
+        if (typeof paranoia !== "undefined" && paranoia) {
             var explain = this.clone();
             explain._ensureSpecial();
             explain._query.$explain = true;
@@ -120,10 +120,11 @@ DBQuery.prototype.shellPrint = function(){
 
             if (type !== undefined) {
                 var index_use = "Index[";
-                if (type == "BasicCursor") {
+                if (type === "BasicCursor") {
                     index_use += colorize( "none", { color: "red", bright: true });
                 } else {
-                    index_use += colorize( result.cursor.substring(12), { color: "green", bright: true });
+                    index_use += colorize( result.cursor.substring(12), 
+                        { color: "green", bright: true });
                 }
                 index_use += "]";
                 output.push(index_use);
@@ -136,7 +137,7 @@ DBQuery.prototype.shellPrint = function(){
         }
         print(output.join(" -- "));
     }
-    catch ( e ){
+    catch ( e ) {
         print( e );
     }
 };
@@ -148,24 +149,25 @@ function isInArray(array, value) {
 tojsonObject = function( x, indent, nolint, sort_keys ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
-	var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
+	var sortKeys = (null === sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
     if (!indent)
         indent = "";
 
-    if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
+    if ( typeof( x.tojson ) === "function" && x.tojson !== tojson ) {
         return x.tojson( indent, nolint );
     }
 
-    if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
+    if ( x.constructor && typeof( x.constructor.tojson ) === "function" &&
+            x.constructor.tojson !== tojson ) {
         return x.constructor.tojson( x, indent , nolint );
     }
 
-    if ( x.toString() == "[object MaxKey]" )
+    if ( x.toString() === "[object MaxKey]" )
         return "{ $maxKey : 1 }";
-    if ( x.toString() == "[object MinKey]" )
+    if ( x.toString() === "[object MinKey]" )
         return "{ $minKey : 1 }";
 
     var s = "{" + lineEnding;
@@ -180,7 +182,7 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
     }
 
     var keys = x;
-    if ( typeof( x._simpleKeys ) == "function" )
+    if ( typeof( x._simpleKeys ) === "function" )
         keys = x._simpleKeys();
     var num = 1;
 
@@ -191,23 +193,25 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
 
     if ( sortKeys ) {
         // Disable sorting if this object looks like an index spec
-        if ( (isInArray(keylist, "v") && isInArray(keylist, "key") && isInArray(keylist, "name") && isInArray(keylist, "ns")) ) {
+        if ( (isInArray(keylist, "v")    && isInArray(keylist, "key") &&
+              isInArray(keylist, "name") && isInArray(keylist, "ns")) ) {
            sortKeys = false;
         } else {
            keylist.sort();
         }
     }
 
-    for ( var i=0; i<keylist.length; i++) {
-        var key=keylist[i];
+    for ( var i = 0; i < keylist.length; i++) {
+        key = keylist[i];
 
         var val = x[key];
-        if ( val == DB.prototype || val == DBCollection.prototype )
+        if ( val === DB.prototype || val === DBCollection.prototype )
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint, sortKeys );
-        if (num != total) {
+        s += indent + colorize("\"" + key + "\"", color) + ": " +
+            tojson( val, indent , nolint, sortKeys );
+        if (num !== total) {
             s += ",";
             num++;
         }
@@ -225,14 +229,14 @@ tojson = function( x, indent , nolint, sort_keys ) {
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
     if ( x === null )
-        return colorize("null", mongo_hacker_config.colors['null']);
+        return colorize("null", mongo_hacker_config.colors["null"]);
 
     if ( x === undefined )
-        return colorize("undefined", mongo_hacker_config.colors['undefined']);
+        return colorize("undefined", mongo_hacker_config.colors["undefined"]);
 
     if ( x.isObjectId ) {
-        var color = mongo_hacker_config.colors['objectid'];
-        return surround('ObjectId', colorize('"' + x.str + '"', color));
+        var color = mongo_hacker_config.colors["objectid"];
+        return surround("ObjectId", colorize("'" + x.str + "'", color));
     }
 
     if (!indent)
@@ -242,20 +246,20 @@ tojson = function( x, indent , nolint, sort_keys ) {
     switch ( typeof x ) {
     case "string": {
         s = "\"";
-        for ( var i=0; i<x.length; i++ ){
-            switch (x[i]){
-                case '"': s += '\\"'; break;
-                case '\\': s += '\\\\'; break;
-                case '\b': s += '\\b'; break;
-                case '\f': s += '\\f'; break;
-                case '\n': s += '\\n'; break;
-                case '\r': s += '\\r'; break;
-                case '\t': s += '\\t'; break;
+        for ( var i = 0; i < x.length; i++ ) {
+            switch (x[i]) {
+                case "'": s += "\\'"; break;
+                case "\\": s += "\\\\"; break;
+                case "\b": s += "\\b"; break;
+                case "\f": s += "\\f"; break;
+                case "\n": s += "\\n"; break;
+                case "\r": s += "\\r"; break;
+                case "\t": s += "\\t"; break;
 
                 default: {
                     var code = x.charCodeAt(i);
-                    if (code < 0x20){
-                        s += (code < 0x10 ? '\\u000' : '\\u00') + code.toString(16);
+                    if (code < 0x20) {
+                        s += (code < 0x10 ? "\\u000" : "\\u00") + code.toString(16);
                     } else {
                         s += x[i];
                     }
@@ -268,16 +272,17 @@ tojson = function( x, indent , nolint, sort_keys ) {
     case "number":
         return colorize(x, mongo_hacker_config.colors.number);
     case "boolean":
-        return colorize("" + x, mongo_hacker_config.colors['boolean']);
+        return colorize("" + x, mongo_hacker_config.colors["boolean"]);
     case "object": {
         s = tojsonObject( x, indent , nolint, sortKeys );
-        if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
+        if ( ( nolint === null || nolint === true ) && s.length < 80 &&
+             ( indent === null || indent.length === 0 ) ) {
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
         return s;
     }
     case "function":
-        return colorize(x.toString(), mongo_hacker_config.colors['function']);
+        return colorize(x.toString(), mongo_hacker_config.colors["function"]);
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
@@ -285,11 +290,11 @@ tojson = function( x, indent , nolint, sort_keys ) {
 };
 
 
-DBQuery.prototype._validate = function( o ){
+DBQuery.prototype._validate = function( o ) {
     var firstKey = null;
     for (var k in o) { firstKey = k; break; }
 
-    if (firstKey !== null && firstKey[0] == '$') {
+    if (firstKey !== null && firstKey[0] === "$") {
         // for mods we only validate partially, for example keys may have dots
         this._validateObject( o );
     } else {
@@ -298,17 +303,17 @@ DBQuery.prototype._validate = function( o ){
     }
 };
 
-DBQuery.prototype._validateObject = function( o ){
-    if (typeof(o) != "object")
+DBQuery.prototype._validateObject = function( o ) {
+    if (typeof(o) !== "object")
         throw "attempted to save a " + typeof(o) + " value.  document expected.";
 
     if ( o._ensureSpecial && o._checkModify )
         throw "can't save a DBQuery object";
 };
 
-DBQuery.prototype._validateForStorage = function( o ){
+DBQuery.prototype._validateForStorage = function( o ) {
     this._validateObject( o );
-    for ( var k in o ){
+    for ( var k in o ) {
         if ( k.indexOf( "." ) >= 0 ) {
             throw "can't have . in field names [" + k + "]" ;
         }
@@ -323,23 +328,23 @@ DBQuery.prototype._validateForStorage = function( o ){
     }
 };
 
-DBQuery.prototype._checkMulti = function(){
-  if(this._limit > 0 || this._skip > 0){
-    var ids = this.clone().select({_id: 1}).map(function(o){return o._id;});
-    this._query['_id'] = {'$in': ids};
+DBQuery.prototype._checkMulti = function() {
+  if(this._limit > 0 || this._skip > 0) {
+    var ids = this.clone().select({_id: 1}).map(function(o) {return o._id;});
+    this._query["_id"] = {"$in": ids};
     return true;
   } else {
     return false;
   }
 };
 
-DBQuery.prototype.ugly = function(){
+DBQuery.prototype.ugly = function() {
     this._prettyShell = false;
     return this;
-}
+};
 
 DB.prototype.shutdownServer = function(opts) {
-    if( "admin" != this._name ){
+    if( "admin" !== this._name ) {
         return "shutdown command only works with the admin database; try 'use admin'";
     }
 
@@ -355,8 +360,9 @@ DB.prototype.shutdownServer = function(opts) {
             throw "shutdownServer failed: " + res.errmsg;
         throw "shutdownServer failed";
     }
-    catch ( e ){
-        assert( e.message.indexOf( "error doing query: failed" ) >= 0 , "unexpected error: " + tojson( e ) );
+    catch ( e ) {
+        assert( e.message.indexOf( "error doing query: failed" ) >= 0 ,
+                "unexpected error: " + tojson( e ) );
         print( "server should be down..." );
     }
-}
+};

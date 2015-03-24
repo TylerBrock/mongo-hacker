@@ -25,7 +25,7 @@ function controlCode( parameters ) {
     if ( parameters === undefined ) {
         parameters = '';
     }
-    else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
+    else if (typeof(parameters) === 'object' && (parameters instanceof Array)) {
         parameters = parameters.join(';');
     }
 
