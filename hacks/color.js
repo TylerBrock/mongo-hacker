@@ -23,18 +23,18 @@ __ansi = {
 
 function controlCode( parameters ) {
     if ( parameters === undefined ) {
-        parameters = "";
+        parameters = '';
     }
-    else if (typeof(parameters) == 'object' && (parameters instanceof Array)) {
+    else if (typeof(parameters) === 'object' && (parameters instanceof Array)) {
         parameters = parameters.join(';');
     }
 
     return __ansi.csi + String(parameters) + String(__ansi.text_prop);
-};
+}
 
 function applyColorCode( string, properties ) {
     return __colorize ? controlCode(properties) + String(string) + controlCode() : String(string);
-};
+}
 
 function colorize( string, color ) {
     var params = [];
@@ -46,4 +46,4 @@ function colorize( string, color ) {
     if ( color.underline === true ) params.push(__ansi.underline);
 
     return applyColorCode( string, params );
-};
+}

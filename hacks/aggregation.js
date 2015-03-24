@@ -2,9 +2,19 @@
 // Aggregation API Extensions
 //----------------------------------------------------------------------------
 
+// Helper method for determining if parameter has dollar signs
+function hasDollar(fields) {
+    for (k in fields) {
+        if(k.indexOf("$") !== -1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Inject aggregation extension while supporting base API
-DBCollection.prototype.aggregate = function( ops, extraOpts ){
-    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))){
+DBCollection.prototype.aggregate = function( ops, extraOpts ) {
+    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))) {
         var arr = ops;
 
         if (!ops.length) {
@@ -32,20 +42,10 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ){
     }
 };
 
-// Helper method for determining if parameter has dollar signs
-function hasDollar(fields){
-    for (k in fields){
-        if(k.indexOf('$') !== -1){
-            return true;
-        };
-    };
-    return false;
-}
-
 //----------------------------------------------------------------------------
 // Aggregation Object
 //----------------------------------------------------------------------------
-Aggregation = function( collection, fields ){
+Aggregation = function( collection, fields ) {
     this._collection = collection;
     this._pipeline = [];
     this._options = {};
@@ -59,7 +59,7 @@ Aggregation.prototype.has_next = function() {
 Aggregation.prototype.next = function() {
     var next = this._results[this._index];
     this._index += 1;
-    return next
+    return next;
 };
 
 Aggregation.prototype.execute = function() {
@@ -85,7 +85,7 @@ Aggregation.prototype.execute = function() {
     this._index = 0;
 
     if (this._options["explain"] === true) {
-        this._results = res.stages
+        this._results = res.stages;
     } else {
         this._results = res.result;
     }
@@ -94,7 +94,7 @@ Aggregation.prototype.execute = function() {
 };
 
 Aggregation.prototype.shellPrint = function() {
-    if (this._results == undefined) {
+    if (this._results === undefined) {
         this.execute();
     }
     try {
@@ -183,7 +183,7 @@ Aggregation.prototype.sort = function( sort ) {
 
 Aggregation.prototype.geoNear = function( options ) {
     if ( ! options ) {
-        throw "geo near requires options"
+        throw "geo near requires options";
     }
     this._pipeline.push({ "$geoNear": options });
     return this;
@@ -195,6 +195,6 @@ Aggregation.prototype.readPreference = function( mode ) {
 };
 
 Aggregation.prototype.explain = function( ) {
-    this._options['explain'] = true;
+    this._options["explain"] = true;
     return this;
 };

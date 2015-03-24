@@ -15,9 +15,9 @@ mongo_hacker_config = {
   enhance_api:    true,             // additonal api extensions
   indent:         2,                // number of spaces for indent
   sort_keys:      false,            // sort the keys in documents when displayed
-  uuid_type:      'default',        // 'java', 'c#', 'python' or 'default'
-  banner_message: 'Mongo-Hacker ',  // banner message
-  version:        '0.0.5',          // current mongo-hacker version
+  uuid_type:      "default",        // "java", "c#", "python" or "default"
+  banner_message: "Mongo-Hacker ",  // banner message
+  version:        "0.0.5",          // current mongo-hacker version
   show_banner:     true,            // show mongo-hacker version banner on startup
   windows_warning: true,            // show warning banner for windows
   force_color:     false,           // force color highlighting for Windows users
@@ -25,21 +25,21 @@ mongo_hacker_config = {
   // Shell Color Settings
   // Colors available: red, green, yellow, blue, magenta, cyan
   colors: {
-    'key':       { color: 'gray' },
-    'number':    { color: 'red' },
-    'boolean':   { color: 'blue', bright: true },
-    'null':      { color: 'red', bright: true },
-    'undefined': { color: 'magenta', bright: true },
-    'objectid':  { color: 'yellow', underline: true },
-    'string':    { color: 'green' },
-    'binData':   { color: 'green', bright: true },
-    'function':  { color: 'magenta' },
-    'date':      { color: 'blue' },
-    'uuid':      { color: 'cyan' }
+    "key":       { color: "gray" },
+    "number":    { color: "red" },
+    "boolean":   { color: "blue", bright: true },
+    "null":      { color: "red", bright: true },
+    "undefined": { color: "magenta", bright: true },
+    "objectid":  { color: "yellow", underline: true },
+    "string":    { color: "green" },
+    "binData":   { color: "green", bright: true },
+    "function":  { color: "magenta" },
+    "date":      { color: "blue" },
+    "uuid":      { color: "cyan" }
   }
-}
+};
 
-if (mongo_hacker_config['show_banner']) {
-  print(mongo_hacker_config['banner_message'] + mongo_hacker_config['version']);
+if (mongo_hacker_config["show_banner"]) {
+  print(mongo_hacker_config["banner_message"] + mongo_hacker_config["version"]);
 }
 
