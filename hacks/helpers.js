@@ -24,7 +24,7 @@ function isMongos() {
 }
 
 function getSlowms() {
-    if(!isMongos()){
+    if(!isMongos()) {
         return db.getProfilingStatus().slowms;
     } else {
         return 100;

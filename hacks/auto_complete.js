@@ -1,4 +1,4 @@
-function listDbs(){
+function listDbs() {
   return db.adminCommand("listDatabases").databases.map(function(d){return d.name;});
 }
 

@@ -10,8 +10,8 @@ prompt = function() {
         var status = rs.status();
         var members = status.members;
         var rs_name = status.set;
-        for(var i = 0; i < members.length; i++){
-            if(members[i].self === true){
+        for(var i = 0; i < members.length; i++) {
+            if(members[i].self === true) {
                 rs_state = "[" + members[i].stateStr + ":" + rs_name + "]";
             }
         }
