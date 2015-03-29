@@ -3,14 +3,14 @@ base = base.js
 config = config.js
 
 all: mongo_hacker.js
+	@echo ""
+	@echo 'Run "make install" to replace your ~/.mongorc.js file:'
 
 mongo_hacker.js: ${config} ${base} ${hacks}
 	cat $^ > $@
-	@echo ""
-	@echo 'Run "make install" to replace your ~/.mongorc.js file:'
 	@ls -la ~/.mongorc.js
 
-install:
+install: mongo_hacker.js
 	@echo "INSTALLATION"
 	@echo "Linking MongoHacker to .mongorc.js in your home directory:"
 
