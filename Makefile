@@ -2,12 +2,15 @@ hacks = $(wildcard hacks/*.js)
 base = base.js
 config = config.js
 
-all: mongo_hacker.js install
+all: mongo_hacker.js
+	@echo ""
+	@echo 'Run "make install" to replace your ~/.mongorc.js file:'
 
 mongo_hacker.js: ${config} ${base} ${hacks}
 	cat $^ > $@
+	@ls -la ~/.mongorc.js
 
-install:
+install: mongo_hacker.js
 	@echo "INSTALLATION"
 	@echo "Linking MongoHacker to .mongorc.js in your home directory:"
 
@@ -17,6 +20,9 @@ install:
 	fi
 
 	ln -sf "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
+
+clean:
+	rm "$(CURDIR)/mongo_hacker.js"
 
 uninstall:
 	rm -f ~/.mongorc.js

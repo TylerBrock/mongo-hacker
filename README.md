@@ -2,29 +2,28 @@
 
 ## Warnings
 
-* These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit pull requests.
-* Does not work in Windows (currently)
-* Does not work with shells or db servers < 2.2 (currently)
+* These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit [feedback or pull requests](https://github.com/TylerBrock/mongo-hacker/issues).
+* Does not work with `mongo` shell or MongoDB servers < 2.2
 * Updates called on existing cursors are new and experimental (see notes in API section)
 
 ## Installation
 
-Install as a global module from npm:
+### Install as a global module from `npm`:
 
 ```sh
 npm install -g mongo-hacker
 ```
 
-Or clone this repository and run `make`. It will link `mongo_hacker.js` to `.mongorc.js` in your home directory:
+### Clone the repository and install with `make`
+
+Clone this repository and run `make install`. This will rename your existing `.mongorc.js` file to `.mongorc.js.orig` and link `mongo_hacker.js` to `.mongorc.js` in your home directory:
 
 ```sh
 git clone https://github.com/TylerBrock/mongo-hacker.git
 rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
 cd mongo-hacker
-make
+make install
 ```
-
-Note: This currently only works with the v2.2+ of shell (which you can use with earlier versions of the server safely)
 
 ## Enhancements
 
@@ -43,7 +42,7 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
   - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
-  - Nicer sh.status() output (remove lastmod, take up less space, colorize chunk's shard)
+  - Nicer `sh.status()` output (remove lastmod, take up less space, colorize chunk's shard)
 
 #### Colorization
 
@@ -140,9 +139,11 @@ db.test.aggregate().group({_id: '$a', 'sum': {'$sum': 1}}).sort({sum: -1})
 #### Helpers
 
 General Shell Helpers
+
   - `findCommand('search')` list commands that match the search string
 
 Aggregation Framework Helpers -- on collections
+
   - Group and Count: `gcount(group_field, filter)`
   - Group and Sum: `gsum(group_field, sum_field, filter)`
   - Group and Average: `gavg(group_field, avg_field, filter)`
