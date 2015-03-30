@@ -8,7 +8,6 @@ all: mongo_hacker.js
 
 mongo_hacker.js: ${config} ${base} ${hacks}
 	cat $^ > $@
-	@ls -la ~/.mongorc.js
 
 install: mongo_hacker.js
 	@echo "INSTALLATION"
