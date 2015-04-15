@@ -11,7 +11,7 @@ shellHelper.count = function (what) {
     what = args[0]
     args = args.splice(1)
 
-    if (what == "documents") {
+    if (what == "documents" || what == "docs") {
         var maxNameLength = 0;
         var paddingLength = 2;
         db.getCollectionNames().forEach(function (collectionName) {
