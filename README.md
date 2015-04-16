@@ -50,6 +50,18 @@ Colorized query output for console/terminal windows supporting ANSI color codes.
 
 ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
+### Additional shell commands
+
+The MongoDB shell offers various "shell commands" _(sometimes referred to as "shell helpers" as well)_ that make interactive use of the shell much more convenient than [proper, Javascript-only scripted use of the shell][interactive_versus_scripted].
+
+To make interactive use of the MongoDB shell even more convenient, `mongo-hacker` adds the following shell commands:
+
+* `count documents`/`count docs`: count the number of documents in all _(non-`system`)_ collections in the database - by [@pvdb][pvdb]
+
+[interactive_versus_scripted]: http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#differences-between-interactive-and-scripted-mongo
+
+[pvdb]: https://github.com/pvdb
+
 ### API Additions
 
 #### General
