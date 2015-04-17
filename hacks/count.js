@@ -12,7 +12,6 @@ shellHelper.count = function (what) {
     args = args.splice(1)
 
     if (what == "documents" || what == "docs") {
-        var paddingLength = 2;
         var maxNameLength = db.getCollectionNames().reduce(function(maxLength, collectionName) {
           return (collectionName.length > maxLength) ? collectionName.length : maxLength ;
         }, 0);
@@ -20,10 +19,11 @@ shellHelper.count = function (what) {
           // exclude "system" collections from "count" operation
           if (collectionName.startsWith('system.')) { return ; }
           var count = db.getCollection(collectionName).count();
-          while(collectionName.length < maxNameLength + paddingLength)
-            collectionName = collectionName + " ";
 
-          print(colorize(collectionName, { color: 'green', bright: true }) + commify(count) + " document(s)")
+          print(
+            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
+            + "  " + commify(count) + " document(s)"
+          );
         });
         return "";
     }
