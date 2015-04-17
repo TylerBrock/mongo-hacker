@@ -55,13 +55,10 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        var maxNameLength = 0;
         var paddingLength = 2;
-        db.getCollectionNames().forEach(function (collectionName) {
-          if (collectionName.length > maxNameLength) {
-            maxNameLength = collectionName.length;
-          }
-        });
+        var maxNameLength = db.getCollectionNames().reduce(function(maxLength, collectionName) {
+          return (collectionName.length > maxLength) ? collectionName.length : maxLength ;
+        }, 0);
         db.getCollectionNames().forEach(function (collectionName) {
           var stats = db.getCollection(collectionName).stats();
           while(collectionName.length < maxNameLength + paddingLength)
