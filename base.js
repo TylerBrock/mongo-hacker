@@ -11,7 +11,7 @@ if (_isWindows() && mongo_hacker_config['windows_warning']) {
 if (typeof db !== 'undefined') {
     var current_version = parseFloat(db.serverBuildInfo().version).toFixed(2)
 
-    if (current_version < 2.2) {
-        print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with Mongo 2.2+\n");
+    if (current_version < 2.4) {
+        print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with Mongo 2.4+\n");
     }
 }
