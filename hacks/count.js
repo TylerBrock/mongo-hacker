@@ -12,21 +12,16 @@ shellHelper.count = function (what) {
     args = args.splice(1)
 
     if (what == "documents" || what == "docs") {
-        var maxNameLength = 0;
-        var paddingLength = 2;
-        db.getCollectionNames().forEach(function (collectionName) {
-          if (collectionName.length > maxNameLength) {
-            maxNameLength = collectionName.length;
-          }
-        });
+        var maxNameLength = maxLength(db.getCollectionNames());
         db.getCollectionNames().forEach(function (collectionName) {
           // exclude "system" collections from "count" operation
           if (collectionName.startsWith('system.')) { return ; }
           var count = db.getCollection(collectionName).count();
-          while(collectionName.length < maxNameLength + paddingLength)
-            collectionName = collectionName + " ";
 
-          print(colorize(collectionName, { color: 'green', bright: true }) + commify(count) + " document(s)")
+          print(
+            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
+            + "  " + commify(count) + " document(s)"
+          );
         });
         return "";
     }

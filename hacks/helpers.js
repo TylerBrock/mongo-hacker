@@ -30,3 +30,9 @@ function getSlowms(){
         return 100;
     }
 };
+
+function maxLength(listOfNames) {
+    return listOfNames.reduce(function(maxLength, name) {
+      return (name.length > maxLength) ? name.length : maxLength ;
+    }, 0);
+}
