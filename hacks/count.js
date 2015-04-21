@@ -12,9 +12,7 @@ shellHelper.count = function (what) {
     args = args.splice(1)
 
     if (what == "documents" || what == "docs") {
-        var maxNameLength = db.getCollectionNames().reduce(function(maxLength, collectionName) {
-          return (collectionName.length > maxLength) ? collectionName.length : maxLength ;
-        }, 0);
+        var maxNameLength = maxLength(db.getCollectionNames());
         db.getCollectionNames().forEach(function (collectionName) {
           // exclude "system" collections from "count" operation
           if (collectionName.startsWith('system.')) { return ; }

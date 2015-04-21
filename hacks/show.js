@@ -55,9 +55,7 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        var maxNameLength = db.getCollectionNames().reduce(function(maxLength, collectionName) {
-          return (collectionName.length > maxLength) ? collectionName.length : maxLength ;
-        }, 0);
+        var maxNameLength = maxLength(db.getCollectionNames());
         db.getCollectionNames().forEach(function (collectionName) {
           var stats = db.getCollection(collectionName).stats();
           var size = (stats.size / 1024 / 1024).toFixed(3),
