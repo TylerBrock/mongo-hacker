@@ -83,8 +83,7 @@ shellHelper.show = function (what) {
 
             dbinfo.push({
                 name:      x.name,
-                size:      x.sizeOnDisk,
-                size_str:  sizeStr,
+                size_str:  (x.sizeOnDisk > 1) ? (sizeStr + "GB") : "(empty)",
                 name_size: nameLength,
                 gb_digits: gbDigits
             });
@@ -95,11 +94,7 @@ shellHelper.show = function (what) {
             var namePadding = maxNameLength - db.name_size;
             var sizePadding = maxGbDigits   - db.gb_digits;
             var padding = Array(namePadding + sizePadding + 3).join(" ");
-            if (db.size > 1) {
-                print(colorize(db.name, { color: 'green', bright: true }) + padding + db.size_str + "GB");
-            } else {
-                print(colorize(db.name, { color: 'green', bright: true }) + padding + "(empty)");
-            }
+            print(colorize(db.name, { color: 'green', bright: true }) + padding + db.size_str);
         });
 
         return "";
