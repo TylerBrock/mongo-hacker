@@ -35,4 +35,19 @@ function maxLength(listOfNames) {
     return listOfNames.reduce(function(maxLength, name) {
       return (name.length > maxLength) ? name.length : maxLength ;
     }, 0);
-}
+};
+
+function printPaddedColumns(keys, values) {
+    assert(keys.length == values.length);
+
+    maxKeyLength   = maxLength(keys);
+    maxValueLength = maxLength(values);
+
+    for (i = 0; i < keys.length; i++) {
+        print(
+            colorize(keys[i].pad(maxKeyLength, true), { color: 'green', bright: true })
+            + " - " // column separator...
+            + values[i].pad(maxValueLength)
+        );
+    }
+};
