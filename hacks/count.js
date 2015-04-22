@@ -7,17 +7,15 @@ shellHelper.count = function (what) {
     args = args.splice(1)
 
     if (what == "documents" || what == "docs") {
-        var maxNameLength = maxLength(db.getCollectionNames());
-        db.getCollectionNames().forEach(function (collectionName) {
-          // exclude "system" collections from "count" operation
-          if (collectionName.startsWith('system.')) { return ; }
-          var count = db.getCollection(collectionName).count();
-
-          print(
-            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
-            + "  " + count.commify() + " document(s)"
-          );
+        collectionNames = db.getCollectionNames().filter(function (collectionName) {
+            // exclude "system" collections from "count" operation
+            return !collectionName.startsWith('system.');
         });
+        documentCounts = collectionNames.map(function (collectionName) {
+            var count = db.getCollection(collectionName).count();
+            return (count.commify() + " document(s)");
+        });
+        printPaddedColumns(collectionNames, documentCounts);
         return "";
     }
 
