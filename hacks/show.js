@@ -83,19 +83,15 @@ shellHelper.show = function (what) {
 
             dbinfo.push({
                 name:      x.name,
-                size_str:  (x.sizeOnDisk > 1) ? (sizeStr + "GB") : "(empty)",
-                name_size: nameLength,
-                gb_digits: gbDigits
+                size_str:  (x.sizeOnDisk > 1) ? (sizeStr + "GB") : "(empty)"
             });
         });
 
         dbinfo.sort(function (a,b) { a.name - b.name });
         dbinfo.forEach(function (db) {
-            var sizePadding = maxGbDigits - db.gb_digits;
-            var padding = Array(sizePadding + 3).join(" ");
             print(
               colorize(db.name.pad(maxNameLength, true), { color: 'green', bright: true })
-              + padding + db.size_str
+              + "  " + db.size_str.pad(maxGbDigits + 6) // xxx.000GB, so 6 trailing chars
             );
         });
 
