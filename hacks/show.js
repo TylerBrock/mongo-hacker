@@ -55,17 +55,14 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        var maxNameLength = maxLength(db.getCollectionNames());
-        db.getCollectionNames().forEach(function (collectionName) {
-          var stats = db.getCollection(collectionName).stats();
-          var size = (stats.size / 1024 / 1024).toFixed(3),
-              storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
-
-          print(
-            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
-            + "  " + size + "MB / " + storageSize + "MB"
-          );
+        var collectionNames = db.getCollectionNames();
+        var collectionSizes = collectionNames.map(function (name) {
+            var stats = db.getCollection(name).stats();
+            var size = (stats.size / 1024 / 1024).toFixed(3);
+            var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+            return (size + "MB / " + storageSize + "MB");
         });
+        printPaddedColumns(collectionNames, collectionSizes);
         return "";
     }
 
