@@ -1,8 +1,3 @@
-function commify(number) {
-    // http://stackoverflow.com/questions/2901102
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
 // "count documents", a bit akin to "show collections"
 shellHelper.count = function (what) {
     assert(typeof what == "string");
@@ -20,7 +15,7 @@ shellHelper.count = function (what) {
 
           print(
             colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
-            + "  " + commify(count) + " document(s)"
+            + "  " + count.commify() + " document(s)"
           );
         });
         return "";
