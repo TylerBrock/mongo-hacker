@@ -91,10 +91,12 @@ shellHelper.show = function (what) {
 
         dbinfo.sort(function (a,b) { a.name - b.name });
         dbinfo.forEach(function (db) {
-            var namePadding = maxNameLength - db.name_size;
-            var sizePadding = maxGbDigits   - db.gb_digits;
-            var padding = Array(namePadding + sizePadding + 3).join(" ");
-            print(colorize(db.name, { color: 'green', bright: true }) + padding + db.size_str);
+            var sizePadding = maxGbDigits - db.gb_digits;
+            var padding = Array(sizePadding + 3).join(" ");
+            print(
+              colorize(db.name.pad(maxNameLength, true), { color: 'green', bright: true })
+              + padding + db.size_str
+            );
         });
 
         return "";
