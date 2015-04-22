@@ -43,10 +43,12 @@ function printPaddedColumns(keys, values) {
     maxKeyLength   = maxLength(keys);
     maxValueLength = maxLength(values);
 
+    columnSeparator = mongo_hacker_config['column_separator'];
+
     for (i = 0; i < keys.length; i++) {
         print(
             colorize(keys[i].pad(maxKeyLength, true), { color: 'green', bright: true })
-            + " - " // column separator...
+            + " " + columnSeparator + " "
             + values[i].pad(maxValueLength)
         );
     }
