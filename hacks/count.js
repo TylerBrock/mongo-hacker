@@ -6,6 +6,16 @@ shellHelper.count = function (what) {
     what = args[0]
     args = args.splice(1)
 
+    if (what == "collections" || what == "tables") {
+        databaseNames = db.getMongo().getDatabaseNames();
+        collectionCounts = databaseNames.map(function (databaseName) {
+            var count = db.getMongo().getDB(databaseName).getCollectionNames().length;
+            return (count.commify() + " collection(s)");
+        });
+        printPaddedColumns(databaseNames, collectionCounts);
+        return "";
+    }
+
     if (what == "documents" || what == "docs") {
         collectionNames = db.getCollectionNames().filter(function (collectionName) {
             // exclude "system" collections from "count" operation
