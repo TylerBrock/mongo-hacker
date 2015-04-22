@@ -72,15 +72,13 @@ shellHelper.show = function (what) {
     if (what == "dbs" || what == "databases") {
         var dbs = db.getMongo().getDBs();
         var dbinfo = [];
-        var maxNameLength = 0;
+        var maxNameLength = maxLength(db.getMongo().getDatabaseNames());
         var maxGbDigits = 0;
 
         dbs.databases.forEach(function (x){
             var sizeStr = (x.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
-            var nameLength = x.name.length;
             var gbDigits = sizeStr.indexOf(".");
 
-            if( nameLength > maxNameLength) maxNameLength = nameLength;
             if( gbDigits > maxGbDigits ) maxGbDigits = gbDigits;
 
             dbinfo.push({
