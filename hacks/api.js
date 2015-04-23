@@ -54,7 +54,7 @@ Mongo.prototype.getDatabaseNames = function() {
     //
     // mongo-hacker FTW :-)
     return this.getDBs().databases.reduce(function(names, db) {
-      return names.concat(db.name);
+        return names.concat(db.name);
     }, []);
 }
 
