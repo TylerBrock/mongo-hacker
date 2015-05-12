@@ -43,6 +43,21 @@ DB.prototype.rename = function(newName) {
     db = this.getSiblingDB(newName);
 };
 
+Mongo.prototype.getDatabaseNames = function() {
+    // this API addition gives us the following convenience function:
+    //
+    //   db.getMongo().getDatabaseNames()
+    //
+    // which is similar in use to:
+    //
+    //   db.getCollectionNames()
+    //
+    // mongo-hacker FTW :-)
+    return this.getDBs().databases.reduce(function(names, db) {
+        return names.concat(db.name);
+    }, []);
+}
+
 //----------------------------------------------------------------------------
 // API Modifications (additions and changes)
 //----------------------------------------------------------------------------

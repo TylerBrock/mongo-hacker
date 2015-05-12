@@ -70,38 +70,28 @@ shellHelper.show = function (what) {
     }
 
     if (what == "dbs" || what == "databases") {
-        var dbs = db.getMongo().getDBs();
         var dbinfo = [];
-        var maxNameLength = 0;
+        var maxNameLength = maxLength(db.getMongo().getDatabaseNames());
         var maxGbDigits = 0;
 
-        dbs.databases.forEach(function (x){
+        db.getMongo().getDBs().databases.forEach(function (x){
             var sizeStr = (x.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
-            var nameLength = x.name.length;
             var gbDigits = sizeStr.indexOf(".");
 
-            if( nameLength > maxNameLength) maxNameLength = nameLength;
             if( gbDigits > maxGbDigits ) maxGbDigits = gbDigits;
 
             dbinfo.push({
                 name:      x.name,
-                size:      x.sizeOnDisk,
-                size_str:  sizeStr,
-                name_size: nameLength,
-                gb_digits: gbDigits
+                size_str:  (x.sizeOnDisk > 1) ? (sizeStr + "GB") : "(empty)"
             });
         });
 
         dbinfo.sort(function (a,b) { a.name - b.name });
         dbinfo.forEach(function (db) {
-            var namePadding = maxNameLength - db.name_size;
-            var sizePadding = maxGbDigits   - db.gb_digits;
-            var padding = Array(namePadding + sizePadding + 3).join(" ");
-            if (db.size > 1) {
-                print(colorize(db.name, { color: 'green', bright: true }) + padding + db.size_str + "GB");
-            } else {
-                print(colorize(db.name, { color: 'green', bright: true }) + padding + "(empty)");
-            }
+            print(
+              colorize(db.name.pad(maxNameLength, true), { color: 'green', bright: true })
+              + "  " + db.size_str.pad(maxGbDigits + 6) // xxx.000GB, so 6 trailing chars
+            );
         });
 
         return "";

@@ -64,6 +64,16 @@ To make interactive use of the MongoDB shell even more convenient, `mongo-hacker
 
 ### API Additions
 
+#### Scripting
+
+Get a list of database names: _(by [@pvdb][pvdb])_
+
+```js
+db.getMongo().getDatabaseNames()
+```
+
+_(note that this method is similar - functionality-wise and usage-wise - to the existing `db.getCollectionNames()` API method and allows for advanced, cross-database scripting in the MongoDB shell)_
+
 #### General
 
 Filter for a collection of documents:
