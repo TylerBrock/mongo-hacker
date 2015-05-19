@@ -56,6 +56,7 @@ The MongoDB shell offers various "shell commands" _(sometimes referred to as "sh
 
 To make interactive use of the MongoDB shell even more convenient, `mongo-hacker` adds the following shell commands:
 
+* `count collections`/`count tables`: count the number of collections in each of the mongo server's databases - by [@pvdb][pvdb]
 * `count documents`/`count docs`: count the number of documents in all _(non-`system`)_ collections in the database - by [@pvdb][pvdb]
 
 [interactive_versus_scripted]: http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#differences-between-interactive-and-scripted-mongo
