@@ -37,6 +37,27 @@ function maxLength(listOfNames) {
     }, 0);
 };
 
+function mergePaddedValues(leftHandValues, rightHandValues) {
+    assert(leftHandValues.length == rightHandValues.length);
+
+    maxLeftHandValueLength = maxLength(leftHandValues);
+    maxRightHandValueLength = maxLength(rightHandValues);
+
+    valueSeparator = mongo_hacker_config['value_separator'];
+
+    var combinedValues = []
+
+    for (i = 0; i < leftHandValues.length; i++) {
+        combinedValues[i] = (
+            leftHandValues[i].pad(maxLeftHandValueLength)
+            + " " + valueSeparator + " "
+            + rightHandValues[i].pad(maxRightHandValueLength)
+        );
+    }
+
+    return combinedValues;
+}
+
 function printPaddedColumns(keys, values) {
     assert(keys.length == values.length);
 

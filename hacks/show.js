@@ -59,10 +59,14 @@ shellHelper.show = function (what) {
         var collectionSizes = collectionNames.map(function (name) {
             var stats = db.getCollection(name).stats();
             var size = (stats.size / 1024 / 1024).toFixed(3);
-            var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
-            return (size + "MB / " + storageSize + "MB");
+            return (size + "MB");
         });
-        printPaddedColumns(collectionNames, collectionSizes);
+        var collectionStorageSizes = collectionNames.map(function (name) {
+            var stats = db.getCollection(name).stats();
+            var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+            return (storageSize + "MB");
+        });
+        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes));
         return "";
     }
 

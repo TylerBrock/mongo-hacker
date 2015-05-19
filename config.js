@@ -22,6 +22,7 @@ mongo_hacker_config = {
   windows_warning: true,            // show warning banner for windows
   force_color:     false,           // force color highlighting for Windows users
   column_separator:  '→',           // separator used when printing padded/aligned columns
+  value_separator:   '/',           // separator used when merging padded/aligned values
 
   // Shell Color Settings
   // Colors available: red, green, yellow, blue, magenta, cyan
