@@ -12,7 +12,7 @@ shellHelper.count = function (what) {
             var count = db.getMongo().getDB(databaseName).getCollectionNames().length;
             return (count.commify() + " collection(s)");
         });
-        printPaddedColumns(databaseNames, collectionCounts);
+        printPaddedColumns(databaseNames, collectionCounts, 'green');
         return "";
     }
 
@@ -25,7 +25,7 @@ shellHelper.count = function (what) {
             var count = db.getCollection(collectionName).count();
             return (count.commify() + " document(s)");
         });
-        printPaddedColumns(collectionNames, documentCounts);
+        printPaddedColumns(collectionNames, documentCounts, 'blue');
         return "";
     }
 

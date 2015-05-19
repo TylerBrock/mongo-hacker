@@ -66,7 +66,7 @@ shellHelper.show = function (what) {
             var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
             return (storageSize + "MB");
         });
-        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes));
+        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes), 'blue');
         return "";
     }
 
@@ -78,7 +78,7 @@ shellHelper.show = function (what) {
             var sizeInGigaBytes = (db.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
             return (db.sizeOnDisk > 1) ? (sizeInGigaBytes + "GB") : "(empty)";
         });
-        printPaddedColumns(databaseNames, databaseSizes);
+        printPaddedColumns(databaseNames, databaseSizes, 'green');
         return "";
     }
 
