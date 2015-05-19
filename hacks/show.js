@@ -67,13 +67,13 @@ shellHelper.show = function (what) {
     }
 
     if (what == "dbs" || what == "databases") {
-        var databaseNames = db.getMongo().getDBs().databases.reduce(function(names, db) {
-            return names.concat(db.name);
-        }, []);
-        var databaseSizes = db.getMongo().getDBs().databases.reduce(function(sizes, db) {
+        var databaseNames = db.getMongo().getDBs().databases.map(function(db) {
+            return db.name;
+        });
+        var databaseSizes = db.getMongo().getDBs().databases.map(function(db) {
             var sizeInGigaBytes = (db.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
-            return sizes.concat((db.sizeOnDisk > 1) ? (sizeInGigaBytes + "GB") : "(empty)");
-        }, []);
+            return (db.sizeOnDisk > 1) ? (sizeInGigaBytes + "GB") : "(empty)";
+        });
         printPaddedColumns(databaseNames, databaseSizes);
         return "";
     }
