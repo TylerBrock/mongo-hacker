@@ -55,45 +55,30 @@ shellHelper.show = function (what) {
     }
 
     if (what == "collections" || what == "tables") {
-        var maxNameLength = maxLength(db.getCollectionNames());
-        db.getCollectionNames().forEach(function (collectionName) {
-          var stats = db.getCollection(collectionName).stats();
-          var size = (stats.size / 1024 / 1024).toFixed(3),
-              storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
-
-          print(
-            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
-            + "  " + size + "MB / " + storageSize + "MB"
-          );
+        var collectionNames = db.getCollectionNames();
+        var collectionSizes = collectionNames.map(function (name) {
+            var stats = db.getCollection(name).stats();
+            var size = (stats.size / 1024 / 1024).toFixed(3);
+            return (size + "MB");
         });
+        var collectionStorageSizes = collectionNames.map(function (name) {
+            var stats = db.getCollection(name).stats();
+            var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+            return (storageSize + "MB");
+        });
+        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes));
         return "";
     }
 
     if (what == "dbs" || what == "databases") {
-        var dbinfo = [];
-        var maxNameLength = maxLength(db.getMongo().getDatabaseNames());
-        var maxGbDigits = 0;
-
-        db.getMongo().getDBs().databases.forEach(function (x){
-            var sizeStr = (x.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
-            var gbDigits = sizeStr.indexOf(".");
-
-            if( gbDigits > maxGbDigits ) maxGbDigits = gbDigits;
-
-            dbinfo.push({
-                name:      x.name,
-                size_str:  (x.sizeOnDisk > 1) ? (sizeStr + "GB") : "(empty)"
-            });
+        var databaseNames = db.getMongo().getDBs().databases.map(function(db) {
+            return db.name;
         });
-
-        dbinfo.sort(function (a,b) { a.name - b.name });
-        dbinfo.forEach(function (db) {
-            print(
-              colorize(db.name.pad(maxNameLength, true), { color: 'green', bright: true })
-              + "  " + db.size_str.pad(maxGbDigits + 6) // xxx.000GB, so 6 trailing chars
-            );
+        var databaseSizes = db.getMongo().getDBs().databases.map(function(db) {
+            var sizeInGigaBytes = (db.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
+            return (db.sizeOnDisk > 1) ? (sizeInGigaBytes + "GB") : "(empty)";
         });
-
+        printPaddedColumns(databaseNames, databaseSizes);
         return "";
     }
 

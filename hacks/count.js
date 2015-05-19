@@ -1,8 +1,3 @@
-function commify(number) {
-    // http://stackoverflow.com/questions/2901102
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
 // "count documents", a bit akin to "show collections"
 shellHelper.count = function (what) {
     assert(typeof what == "string");
@@ -12,17 +7,15 @@ shellHelper.count = function (what) {
     args = args.splice(1)
 
     if (what == "documents" || what == "docs") {
-        var maxNameLength = maxLength(db.getCollectionNames());
-        db.getCollectionNames().forEach(function (collectionName) {
-          // exclude "system" collections from "count" operation
-          if (collectionName.startsWith('system.')) { return ; }
-          var count = db.getCollection(collectionName).count();
-
-          print(
-            colorize(collectionName.pad(maxNameLength, true), { color: 'green', bright: true })
-            + "  " + commify(count) + " document(s)"
-          );
+        collectionNames = db.getCollectionNames().filter(function (collectionName) {
+            // exclude "system" collections from "count" operation
+            return !collectionName.startsWith('system.');
         });
+        documentCounts = collectionNames.map(function (collectionName) {
+            var count = db.getCollection(collectionName).count();
+            return (count.commify() + " document(s)");
+        });
+        printPaddedColumns(collectionNames, documentCounts);
         return "";
     }
 

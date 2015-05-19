@@ -53,6 +53,11 @@ function surround(name, inside) {
     return [name, '(', inside, ')'].join('');
 }
 
+Number.prototype.commify = function() {
+    // http://stackoverflow.com/questions/2901102
+    return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 NumberLong.prototype.tojson = function() {
     var color = mongo_hacker_config.colors.number;
     var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
