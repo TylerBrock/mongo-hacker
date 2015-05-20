@@ -153,7 +153,7 @@ function isInArray(array, value) {
 tojsonObject = function( x, indent, nolint, sort_keys ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
-	var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
+    var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
@@ -197,9 +197,9 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
     if ( sortKeys ) {
         // Disable sorting if this object looks like an index spec
         if ( (isInArray(keylist, "v") && isInArray(keylist, "key") && isInArray(keylist, "name") && isInArray(keylist, "ns")) ) {
-           sortKeys = false;
+            sortKeys = false;
         } else {
-           keylist.sort();
+            keylist.sort();
         }
     }
 

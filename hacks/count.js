@@ -6,6 +6,16 @@ shellHelper.count = function (what) {
     what = args[0]
     args = args.splice(1)
 
+    if (what == "collections" || what == "tables") {
+        databaseNames = db.getMongo().getDatabaseNames();
+        collectionCounts = databaseNames.map(function (databaseName) {
+            var count = db.getMongo().getDB(databaseName).getCollectionNames().length;
+            return (count.commify() + " collection(s)");
+        });
+        printPaddedColumns(databaseNames, collectionCounts, mongo_hacker_config['colors']['databaseNames']);
+        return "";
+    }
+
     if (what == "documents" || what == "docs") {
         collectionNames = db.getCollectionNames().filter(function (collectionName) {
             // exclude "system" collections from "count" operation
@@ -15,7 +25,7 @@ shellHelper.count = function (what) {
             var count = db.getCollection(collectionName).count();
             return (count.commify() + " document(s)");
         });
-        printPaddedColumns(collectionNames, documentCounts);
+        printPaddedColumns(collectionNames, documentCounts, mongo_hacker_config['colors']['collectionNames']);
         return "";
     }
 

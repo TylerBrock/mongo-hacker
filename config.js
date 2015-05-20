@@ -37,7 +37,9 @@ mongo_hacker_config = {
     'binData':   { color: 'green', bright: true },
     'function':  { color: 'magenta' },
     'date':      { color: 'blue' },
-    'uuid':      { color: 'cyan' }
+    'uuid':      { color: 'cyan' },
+    'databaseNames':   { color: 'green', bright: true },
+    'collectionNames': { color: 'blue',  bright: true }
   }
 }
 

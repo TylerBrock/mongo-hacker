@@ -28,7 +28,7 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ){
         }
         return res;
     } else {
-       return new Aggregation( this ).match( ops || {} );
+        return new Aggregation( this ).match( ops || {} );
     }
 };
 
