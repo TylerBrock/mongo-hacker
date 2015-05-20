@@ -33,7 +33,7 @@ function getSlowms(){
 
 function maxLength(listOfNames) {
     return listOfNames.reduce(function(maxLength, name) {
-      return (name.length > maxLength) ? name.length : maxLength ;
+        return (name.length > maxLength) ? name.length : maxLength ;
     }, 0);
 };
 
