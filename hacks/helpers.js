@@ -67,12 +67,12 @@ function printPaddedColumns(keys, values, color) {
     columnSeparator = mongo_hacker_config['column_separator'];
 
     if (typeof color === 'undefined') {
-        color = 'gray';
+        color = { color: 'green', bright: true }
     }
 
     for (i = 0; i < keys.length; i++) {
         print(
-            colorize(keys[i].pad(maxKeyLength, true), { color: color, bright: true })
+            colorize(keys[i].pad(maxKeyLength, true), color)
             + " " + columnSeparator + " "
             + values[i].pad(maxValueLength)
         );
