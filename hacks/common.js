@@ -150,7 +150,7 @@ function isInArray(array, value) {
     return array.indexOf(value) > -1;
 }
 
-tojsonObject = function( x, indent, nolint, sort_keys ) {
+tojsonObject = function( x, indent, nolint, nocolor, sort_keys ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
@@ -211,7 +211,7 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint, sortKeys );
+        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
         if (num != total) {
             s += ",";
             num++;
@@ -224,20 +224,24 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
     return s + indent + "}";
 };
 
-
-tojson = function( x, indent , nolint, sort_keys ) {
+tojson = function( x, indent , nolint, nocolor, sort_keys ) {
 
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
+    if (null == tojson.caller) {
+        // Unknonwn caller context, so assume this is from C++ code
+        nocolor = true;
+    }
+
     if ( x === null )
-        return colorize("null", mongo_hacker_config.colors['null']);
+        return colorize("null", mongo_hacker_config.colors['null'], nocolor);
 
     if ( x === undefined )
-        return colorize("undefined", mongo_hacker_config.colors['undefined']);
+        return colorize("undefined", mongo_hacker_config.colors['undefined'], nocolor);
 
     if ( x.isObjectId ) {
         var color = mongo_hacker_config.colors['objectid'];
-        return surround('ObjectId', colorize('"' + x.str + '"', color));
+        return surround('ObjectId', colorize('"' + x.str + '"', color, nocolor));
     }
 
     if (!indent)
@@ -268,21 +272,21 @@ tojson = function( x, indent , nolint, sort_keys ) {
             }
         }
         s += "\"";
-        return colorize(s, mongo_hacker_config.colors.string);
+        return colorize(s, mongo_hacker_config.colors.string, nocolor);
     }
     case "number":
-        return colorize(x, mongo_hacker_config.colors.number);
+        return colorize(x, mongo_hacker_config.colors.number, nocolor);
     case "boolean":
-        return colorize("" + x, mongo_hacker_config.colors['boolean']);
+        return colorize("" + x, mongo_hacker_config.colors['boolean'], nocolor);
     case "object": {
-        s = tojsonObject( x, indent , nolint, sortKeys );
+        s = tojsonObject( x, indent , nolint, nocolor, sortKeys );
         if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
         return s;
     }
     case "function":
-        return colorize(x.toString(), mongo_hacker_config.colors['function']);
+        return colorize(x.toString(), mongo_hacker_config.colors['function'], nocolor);
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
