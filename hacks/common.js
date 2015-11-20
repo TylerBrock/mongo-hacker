@@ -11,15 +11,15 @@ ObjectId.prototype.tojson = function(indent, nolint) {
 
 var dateToJson = Date.prototype.tojson;
 
-Date.prototype.tojson = function() {
+Date.prototype.tojson = function(indent, nolint, nocolor) {
   var isoDateString = dateToJson.call(this);
   var dateString = isoDateString.substring(8, isoDateString.length-1);
 
-  var isodate = colorize(dateString, mongo_hacker_config.colors.date);
+  var isodate = colorize(dateString, mongo_hacker_config.colors.date, nocolor);
   return 'ISODate(' + isodate + ')';
 };
 
-Array.tojson = function( a , indent , nolint ){
+Array.tojson = function( a , indent , nolint, nocolor ){
     var lineEnding = nolint ? " " : "\n";
 
     if (!indent)
@@ -35,7 +35,7 @@ Array.tojson = function( a , indent , nolint ){
     var s = "[" + lineEnding;
     indent += __indent;
     for ( var i=0; i<a.length; i++){
-        s += indent + tojson( a[i], indent , nolint );
+        s += indent + tojson( a[i], indent , nolint, nocolor );
         if ( i < a.length - 1 ){
             s += "," + lineEnding;
         }
@@ -58,33 +58,33 @@ Number.prototype.commify = function() {
     return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-NumberLong.prototype.tojson = function() {
+NumberLong.prototype.tojson = function(indent, nolint, nocolor) {
     var color = mongo_hacker_config.colors.number;
-    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
+    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color, nocolor);
     return surround('NumberLong', output);
 };
 
-NumberInt.prototype.tojson = function() {
+NumberInt.prototype.tojson = function(indent, nolint, nocolor) {
     var color = mongo_hacker_config.colors.number;
-    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color);
+    var output = colorize('"' + this.toString().match(/-?\d+/)[0] + '"', color, nocolor);
     return surround('NumberInt', output);
 };
 
-BinData.prototype.tojson = function(indent , nolint) {
+BinData.prototype.tojson = function(indent , nolint, nocolor) {
     var uuidType = mongo_hacker_config.uuid_type;
     var uuidColor = mongo_hacker_config.colors.uuid;
     var binDataColor = mongo_hacker_config.colors.binData;
 
     if (this.subtype() === 3) {
-        var output = colorize('"' + uuidToString(this) + '"', uuidColor) + ', '
+        var output = colorize('"' + uuidToString(this) + '"', uuidColor, nocolor) + ', '
         output += colorize('"' + uuidType + '"', uuidColor)
         return surround('UUID', output);
     } else if (this.subtype() === 4) {
-        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor) + ')'
+        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor, nocolor) + ')'
         return surround('UUID', output);
     } else {
         var output = colorize(this.subtype(), {color: 'red'}) + ', '
-        output += colorize('"' + this.base64() + '"', binDataColor)
+        output += colorize('"' + this.base64() + '"', binDataColor, nocolor)
         return surround('BinData', output);
     }
 };
@@ -150,7 +150,7 @@ function isInArray(array, value) {
     return array.indexOf(value) > -1;
 }
 
-tojsonObject = function( x, indent, nolint, sort_keys ) {
+tojsonObject = function( x, indent, nolint, nocolor, sort_keys ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
@@ -161,11 +161,11 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
         indent = "";
 
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
-        return x.tojson( indent, nolint );
+        return x.tojson( indent, nolint, nocolor );
     }
 
     if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
-        return x.constructor.tojson( x, indent , nolint );
+        return x.constructor.tojson( x, indent , nolint, nocolor );
     }
 
     if ( x.toString() == "[object MaxKey]" )
@@ -211,7 +211,7 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color) + ": " + tojson( val, indent , nolint, sortKeys );
+        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
         if (num != total) {
             s += ",";
             num++;
@@ -224,20 +224,24 @@ tojsonObject = function( x, indent, nolint, sort_keys ) {
     return s + indent + "}";
 };
 
-
-tojson = function( x, indent , nolint, sort_keys ) {
+tojson = function( x, indent , nolint, nocolor, sort_keys ) {
 
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
+    if (null == tojson.caller) {
+        // Unknonwn caller context, so assume this is from C++ code
+        nocolor = true;
+    }
+
     if ( x === null )
-        return colorize("null", mongo_hacker_config.colors['null']);
+        return colorize("null", mongo_hacker_config.colors['null'], nocolor);
 
     if ( x === undefined )
-        return colorize("undefined", mongo_hacker_config.colors['undefined']);
+        return colorize("undefined", mongo_hacker_config.colors['undefined'], nocolor);
 
     if ( x.isObjectId ) {
         var color = mongo_hacker_config.colors['objectid'];
-        return surround('ObjectId', colorize('"' + x.str + '"', color));
+        return surround('ObjectId', colorize('"' + x.str + '"', color, nocolor));
     }
 
     if (!indent)
@@ -268,21 +272,21 @@ tojson = function( x, indent , nolint, sort_keys ) {
             }
         }
         s += "\"";
-        return colorize(s, mongo_hacker_config.colors.string);
+        return colorize(s, mongo_hacker_config.colors.string, nocolor);
     }
     case "number":
-        return colorize(x, mongo_hacker_config.colors.number);
+        return colorize(x, mongo_hacker_config.colors.number, nocolor);
     case "boolean":
-        return colorize("" + x, mongo_hacker_config.colors['boolean']);
+        return colorize("" + x, mongo_hacker_config.colors['boolean'], nocolor);
     case "object": {
-        s = tojsonObject( x, indent , nolint, sortKeys );
+        s = tojsonObject( x, indent , nolint, nocolor, sortKeys );
         if ( ( nolint === null || nolint === true ) && s.length < 80 && ( indent === null || indent.length === 0 ) ){
             s = s.replace( /[\s\r\n ]+/gm , " " );
         }
         return s;
     }
     case "function":
-        return colorize(x.toString(), mongo_hacker_config.colors['function']);
+        return colorize(x.toString(), mongo_hacker_config.colors['function'], nocolor);
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
