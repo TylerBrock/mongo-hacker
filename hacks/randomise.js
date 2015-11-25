@@ -15,14 +15,14 @@ function randomWord(length, words, seed){
 
     var text = "";
     var possible ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    
+        
     for (var j=0; j < words; j++){
         var word = "";
         for (var i=0; i < length; i++){
-            word += possible.charAt(Math.floor(Math.random()*possible.length));
+            word += possible.charAt(Random.randInt(possible.length));
         }
         if (seedOn == true){
-            var randomBool = Math.random() >= 0.8;
+            var randomBool = Random.rand() >= 0.8;
             if (randomBool == true){
                 text += seed + " ";
                 seedOn = false;
@@ -35,8 +35,9 @@ function randomWord(length, words, seed){
 
 function randomNumber(digits){
     /* randomNumber
-        max: how many digits of random number (default is 3).
+        max: how many digits of random number (default is 2).
     */
-    length = typeof length !== 'undefined' ? length : 1000;
-    return Math.floor(Math.random() * length);
+
+    digits = typeof digits !== 'undefined' ? digits : 100;
+    return Random.randInt(digits);
 };
