@@ -41,3 +41,17 @@ function randomNumber(digits){
     digits = typeof digits !== 'undefined' ? digits : 100;
     return Random.randInt(digits);
 };
+
+function randomDate(start, end){
+    /* randomDate
+       start: Date(), default 2 years ago. 
+       end: Date(), default today.
+    */
+    end = typeof end !== 'undefined' ? end : new Date();
+    if (typeof start === 'undefined') {	
+	start = end;
+        start.setYear(start.getFullYear() - 2);
+    }
+    return new Date(start.getTime() + (Random.randInt(24) + Random.randInt(31) * Random.rand() * 24 * 24 * 60 * 60 * 1000) );
+};
+
