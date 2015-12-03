@@ -43,6 +43,73 @@ DB.prototype.rename = function(newName) {
     db = this.getSiblingDB(newName);
 };
 
+DB.prototype.indexStats = function(collectionFilter, details){
+
+    details = details || false;
+
+    collectionNames = db.getCollectionNames().filter(function (collectionName) {
+        // exclude "system" collections from "count" operation
+
+        if (!collectionFilter) {
+            return !collectionName.startsWith('system.');
+        }
+
+        if (collectionName == collectionFilter) {
+            return !collectionName.startsWith('system.');
+        }
+    });
+    documentIndexes = collectionNames.map(function (collectionName) {
+        var count = db.getCollection(collectionName).count();
+        return (count.commify() + " document(s)");
+    });
+
+    columnSeparator = mongo_hacker_config['column_separator'];
+
+    assert(collectionNames.length == documentIndexes.length);
+
+    maxKeyLength   = maxLength(collectionNames);
+    maxValueLength = maxLength(documentIndexes);
+
+    for (i = 0; i < collectionNames.length; i++) {
+        print(
+            colorize(collectionNames[i].pad(maxKeyLength, true), mongo_hacker_config['colors']['collectionNames'])
+            + " " + columnSeparator + " "
+            + documentIndexes[i].pad(maxValueLength)
+        );
+
+        var stats = db.getCollection(collectionNames[i]).stats();
+        var totalIndexSize = (Math.round((stats.totalIndexSize / 1024 / 1024) * 10) / 10) + " MB";
+
+        var indexNames = [];
+        var indexSizes = [];
+        for (indexName in stats.indexSizes) {
+            indexSizes.push((Math.round((stats.indexSizes[indexName] / 1024 / 1024) * 10) / 10) + " MB");
+            indexNames.push("  " + indexName);
+        }
+
+        maxIndexKeyLength   = maxLength(indexNames);
+        maxIndexValueLength = maxLength(indexSizes);
+
+        print(
+            colorize("totalIndexSize".pad(maxKeyLength, true), mongo_hacker_config['colors']['string'])
+            + " " + columnSeparator + " "
+            + colorize(totalIndexSize.pad(maxValueLength), mongo_hacker_config['colors']['number'])
+        );
+
+        if (details) {
+            for (var j = 0; j < indexSizes.length; j++) {
+                print(
+                    colorize("" + indexNames[j].pad(maxIndexKeyLength, true), mongo_hacker_config['colors']['string'])
+                    + " " + columnSeparator + " "
+                    + colorize(indexSizes[j].pad(maxIndexValueLength), mongo_hacker_config['colors']['binData'])
+                );
+            };
+        }
+    }
+
+    return "";
+}
+
 Mongo.prototype.getDatabaseNames = function() {
     // this API addition gives us the following convenience function:
     //
