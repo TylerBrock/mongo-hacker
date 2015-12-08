@@ -141,7 +141,7 @@ DBQuery.prototype.shellPrint = function(){
 
                 if (winningPlan !== undefined) {
                     var index_use = "Index[";
-                    if (winningPlan.inputStage !== "COLLSCAN" || (winningInputStage !== undefined && winningInputStage.stage !== "IXSCAN")) {
+                    if (winningPlan.inputStage.stage === "COLLSCAN" || (winningInputStage !== undefined && winningInputStage.stage !== "IXSCAN")) {
                         index_use += colorize( "none", { color: "red", bright: true });
                     } else {
                         var fullScan = false;
