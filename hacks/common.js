@@ -121,17 +121,45 @@ DBQuery.prototype.shellPrint = function(){
             explain._query.$explain = true;
             explain._limit = Math.abs(n) * -1;
             var result = explain.next();
-            var type = result.cursor;
 
-            if (type !== undefined) {
-                var index_use = "Index[";
-                if (type == "BasicCursor") {
-                    index_use += colorize( "none", { color: "red", bright: true });
-                } else {
-                    index_use += colorize( result.cursor.substring(12), { color: "green", bright: true });
+            if (current_version < 3) {
+                var type = result.cursor;
+
+                if (type !== undefined) {
+                    var index_use = "Index[";
+                    if (type == "BasicCursor") {
+                        index_use += colorize( "none", { color: "red", bright: true });
+                    } else {
+                        index_use += colorize( result.cursor.substring(12), { color: "green", bright: true });
+                    }
+                    index_use += "]";
+                    output.push(index_use);
                 }
-                index_use += "]";
-                output.push(index_use);
+            } else {
+                var winningPlan = result.queryPlanner.winningPlan;
+                var winningInputStage = winningPlan.inputStage.inputStage;
+
+                if (winningPlan !== undefined) {
+                    var index_use = "Index[";
+                    if (winningPlan.inputStage !== "COLLSCAN" || (winningInputStage !== undefined && winningInputStage.stage !== "IXSCAN")) {
+                        index_use += colorize( "none", { color: "red", bright: true });
+                    } else {
+                        var fullScan = false;
+                        for (index in winningInputStage.keyPattern) {
+                            if (winningInputStage.indexBounds[index][0] == "[MinKey, MaxKey]") {
+                                fullScan = true;
+                            }
+                        }
+
+                        if (fullScan) {
+                            index_use += colorize( winningInputStage.indexName + " (full scan)", { color: "yellow", bright: true });
+                        } else {
+                            index_use += colorize( winningInputStage.indexName, { color: "green", bright: true });
+                        }
+                    }
+                    index_use += "]";
+                    output.push(index_use);
+                }
             }
         }
 
