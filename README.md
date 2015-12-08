@@ -56,7 +56,7 @@ To make interactive use of the MongoDB shell even more convenient, `mongo-hacker
 
 * `count collections`/`count tables`: count the number of collections in each of the mongo server's databases - by [@pvdb][pvdb]
 * `count documents`/`count docs`: count the number of documents in all _(non-`system`)_ collections in the database - by [@pvdb][pvdb]
-* `db.indexStats(['collectionName' [, bool details ]])`: list all collections and display the size of all indexes - by [@cog-g][cog-g]
+* `count indexes`: list all collections and display the size of all indexes - by [@cog-g][cog-g]
 
 [interactive_versus_scripted]: http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#differences-between-interactive-and-scripted-mongo
 
