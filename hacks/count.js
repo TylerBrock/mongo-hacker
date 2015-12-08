@@ -29,6 +29,11 @@ shellHelper.count = function (what) {
         return "";
     }
 
+    if (what == "index" || what == "indexes") {
+        db.indexStats("", 1);
+        return ""
+    }
+
     throw "don't know how to count [" + what + "]";
 
 }
