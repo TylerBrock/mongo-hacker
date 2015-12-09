@@ -39,6 +39,8 @@ make install
 
 ### Basic UX
 
+  - Colorized query output for console/terminal windows supporting ANSI color codes.
+    ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
   - Sort document keys by default
   - Highlight querytime if verboseShell is enabled
     - In **green** if querytime is at or below slowms
@@ -51,12 +53,6 @@ make install
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
   - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
   - Nicer `sh.status()` output (remove lastmod, take up less space, colorize chunk's shard)
-
-#### Colorization
-
-Colorized query output for console/terminal windows supporting ANSI color codes.
-
-![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
 ### Additional shell commands
 
