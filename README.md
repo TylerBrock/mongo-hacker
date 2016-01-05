@@ -24,17 +24,6 @@
 npm install -g mongo-hacker
 ```
 
-### Clone the repository and install with `make`
-
-Clone this repository, `cd` into it, and run `make install`. This will rename your existing `.mongorc.js` file to `.mongorc.js.orig` and link `mongo_hacker.js` to `.mongorc.js` in your home directory:
-
-```sh
-git clone --depth=1 https://github.com/TylerBrock/mongo-hacker.git
-rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
-cd mongo-hacker
-make install
-```
-
 ## Enhancements
 
 ### Basic UX
