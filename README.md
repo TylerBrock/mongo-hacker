@@ -18,15 +18,13 @@
 
 ## Installation
 
-### Install as a global module from `npm`:
-
 ```sh
 npm install -g mongo-hacker
 ```
 
 ## Enhancements
 
-### Basic UX
+#### Basic UX
 
   - Sort document keys by default
   - Highlight querytime if verboseShell is enabled
@@ -43,7 +41,7 @@ npm install -g mongo-hacker
   - Colorized query output for console/terminal windows supporting ANSI color codes.
     ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
-### Additional shell commands
+#### Additional shell commands
 
 The MongoDB shell offers various "shell commands" _(sometimes referred to as "shell helpers" as well)_ that make interactive use of the shell much more convenient than [proper, Javascript-only scripted use of the shell][interactive_versus_scripted].
 
@@ -58,9 +56,9 @@ To make interactive use of the MongoDB shell even more convenient, `mongo-hacker
 [pvdb]: https://github.com/pvdb
 [cog-g]: https://github.com/Cog-g
 
-### API Additions
+#### API Additions
 
-#### Scripting
+##### Scripting
 
 Get a list of database names: _(by [@pvdb][pvdb])_
 
@@ -70,7 +68,7 @@ db.getMongo().getDatabaseNames()
 
 _(note that this method is similar - functionality-wise and usage-wise - to the existing `db.getCollectionNames()` API method and allows for advanced, cross-database scripting in the MongoDB shell)_
 
-#### General
+##### General
 
 Filter for a collection of documents:
 
