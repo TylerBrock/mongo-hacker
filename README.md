@@ -36,7 +36,7 @@ npm install -g mongo-hacker
   - Disable notfication of "Type 'it' for more"
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
-  - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
+  - Show DBs has aligned columns, is sorted by database name and shows less significant digits (in master for Mongo 2.5/2.6)
   - Nicer `sh.status()` output (remove lastmod, take up less space, colorize chunk's shard)
   - Colorized query output for console/terminal windows supporting ANSI color codes.
     ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
