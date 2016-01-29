@@ -21,7 +21,7 @@ mongo_hacker_config = {
   show_banner:     true,            // show mongo-hacker version banner on startup
   windows_warning: true,            // show warning banner for windows
   force_color:     false,           // force color highlighting for Windows users
-  count_deltas:    true,            // "count documents" shows deltas with previous counts
+  count_deltas:    false,           // "count documents" shows deltas with previous counts
   column_separator:  '→',           // separator used when printing padded/aligned columns
   value_separator:   '/',           // separator used when merging padded/aligned values
 
