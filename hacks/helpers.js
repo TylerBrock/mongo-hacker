@@ -58,7 +58,7 @@ function mergePaddedValues(leftHandValues, rightHandValues) {
     return combinedValues;
 }
 
-function printPaddedColumns(keys, values, color) {
+function printPaddedColumns(keys, values) {
     assert(keys.length == values.length);
 
     maxKeyLength   = maxLength(keys);
@@ -66,13 +66,9 @@ function printPaddedColumns(keys, values, color) {
 
     columnSeparator = mongo_hacker_config['column_separator'];
 
-    if (typeof color === 'undefined') {
-        color = { color: 'green', bright: true }
-    }
-
     for (i = 0; i < keys.length; i++) {
         print(
-            colorize(keys[i].pad(maxKeyLength, true), color)
+            keys[i].pad(maxKeyLength, true)
             + " " + columnSeparator + " "
             + values[i].pad(maxValueLength)
         );
