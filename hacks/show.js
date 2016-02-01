@@ -67,7 +67,7 @@ shellHelper.show = function (what) {
             return (storageSize + "MB");
         });
         collectionNames = colorizeAll(collectionNames, mongo_hacker_config['colors']['collectionNames']);
-        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes));
+        printPaddedColumns(collectionNames, collectionSizes, collectionStorageSizes);
         return "";
     }
 

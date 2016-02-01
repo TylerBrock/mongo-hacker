@@ -37,40 +37,28 @@ function maxLength(listOfNames) {
     }, 0);
 };
 
-function mergePaddedValues(leftHandValues, rightHandValues) {
-    assert(leftHandValues.length == rightHandValues.length);
+function printPaddedColumns() {
+    var columnWidths = Array.prototype.map.call(
+      arguments,
+      function(column) {
+        return maxLength(column);
+      }
+    );
 
-    maxLeftHandValueLength = maxLength(leftHandValues);
-    maxRightHandValueLength = maxLength(rightHandValues);
-
-    valueSeparator = mongo_hacker_config['value_separator'];
-
-    var combinedValues = []
-
-    for (i = 0; i < leftHandValues.length; i++) {
-        combinedValues[i] = (
-            leftHandValues[i].pad(maxLeftHandValueLength)
-            + " " + valueSeparator + " "
-            + rightHandValues[i].pad(maxRightHandValueLength)
-        );
+    for (i = 0; i < arguments[0].length; i++) {
+        row = "";
+        for (j = 0; j < arguments.length; j++) {
+            row += arguments[j][i].toString().pad(columnWidths[j], (j == 0));
+            if (j < (arguments.length - 1)) {
+                separator = ((j == 0) ?
+                    mongo_hacker_config['column_separator'] :
+                    mongo_hacker_config['value_separator']
+                );
+                row += " " + separator + " ";
+            }
+        }
+        print(row);
     }
 
-    return combinedValues;
-}
-
-function printPaddedColumns(keys, values) {
-    assert(keys.length == values.length);
-
-    maxKeyLength   = maxLength(keys);
-    maxValueLength = maxLength(values);
-
-    columnSeparator = mongo_hacker_config['column_separator'];
-
-    for (i = 0; i < keys.length; i++) {
-        print(
-            keys[i].pad(maxKeyLength, true)
-            + " " + columnSeparator + " "
-            + values[i].pad(maxValueLength)
-        );
-    }
+    return null;
 };
