@@ -8,7 +8,7 @@ function delta(currentCount, previousCount) {
                     (delta + " not supported");
 }
 
-// global variable (to ensure "persistence")
+// global variable (to ensure "persistence" of document counts)
 shellHelper.previousDocumentCount = {};
 
 // "count documents", a bit akin to "show collections"
