@@ -28,7 +28,8 @@ shellHelper.count = function (what) {
             var count = db.getMongo().getDB(databaseName).getCollectionNames().length;
             return (count.commify() + " collection(s)");
         });
-        printPaddedColumns(databaseNames, collectionCounts, mongo_hacker_config['colors']['databaseNames']);
+        databaseNames = colorizeAll(databaseNames, mongo_hacker_config['colors']['databaseNames']);
+        printPaddedColumns(databaseNames, collectionCounts);
         return "";
     }
 
@@ -47,7 +48,8 @@ shellHelper.count = function (what) {
             // format the current document count, incl. delta since last count
             return (count.commify() + " document(s)" + delta(count, previous));
         });
-        printPaddedColumns(collectionNames, documentCounts, mongo_hacker_config['colors']['collectionNames']);
+        collectionNames = colorizeAll(collectionNames, mongo_hacker_config['colors']['collectionNames']);
+        printPaddedColumns(collectionNames, documentCounts);
         return "";
     }
 

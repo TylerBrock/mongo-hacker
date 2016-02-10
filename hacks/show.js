@@ -66,7 +66,8 @@ shellHelper.show = function (what) {
             var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
             return (storageSize + "MB");
         });
-        printPaddedColumns(collectionNames, mergePaddedValues(collectionSizes, collectionStorageSizes), mongo_hacker_config['colors']['collectionNames']);
+        collectionNames = colorizeAll(collectionNames, mongo_hacker_config['colors']['collectionNames']);
+        printPaddedColumns(collectionNames, collectionSizes, collectionStorageSizes);
         return "";
     }
 
@@ -79,7 +80,8 @@ shellHelper.show = function (what) {
             var sizeInGigaBytes = (db.sizeOnDisk / 1024 / 1024 / 1024).toFixed(3);
             return (db.sizeOnDisk > 1) ? (sizeInGigaBytes + "GB") : "(empty)";
         });
-        printPaddedColumns(databaseNames, databaseSizes, mongo_hacker_config['colors']['databaseNames']);
+        databaseNames = colorizeAll(databaseNames, mongo_hacker_config['colors']['databaseNames']);
+        printPaddedColumns(databaseNames, databaseSizes);
         return "";
     }
 

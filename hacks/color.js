@@ -51,3 +51,9 @@ function colorize( string, color, nocolor ) {
 
     return applyColorCode( string, params, nocolor );
 };
+
+function colorizeAll( strings, color, nocolor ) {
+    return strings.map(function(string) {
+        return colorize( string, color, nocolor );
+    });
+};
