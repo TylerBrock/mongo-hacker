@@ -51,6 +51,10 @@ To make interactive use of the MongoDB shell even more convenient, `mongo-hacker
 * `count documents`/`count docs`: count the number of documents in all _(non-`system`)_ collections in the database - by [@pvdb][pvdb]
 * `count indexes`: list all collections and display the size of all indexes - by [@cog-g][cog-g]
 
+Some of these commands have hidden features that can be enabled in the `mongo-hacker` config, to make the command output even more useful:
+
+* by changing the `count_deltas` setting to `true` in `config.js`, the `count documents` command will also print out the change in the number of documents since the last count - by [@pvdb][pvdb]
+
 [interactive_versus_scripted]: http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#differences-between-interactive-and-scripted-mongo
 
 [pvdb]: https://github.com/pvdb
