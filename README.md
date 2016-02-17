@@ -164,3 +164,11 @@ Aggregation Framework Helpers -- on collections
   - Group and Sum: `gsum(group_field, sum_field, filter)`
   - Group and Average: `gavg(group_field, avg_field, filter)`
 
+Run function on some/all databases
+
+```js
+runOnDbs(/db_names_regexp/, function(db) {
+    // callback is ran for each database which name matches regular expression
+    // db is that selected database
+});
+```
