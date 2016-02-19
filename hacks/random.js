@@ -15,8 +15,13 @@ var random = {
 
     _numstr : "0123456789",
 
-    _randint : function(maxval) {
-        return Math.floor(Math.random() * maxval);
+    randint : function(a, b) {
+        switch (arguments.length) {
+            case 1:
+                return Math.floor(Math.random() * a);
+            default:
+                return a + Math.floor(Math.random() * (b-a));
+        }
     },
 
     keyval : function() {
@@ -39,7 +44,7 @@ var random = {
         var words = words || random._phonetics;
         var n = n || 1;
         var len = words.length;
-        var out = random.array(n, function(){return words[random._randint(len)]});
+        var out = random.array(n, function(){return words[random.randint(len)]});
         return out.join(" ");
     },
 
@@ -56,7 +61,7 @@ var random = {
             case 0:
                 var len = 3;
             case 1:
-                var out = random.array(len, function(){return random._numstr[random._randint(10)]});
+                var out = random.array(len, function(){return random._numstr[random.randint(10)]});
                 return Number(out.join(""));
             case 2:
                 return Number(random.number(len) + "." + random.number(frac));
@@ -65,7 +70,7 @@ var random = {
 
     date : function(year) {
         year = year || (new Date()).getFullYear();
-        return new Date(year, random._randint(12), random._randint(30) + 1, 0, 0, random._randint(86400));
+        return new Date(year, random.randint(12), random.randint(30) + 1, 0, 0, random.randint(86400));
     }
 
 }
