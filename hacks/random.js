@@ -61,7 +61,8 @@ var random = {
             case 0:
                 var len = 3;
             case 1:
-                var out = random.array(len, function(){return random._numstr[random.randint(10)]});
+                var out = (len > 0) ? [random.randint(1,10)] : [0];
+                out = out.concat(random.array(len-1, function(){return random._numstr[random.randint(10)]}));
                 return Number(out.join(""));
             case 2:
                 return Number(random.number(len) + "." + random.number(frac));
