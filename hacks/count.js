@@ -1,11 +1,19 @@
 // helper function to format delta counts
 function delta(currentCount, previousCount) {
     var delta = Number(currentCount - previousCount);
-    return isNaN(delta) ? colorize("(first count)", { color: 'blue' }) :
-        (delta == 0) ?  colorize("(=)", { color: 'blue' }) :
-            (delta > 0) ? colorize("(+" + delta.commify() + ")", { color: 'green' }) :
-                (delta < 0) ? colorize("(" + delta.commify() + ")", { color: 'red' }) :
-                    (delta + " not supported");
+    var formatted_delta;
+    if (isNaN(delta)) {
+      formatted_delta = colorize("(first count)", { color: 'blue' });
+    } else if (delta == 0) {
+      formatted_delta = colorize("(=)", { color: 'blue' });
+    } else if (delta > 0) {
+      formatted_delta = colorize("(+" + delta.commify() + ")", { color: 'green' });
+    } else if (delta < 0) {
+      formatted_delta = colorize("(" + delta.commify() + ")", { color: 'red' });
+    } else {
+      formatted_delta = (delta + " not supported");
+    }
+    return formatted_delta;
 }
 
 // global variable (to ensure "persistence" of document counts)
