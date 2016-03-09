@@ -4,8 +4,8 @@
   "description": "MongoDB Shell Enhancements for Hackers",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "make all",
-    "update": "make all",
+    "install": "sudo make all",
+    "update": "sudo make all",
     "postuninstall": "make uninstall"
   },
   "preferGlobal": true,
