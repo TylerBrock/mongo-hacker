@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "sudo make all",
     "update": "sudo make all",
-    "postuninstall": "make uninstall"
+    "postuninstall": "sudo make uninstall"
   },
   "preferGlobal": true,
   "repository": {
