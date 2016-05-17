@@ -14,7 +14,7 @@ function randomWord(length, words, seed){
     var seedOn = typeof seed !== 'undefined';
 
     var text = "";
-    var possible ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var possible ="abcdefghijklmnopqrstuvwxyz";
         
     for (var j=0; j < words; j++){
         var word = "";
@@ -26,8 +26,8 @@ function randomWord(length, words, seed){
             if (randomBool == true){
                 text += seed + " ";
                 seedOn = false;
-	    }
-	}
+        }
+    }
         text += word + " ";
     }
     return text;
@@ -35,9 +35,8 @@ function randomWord(length, words, seed){
 
 function randomNumber(digits){
     /* randomNumber
-        max: how many digits of random number (default is 2).
+        max: highest random number (default is 100).
     */
-
     digits = typeof digits !== 'undefined' ? digits : 100;
     return Random.randInt(digits);
 };
@@ -48,10 +47,9 @@ function randomDate(start, end){
        end: Date(), default today.
     */
     end = typeof end !== 'undefined' ? end : new Date();
-    if (typeof start === 'undefined') {	
-	start = end;
+    if (typeof start === 'undefined') { 
+        start = new Date(end.getTime());
         start.setYear(start.getFullYear() - 2);
     }
-    return new Date(start.getTime() + (Random.randInt(24) + Random.randInt(31) * Random.rand() * 24 * 24 * 60 * 60 * 1000) );
+    return new Date(start.getTime() + Random.randInt(end.getTime() - start.getTime()));
 };
-
