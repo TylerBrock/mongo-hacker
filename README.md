@@ -1,3 +1,13 @@
+
+            ┌───────────────────────────────────────────────────────────────────────────────────┐
+            │           __  ___                           __  __           __                   │
+            │          /  |/  /___  ____  ____ _____     / / / /___ ______/ /_____  _____       │
+            │         / /|_/ / __ \/ __ \/ __ `/ __ \   / /_/ / __ `/ ___/ //_/ _ \/ ___/       │
+            │        / /  / / /_/ / / / / /_/ / /_/ /  / __  / /_/ / /__/ ,< /  __/ /           │
+            │       /_/  /_/\____/_/ /_/\__, /\____/  /_/ /_/\__,_/\___/_/|_|\___/_/            │
+            │                          /____/                                                   │
+            └───────────────────────────────────────────────────────────────────────────────────┘
+
 # MongoDB Shell Enhancements
 
 ## Warnings
@@ -8,26 +18,13 @@
 
 ## Installation
 
-### Install as a global module from `npm`:
-
 ```sh
 npm install -g mongo-hacker
 ```
 
-### Clone the repository and install with `make`
-
-Clone this repository, `cd` into it, and run `make install`. This will rename your existing `.mongorc.js` file to `.mongorc.js.orig` and link `mongo_hacker.js` to `.mongorc.js` in your home directory:
-
-```sh
-git clone --depth=1 https://github.com/TylerBrock/mongo-hacker.git
-rm -rf ~/.mongorc.js # may be needed as we don't force the link anymore
-cd mongo-hacker
-make install
-```
-
 ## Enhancements
 
-### Basic UX
+#### Basic UX
 
   - Sort document keys by default
   - Highlight querytime if verboseShell is enabled
@@ -39,16 +36,12 @@ make install
   - Disable notfication of "Type 'it' for more"
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
-  - Show DBs has aligned columns and shows less significant digits (in master for Mongo 2.5/2.6)
+  - Show DBs has aligned columns, is sorted by database name and shows less significant digits (in master for Mongo 2.5/2.6)
   - Nicer `sh.status()` output (remove lastmod, take up less space, colorize chunk's shard)
+  - Colorized query output for console/terminal windows supporting ANSI color codes.
+    ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
-#### Colorization
-
-Colorized query output for console/terminal windows supporting ANSI color codes.
-
-![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
-
-### Additional shell commands
+#### Additional shell commands
 
 The MongoDB shell offers various "shell commands" _(sometimes referred to as "shell helpers" as well)_ that make interactive use of the shell much more convenient than [proper, Javascript-only scripted use of the shell][interactive_versus_scripted].
 
@@ -56,14 +49,20 @@ To make interactive use of the MongoDB shell even more convenient, `mongo-hacker
 
 * `count collections`/`count tables`: count the number of collections in each of the mongo server's databases - by [@pvdb][pvdb]
 * `count documents`/`count docs`: count the number of documents in all _(non-`system`)_ collections in the database - by [@pvdb][pvdb]
+* `count indexes`: list all collections and display the size of all indexes - by [@cog-g][cog-g]
+
+Some of these commands have hidden features that can be enabled in the `mongo-hacker` config, to make the command output even more useful:
+
+* by changing the `count_deltas` setting to `true` in `config.js`, the `count documents` command will also print out the change in the number of documents since the last count - by [@pvdb][pvdb]
 
 [interactive_versus_scripted]: http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#differences-between-interactive-and-scripted-mongo
 
 [pvdb]: https://github.com/pvdb
+[cog-g]: https://github.com/Cog-g
 
-### API Additions
+#### API Additions
 
-#### Scripting
+##### Scripting
 
 Get a list of database names: _(by [@pvdb][pvdb])_
 
@@ -73,7 +72,7 @@ db.getMongo().getDatabaseNames()
 
 _(note that this method is similar - functionality-wise and usage-wise - to the existing `db.getCollectionNames()` API method and allows for advanced, cross-database scripting in the MongoDB shell)_
 
-#### General
+##### General
 
 Filter for a collection of documents:
 
