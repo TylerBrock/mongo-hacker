@@ -161,13 +161,13 @@ db.test.aggregate().group({_id: '$a', 'sum': {'$sum': 1}}).sort({sum: -1})
 For fast and simple random data generation you can utilise these methods below. You can use any of these functions in a loop. For example: 
 
 ```js
-// Inserts 10 random documents with data. 
-for (i=0; i<11; i++) { db.collection.insert({word: randomWord(), number: randomNumber(), date: randomDate() }); }
+// Inserts 20 documents with random data. 
+for (i=0; i<21; i++) { db.collection.insert({word: randomWord(), number: randomNumber(), date: randomDate() }); }
 ```
 
 ##### randomWord 
 
-You can specify length of each word, number of words, and seed a word in a sentence randomly. Use the optional `seed` parameter for testing text search.
+You can specify the length of each word, the number of words, and an optional seeded word in a sentence randomly. Use the optional `seed` parameter for testing text search.
 
 `randomWord(length=5, words=1, seed=undefined)` 
 
@@ -181,7 +181,7 @@ db.collection.insert( {words: randomWord(16)} )
 
 ##### randomNumber
 
-You can specify highest or maximum number to be randomly generated (exclusive)
+You can specify maximum number to be randomly generated (exclusive)
 
 `randomNumber(max=100)`
 
@@ -204,7 +204,7 @@ You can specify start and end dates range to be randomly generated. (exclusive)
 // Inserts a random date object in the range of 1st January 2016 to 1st February 2016
 db.collection.insert( {date: randomDate(ISODate("2016-01-01T00:00:00"), ISODate("2016-02-01T00:00:00"))})
 
-// If today is 19th May 2016 and you specify only the start of the day, this will generate random time between 00:00:00 to current time.  
+// If today is 19th May 2016 and you specify only the start of the day, this will generate random date object between 00:00:00 to current time.  
 db.collection.insert( {date: randomDate(ISODate("2016-05-19T00:00:00")) })
 ```
 
