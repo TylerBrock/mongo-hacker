@@ -158,7 +158,7 @@ db.test.aggregate().group({_id: '$a', 'sum': {'$sum': 1}}).sort({sum: -1})
 
 #### Data Generation
 
-For fast and simple random data generation you can utilise these methods below. You can use any of these functions in a loop. For example: 
+For easy and simple random data generation you can utilise these methods below. You can use any of these functions in a loop. For example: 
 
 ```js
 // Inserts 20 documents with random data. 
