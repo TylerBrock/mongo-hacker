@@ -62,3 +62,14 @@ function printPaddedColumns() {
 
     return null;
 };
+
+function runOnDbs(regexp, callback) {
+    var originalDb = db.getName();
+    db.getMongo().getDBs().databases.filter(function(db) {
+        return db.name.match(regexp); }
+    ).forEach(function(dbEntry) {
+        db = db.getSiblingDB(dbEntry.name);
+        callback(db);
+    });
+    db = db.getSiblingDB(originalDb);
+}
