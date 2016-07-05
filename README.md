@@ -162,7 +162,15 @@ For easy and simple random data generation you can utilise these methods below. 
 
 ```js
 // Inserts 20 documents with random data. 
-for (i=0; i<21; i++) { db.collection.insert({word: randomWord(), number: randomNumber(), date: randomDate() }); }
+for (i=1; i<21; i++) { 
+    db.collection.insert(
+            {
+             word: randomWord(), 
+             number: randomNumber(), 
+             date: randomDate() 
+            }
+    ); 
+}
 ```
 
 ##### randomWord 
@@ -173,10 +181,10 @@ You can specify the length of each word, the number of words, and an optional se
 
 ```js
 // Inserts a random sentence consisting of 5 letters per word, 5 words in total, with a probability to insert the word 'needle' in the sentence
-db.collection.insert( {words: randomWord(5, 5, 'needle')} )
+db.collection.insert( { words: randomWord(5, 5, 'needle') } )
 
 // Inserts a random word consisting of 16 letters
-db.collection.insert( {words: randomWord(16)} )
+db.collection.insert( { words: randomWord(16) } )
 ```
 
 ##### randomNumber
@@ -187,10 +195,10 @@ You can specify maximum number to be randomly generated (exclusive)
 
 ```js
 // Inserts a random number in the range of 0 or 1. 
-db.collection.insert( {number:randomNumber(2)} )
+db.collection.insert( { number: randomNumber(2) } )
 
 // Inserts a random number in the range of 0 or 999. 
-db.collection.insert( {number:randomNumber(1000)} )
+db.collection.insert( { number: randomNumber(1000) } )
 
 ```
 
@@ -202,10 +210,10 @@ You can specify start and end dates range to be randomly generated. (exclusive)
 
 ```js
 // Inserts a random date object in the range of 1st January 2016 to 1st February 2016
-db.collection.insert( {date: randomDate(ISODate("2016-01-01T00:00:00"), ISODate("2016-02-01T00:00:00"))})
+db.collection.insert( { date: randomDate(ISODate("2016-01-01T00:00:00"), ISODate("2016-02-01T00:00:00")) })
 
 // If today is 19th May 2016 and you specify only the start of the day, this will generate random date object between 00:00:00 to current time.  
-db.collection.insert( {date: randomDate(ISODate("2016-05-19T00:00:00")) })
+db.collection.insert( { date: randomDate(ISODate("2016-05-19T00:00:00")) })
 ```
 
 
