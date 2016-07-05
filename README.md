@@ -180,7 +180,8 @@ You can specify the length of each word, the number of words, and an optional se
 `randomWord(length=5, words=1, seed=undefined)` 
 
 ```js
-// Inserts a random sentence consisting of 5 letters per word, 5 words in total, with a probability to insert the word 'needle' in the sentence
+// Inserts a random sentence consisting of 5 letters per word, 5 words in total, 
+// with a probability to insert the word 'needle' in the sentence
 db.collection.insert( { words: randomWord(5, 5, 'needle') } )
 
 // Inserts a random word consisting of 16 letters
@@ -212,7 +213,8 @@ You can specify start and end dates range to be randomly generated. (exclusive)
 // Inserts a random date object in the range of 1st January 2016 to 1st February 2016
 db.collection.insert( { date: randomDate(ISODate("2016-01-01T00:00:00"), ISODate("2016-02-01T00:00:00")) })
 
-// If today is 19th May 2016 and you specify only the start of the day, this will generate random date object between 00:00:00 to current time.  
+// If today is 19th May 2016 and you specify only the start of the day, 
+// this will generate random date object between 00:00:00 to current time.  
 db.collection.insert( { date: randomDate(ISODate("2016-05-19T00:00:00")) })
 ```
 
