@@ -1,3 +1,7 @@
+// Begin PS Hack
+// Copyright (c) 2016 Andrew Young
+// SPDX-License-Identifier: MIT
+
 function printTableRow(row, columnWidths) {
     var pad = function(x, i) {
         return x.pad(i).slice(-i).toString();
@@ -98,3 +102,5 @@ shellHelper.ps = function() {
 shellHelper.kill = function(opId) {
     return db.killOp(opId);
 }
+
+// End PS Hack
