@@ -42,12 +42,12 @@ function printTable(headers, rows) {
     }
     printTableRow(headers, columnWidths);
     printTableRow(hrs, columnWidths);
-    rows.forEach(row => printTableRow(row, columnWidths));
+    rows.forEach(function(row) { printTableRow(row, columnWidths); });
     
 }
 
 function getConnections() {
-    return db.currentOp(true).inprog.filter(x => x.connectionId);
+    return db.currentOp(true).inprog.filter(function(x) { return x.connectionId; } );
 }
 
 shellHelper.ps = function() {
