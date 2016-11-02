@@ -56,18 +56,27 @@ shellHelper.show = function (what) {
 
     if (what == "collections" || what == "tables") {
         var collectionNames = db.getCollectionNames();
-        var collectionSizes = collectionNames.map(function (name) {
+        var collectionStats = collectionNames.map(function (name) {
             var stats = db.getCollection(name).stats();
-            var size = (stats.size / 1024 / 1024).toFixed(3);
-            return (size + "MB");
+            if (stats.ok) {
+              var size = (stats.size / 1024 / 1024).toFixed(3);
+              return (size + "MB");
+            } else if (stats.code === 166) {
+              return "VIEW";
+            } else {
+              return "ERR:" + stats.code;
+            }
         });
         var collectionStorageSizes = collectionNames.map(function (name) {
             var stats = db.getCollection(name).stats();
-            var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
-            return (storageSize + "MB");
+            if (stats.ok) {
+              var storageSize = (stats.storageSize / 1024 / 1024).toFixed(3);
+              return (storageSize + "MB");
+            }
+            return "";
         });
         collectionNames = colorizeAll(collectionNames, mongo_hacker_config['colors']['collectionNames']);
-        printPaddedColumns(collectionNames, collectionSizes, collectionStorageSizes);
+        printPaddedColumns(collectionNames, collectionStats, collectionStorageSizes);
         return "";
     }
 
