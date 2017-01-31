@@ -134,6 +134,7 @@ var psHack = {
             "Description",
             "Connection",
             "Op ID",
+            "App Name",
             "Client",
             "S",
             "Active",
@@ -159,6 +160,7 @@ var psHack = {
             print("  -r | --running <seconds>         Show only processes which have been running for a certain time");
             print("  -o | --op <operation>            Show commands running a certain operation");
             print("  -n | --ns <namespace>            Show commands running against a certain namespace*");
+            print("  -x | --app <app name>            Show commands with a matching app name*");
             print("  -l | --locks                     Show commands waiting for a lock");
             print("  -C | --collection <name>         Search the given collection instead of calling db.currentOp()");
             print("  -v | --verbose                   Print the query that is being run");
@@ -177,6 +179,7 @@ var psHack = {
         this.addOptionsToQuery(connectionOptions, "secs_running", options, ["r","running"], function(x) { return { $gt: x }; });
         this.addOptionsToQuery(connectionOptions, "op", options, ["o","op"]);
         this.addOptionsToQuery(connectionOptions, "ns", options, ["n","ns"], function(x) { return { $regex: "^" + x.replace(/\$/g, "\\$") } });
+        this.addOptionsToQuery(connectionOptions, "appName", options, ["x","app"], function(x) { return { $regex: new RegExp(x.replace(/\$/g, "\\$"), "i") } });
         this.addOptionsToQuery(connectionOptions, "waitingForLock", options, ["l","locks"]);
         var clientQuery = this.getOptionsAsQuery(options, ["c","client"], function(x) { return { $regex: "^" + x } });
         if (clientQuery != undefined) {
@@ -206,6 +209,7 @@ var psHack = {
             var description = op.desc || "";
             var connectionId = op.connectionId || "";
             var opId = op.opid || "";
+            var appName = op.appName || "";
             var client = op.client || op.client_s || "";
             var isMongos = op.client_s ? "S" : "";
             var active = op.active ? "Active" : "Idle";
@@ -220,6 +224,7 @@ var psHack = {
                 description,
                 connectionId,
                 opId,
+                appName,
                 client,
                 isMongos,
                 active,
