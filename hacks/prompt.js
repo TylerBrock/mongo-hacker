@@ -1,7 +1,7 @@
 // Improve the default prompt with hostname, process type, and version
 prompt = function() {
     var serverstatus = db.serverStatus();
-    var host = serverstatus.host.split('.')[0];
+    var host = getHostName().split('.')[0];
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
     var repl_set = db._adminCommand({"replSetGetStatus": 1}).ok !== 0;
