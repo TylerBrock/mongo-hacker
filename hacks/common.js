@@ -165,7 +165,7 @@ DBQuery.prototype.shellPrint = function(){
 
         if ( this.hasNext() ) {
             ___it___  = this;
-            output.push("More[" + colorize("true", { color: "green", bright: true }) + "]");
+            output.push("More[" + colorize("true", { color: "green", bright: true }) + "]", "Type 'it' to see next");
         }
         print(output.join(" -- "));
     }
