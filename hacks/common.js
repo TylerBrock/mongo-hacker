@@ -104,7 +104,7 @@ DBQuery.prototype.shellPrint = function(){
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
             var slowms = getSlowms();
-            var fetched = "Fetched " + n + " record(s) in ";
+            var fetched = "Fetched " + n + " record" + (n !== 1 ? "s" : "") + " in ";
             if (time > slowms) {
                 fetched += colorize(time + "ms", { color: "red", bright: true });
             } else {
