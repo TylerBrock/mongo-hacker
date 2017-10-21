@@ -116,50 +116,139 @@ DBQuery.prototype.shellPrint = function(){
         var paranoia = mongo_hacker_config.index_paranoia;
 
         if (typeof paranoia !== 'undefined' && paranoia) {
-            var explain = this.clone();
-            explain._ensureSpecial();
-            explain._query.$explain = true;
-            explain._limit = Math.abs(n) * -1;
-            var result = explain.next();
+            var explanation = this.explain();
+            var cursor = explanation.cursor;
+            var clauses = explanation.clauses;
+            var queryPlanner = explanation.queryPlanner;
 
-            if (current_version < 3) {
-                var type = result.cursor;
-
-                if (type !== undefined) {
-                    var index_use = "Index[";
-                    if (type == "BasicCursor") {
-                        index_use += colorize( "none", { color: "red", bright: true });
+            if (cursor !== undefined || clauses !== undefined) {
+                var index_use = "Index[";
+                var parseClause = function(clause) {
+                    var indexInfo;
+                    if (clause.cursor === "BasicCursor") {
+                        indexInfo = colorize("none", {color: "red", bright: true});
                     } else {
-                        index_use += colorize( result.cursor.substring(12), { color: "green", bright: true });
+                        var indexName = clause.cursor === "IDCursor" ? "_id_" : clause.cursor.split(" ")[1];
+                        indexInfo = colorize(indexName, {color: "green", bright: true});
+                        if (clause.indexOnly) {
+                            indexInfo += colorize("(covered)", {color: "green", bright: false});
+                        }
                     }
-                    index_use += "]";
-                    output.push(index_use);
+                    return indexInfo;
+                };
+                if (clauses) {
+                    var clauseInfo = [];
+                    var singleClauseInfo;
+                    clauses.forEach(function(clause) {
+                        singleClauseInfo = parseClause(clause);
+                        if (clauseInfo.filter(function(info) { return info === singleClauseInfo; }).length === 0) {
+                            clauseInfo.push(singleClauseInfo);
+                        }
+                    });
+                    index_use += clauseInfo.join(', ');
+                } else {
+                    index_use += parseClause(explanation);
                 }
-            } else {
-                var winningPlan = result.queryPlanner.winningPlan;
-                var winningInputStage = winningPlan.inputStage.inputStage;
-
-                if (winningPlan !== undefined) {
-                    var index_use = "Index[";
-                    if (winningPlan.inputStage.stage === "COLLSCAN" || (winningInputStage !== undefined && winningInputStage.stage !== "IXSCAN")) {
-                        index_use += colorize( "none", { color: "red", bright: true });
-                    } else {
-                        var fullScan = false;
-                        for (index in winningInputStage.keyPattern) {
-                            if (winningInputStage.indexBounds[index][0] == "[MinKey, MaxKey]") {
-                                fullScan = true;
+                index_use += "]";
+                output.push(index_use);
+            } else if (queryPlanner !== undefined) {
+                var collectionIndexes;
+                var getIndexNameByKey = (function(query) {
+                    return function(key) {
+                        if (!collectionIndexes) {
+                            var nsParts = query._ns.split('.');
+                            var dbName = nsParts[0];
+                            var colName = nsParts[1];
+                            collectionIndexes = db.getSisterDB(dbName)[colName].getIndexes();
+                        }
+                        return collectionIndexes.filter(function (index) {
+                          return JSON.stringify(index.key) === JSON.stringify(key);
+                        })[0].name;
+                    }
+                })(this);
+                var traverseStageTree = function(currentStage, results) {
+                    results = results || {
+                        collscans: 0,
+                        eof: false,
+                        fetches: 0,
+                        idhacks: 0,
+                        indexes: [],
+                        ixscans: 0
+                    };
+                    switch(currentStage.stage) {
+                    case "EOF":
+                        results.eof = true;
+                        break;
+                    case "COLLSCAN":
+                        results.collscans++;
+                        break;
+                    case "IDHACK":
+                        results.idhacks++;
+                        break;
+                    case "IXSCAN":
+                        results.ixscans++;
+                        var currentIndexName = currentStage.indexName;
+                        if (!currentIndexName) {
+                          currentIndexName = getIndexNameByKey(currentStage.keyPattern);
+                        }
+                        if (results.indexes.filter(function(indexName) { return indexName === currentIndexName; }).length === 0) {
+                            results.indexes.push(currentIndexName);
+                        }
+                        break;
+                    case "FETCH":
+                        results.fetches++;
+                      // Fallthrough.
+                    default:
+                        if (currentStage.inputStage) {
+                            traverseStageTree(currentStage.inputStage, results);
+                        } else if (currentStage.inputStages) {
+                            for (var i = 0, length = currentStage.inputStages.length; i < length; i++) {
+                                traverseStageTree(currentStage.inputStages[i], results);
                             }
                         }
-
-                        if (fullScan) {
-                            index_use += colorize( winningInputStage.indexName + " (full scan)", { color: "yellow", bright: true });
-                        } else {
-                            index_use += colorize( winningInputStage.indexName, { color: "green", bright: true });
-                        }
                     }
-                    index_use += "]";
-                    output.push(index_use);
+                    return results;
+                };
+                var parseQueryResults = function(results) {
+                    var indexInfo;
+                    if (results.eof) {
+                        indexInfo = colorize("collection doesn't exist", { color: "red", bright: true });
+                    } else if (results.idhacks) {
+                        indexInfo = colorize("_id_", { color: "green", bright: true });
+                    } else if (results.ixscans) {
+                        indexInfo = results.indexes.map(function(index) {
+                            return colorize(index, { color: "green", bright: true });
+                        }).join(', ');
+                        if (!results.fetches) {
+                            indexInfo += colorize(" (covered)", { color: "green", bright: false });
+                        }
+                    } else if (results.collscans) {
+                        indexInfo = colorize("none", { color: "red", bright: true });
+                    } else {
+                        indexInfo = colorize( "CAN'T DETERMINE", { color: "red", bright: true });
+                    }
+                    return indexInfo;
+                };
+
+                var index_use = "Index[";
+                if (queryPlanner.winningPlan.shards) {
+                    var shards = queryPlanner.winningPlan.shards;
+                    var shardIndexesInfo = [];
+                    shards.forEach(function(shard) {
+                        shardIndexesInfo.push(
+                            "shard " +
+                            colorize(shard.shardName, { color: "blue", bright: true }) +
+                            ": " +
+                            parseQueryResults(traverseStageTree(shard.winningPlan))
+                        );
+                    });
+                    index_use += shardIndexesInfo.join('; ');
+                } else {
+                    index_use += parseQueryResults(traverseStageTree(queryPlanner.winningPlan));
                 }
+
+                index_use += "]";
+                output.push(index_use);
             }
         }
 
