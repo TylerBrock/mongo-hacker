@@ -22,6 +22,16 @@
 npm install -g mongo-hacker
 ```
 
+
+#### Install from source
+```
+git clone https://github.com/TylerBrock/mongo-hacker
+cd mongo-hacker
+make install
+cd ..
+rm -rdf mongo-hacker/
+```
+
 ## Enhancements
 
 #### Basic UX
