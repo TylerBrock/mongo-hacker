@@ -80,7 +80,7 @@ BinData.prototype.tojson = function(indent , nolint, nocolor) {
         output += colorize('"' + uuidType + '"', uuidColor)
         return surround('UUID', output);
     } else if (this.subtype() === 4) {
-        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor, nocolor) + ')'
+        var output = colorize('"' + uuidToString(this, "default") + '"', uuidColor, nocolor)
         return surround('UUID', output);
     } else {
         var output = colorize(this.subtype(), {color: 'red'}) + ', '
