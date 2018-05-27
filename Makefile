@@ -18,7 +18,7 @@ install: mongo_hacker.js
 		echo "Backed up ~/.mongorc.js.orig" ; \
 	fi
 
-	ln -sf "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
+	cp "$(CURDIR)/mongo_hacker.js" ~/.mongorc.js
 
 clean:
 	rm "$(CURDIR)/mongo_hacker.js"
