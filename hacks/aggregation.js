@@ -19,14 +19,18 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ){
         }
 
         var cmd = {pipeline: arr};
-        Object.extend(cmd, extraOpts);
+        // Object.extend(cmd, extraOpts);
+        
+        var cmdObj = this._makeCommand("aggregate", cmd);
 
-        var res = this.runCommand("aggregate", cmd);
+        return this._db._runAggregate(cmdObj, extraOpts);
+        /* var res = this.runCommand("aggregate", cmd);
         if (!res.ok) {
             printStackTrace();
             throw "aggregate failed: " + tojson(res);
         }
         return res;
+        */
     } else {
         return new Aggregation( this ).match( ops || {} );
     }
