@@ -18,6 +18,10 @@ DBCollection.prototype.aggregate = function( ops, extraOpts ){
             extraOpts = {};
         }
 
+        if (extraOpts.cursor === undefined){
+            extraOpts.cursor = {batchSize: 1000};
+        }
+
         var cmd = {pipeline: arr};
         Object.extend(cmd, extraOpts);
 
