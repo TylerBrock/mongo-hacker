@@ -84,12 +84,6 @@ _(note that this method is similar - functionality-wise and usage-wise - to the 
 
 ##### General
 
-Filter for a collection of documents:
-
-```js
-db.collection.filter(<criteria>)
-```
-
 One for finding a single document:
 
 ```js
