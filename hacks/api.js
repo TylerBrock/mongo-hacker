@@ -134,8 +134,12 @@ DBQuery.prototype.upsert = function( upsert ){
     assert( upsert , "need an upsert object" );
 
     this._validate(upsert);
+
+    var startTime =
+        (typeof(_verboseShell) === 'undefined' || !_verboseShell) ? 0 : new Date().getTime();
+
     this._mongo.update( this._ns , this._query , upsert , true , false );
-    this._db._getExtraInfo("Upserted");
+    this._db._printExtraInfo("Upserted", startTime);
 };
 
 // Updates are always multi and never an upsert
@@ -144,8 +148,12 @@ DBQuery.prototype.update = function( update ){
 
     this._checkMulti();
     this._validate(update);
+
+    var startTime =
+        (typeof(_verboseShell) === 'undefined' || !_verboseShell) ? 0 : new Date().getTime();
+
     this._mongo.update( this._ns , this._query , update , false , true );
-    this._db._getExtraInfo("Updated");
+    this._db._printExtraInfo("Updated", startTime);
 };
 
 // Replace one document
@@ -153,8 +161,12 @@ DBQuery.prototype.replace = function( replacement ){
     assert( replacement , "need an update object" );
 
     this._validate(replacement);
+
+    var startTime =
+        (typeof(_verboseShell) === 'undefined' || !_verboseShell) ? 0 : new Date().getTime();
+
     this._mongo.update( this._ns , this._query , replacement , false , false );
-    this._db._getExtraInfo("Replaced");
+    this._db._printExtraInfo("Replaced", startTime);
 };
 
 // Remove is always multi
@@ -166,8 +178,12 @@ DBQuery.prototype.remove = function(){
     }
 
     this._checkMulti();
+
+    var startTime =
+        (typeof(_verboseShell) === 'undefined' || !_verboseShell) ? 0 : new Date().getTime();
+
     this._mongo.remove( this._ns , this._query , false );
-    this._db._getExtraInfo("Removed");
+    this._db._printExtraInfo("Removed", startTime);
 };
 
 //----------------------------------------------------------------------------
