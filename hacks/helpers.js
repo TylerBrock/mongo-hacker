@@ -25,6 +25,12 @@ function isMongos() {
 
 function getSlowms(){
     if (!isMongos()){
+        var current_version = parseFloat(db.serverBuildInfo().version).toFixed(2);
+        if (current_version >= 4.0) {
+            // The `profile` command can block with pending transactions in 4.0+ (#193)
+            return 100;
+        }
+
         var res = db._dbCommand({profile: -1});
         return (res.ok ? res.slowms : 100);
     } else {
