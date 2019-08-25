@@ -266,6 +266,17 @@ tojson = function( x, indent , nolint, nocolor, sort_keys ) {
 
     var sortKeys = (null == sort_keys) ? mongo_hacker_config.sort_keys : sort_keys;
 
+    try {
+        if (tojson.caller === null) {
+            // Unknown caller context, so assume this is from C++ code
+            nocolor = true;
+        }
+    }
+    catch (err) {
+        // Access to caller function can be disabled in strict mode
+        no_color = true;
+    }
+
     if ( x === null )
         return colorize("null", mongo_hacker_config.colors['null'], nocolor);
 
