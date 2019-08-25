@@ -24,7 +24,7 @@ function isMongos() {
 };
 
 function getSlowms(){
-    if(!isMongos()){
+    if (!isMongos()){
         var res = db._dbCommand({profile: -1});
         return (res.ok ? res.slowms : 100);
     } else {
@@ -40,10 +40,10 @@ function maxLength(listOfNames) {
 
 function printPaddedColumns() {
     var columnWidths = Array.prototype.map.call(
-      arguments,
-      function(column) {
-        return maxLength(column);
-      }
+        arguments,
+        function(column) {
+            return maxLength(column);
+        }
     );
 
     for (i = 0; i < arguments[0].length; i++) {
