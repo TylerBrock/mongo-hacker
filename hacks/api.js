@@ -134,7 +134,6 @@ DBQuery.prototype.upsert = function( upsert ){
     assert( upsert , "need an upsert object" );
 
     this._validate(upsert);
-    this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , upsert , true , false );
     this._db._getExtraInfo("Upserted");
 };
@@ -145,7 +144,6 @@ DBQuery.prototype.update = function( update ){
 
     this._checkMulti();
     this._validate(update);
-    this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , update , false , true );
     this._db._getExtraInfo("Updated");
 };
@@ -155,7 +153,6 @@ DBQuery.prototype.replace = function( replacement ){
     assert( replacement , "need an update object" );
 
     this._validate(replacement);
-    this._db._initExtraInfo();
     this._mongo.update( this._ns , this._query , replacement , false , false );
     this._db._getExtraInfo("Replaced");
 };
@@ -169,7 +166,6 @@ DBQuery.prototype.remove = function(){
     }
 
     this._checkMulti();
-    this._db._initExtraInfo();
     this._mongo.remove( this._ns , this._query , false );
     this._db._getExtraInfo("Removed");
 };
