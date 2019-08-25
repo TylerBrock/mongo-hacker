@@ -1,5 +1,15 @@
 __indent = Array(mongo_hacker_config.indent + 1).join(' ');
-__colorize = (_isWindows() && !mongo_hacker_config['force_color']) ? false : true;
+__colorize = mongo_hacker_config['use_color'];
+
+// Disable color for terminals that aren't likely to support ANSI color codes
+if (__colorize && !mongo_hacker_config['force_color']) {
+    if (_isWindows()) {
+        __colorize = false;
+    } else if (typeof(isInteractive) === typeof(Function)) {
+        // Requires MongoDB 4.2+ shell
+        __colorize = isInteractive();
+    }
+}
 
 ObjectId.prototype.toString = function() {
     return this.str;
