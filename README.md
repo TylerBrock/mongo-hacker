@@ -37,17 +37,15 @@ rm -rdf mongo-hacker/
 #### Basic UX
 
   - Sort document keys by default
+  - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
   - Highlight querytime if verboseShell is enabled
     - In **green** if querytime is at or below slowms
     - In **red** if query time is above slowms
   - Default indent is 2 spaces instead of tab
     - Customizable by setting `indent` key of config
-  - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
-  - Disable notfication of "Type 'it' for more"
+  - Disable notification of "Type 'it' for more"
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
-  - Always pretty print. You can still use default format by appending `.ugly()` to the end of db statement.
-  - Show DBs has aligned columns, is sorted by database name and shows less significant digits (in master for Mongo 2.5/2.6)
-  - Nicer `sh.status()` output (remove lastmod, take up less space, colorize chunk's shard)
+  - Always pretty print. You can still use default format by appending `.ugly()` to the end of a statement.
   - Colorized query output for console/terminal windows supporting ANSI color codes.
     ![Colorized Output](http://tylerbrock.github.com/mongo-hacker/screenshots/colorized_shell.png)
 
