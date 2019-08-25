@@ -36,14 +36,14 @@ rm -rdf mongo-hacker/
 
 #### Basic UX
 
-  - Sort document keys by default
-  - Verbose shell is enabled by default -- to disable: `setVerboseShell(false)`
-  - Highlight querytime if verboseShell is enabled
-    - In **green** if querytime is at or below slowms
+  - Verbose shell is enabled by default (config: `verbose_shell`)
+    - To toggle temporarily run `setVerboseShell(false)`
+  - Highlight query time if verbose shell is enabled
+    - In **green** if query time is at or below slowms
     - In **red** if query time is above slowms
-  - Default indent is 2 spaces instead of tab
-    - Customizable by setting `indent` key of config
+  - Default indent is 2 spaces instead of tab (config: `indent`)
   - Disable notification of "Type 'it' for more"
+  - Option to sort document keys (config: `sort_keys`)
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of a statement.
   - Colorized query output for console/terminal windows supporting ANSI color codes.
