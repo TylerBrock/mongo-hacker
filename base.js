@@ -9,9 +9,19 @@ if (_isWindows() && mongo_hacker_config['windows_warning']) {
 }
 
 if (typeof db !== 'undefined') {
-    var current_version = parseFloat(db.serverBuildInfo().version).toFixed(2)
+    var shell_version = parseFloat(version()).toFixed(1);
+    var server_version = parseFloat(db.serverBuildInfo().version).toFixed(1);
 
-    if (current_version < 2.4) {
-        print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with Mongo 2.4+\n");
+    if ((shell_version < 2.4) || (server_version < 2.4)) {
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        print("Sorry! MongoDB Shell Enhancements for Hackers is only compatible with MongoDB 2.4+");
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    } else if ((shell_version < 3.4) || (server_version < 3.4)) {
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        print("WARNING: Your shell version (" + shell_version + ") " +
+              "or server version (" + server_version + ") of MongoDB is end of life\n");
+        print("You should consider upgrading to a supported version (currently 3.4 or newer):");
+        print("   https://docs.mongodb.com/manual/release-notes/");
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 }
