@@ -17,7 +17,7 @@ mongo_hacker_config = {
   sort_keys:      false,            // sort the keys in documents when displayed
   uuid_type:      'default',        // 'java', 'c#', 'python' or 'default'
   banner_message: 'Mongo-Hacker ',  // banner message
-  version:        '0.1.0-dev',      // current mongo-hacker version
+  version:        '0.1.0',          // current mongo-hacker version
   show_banner:     true,            // show mongo-hacker version banner on startup
   use_color:       true,            // use color highlighting if possible
   force_color:     false,           // force color even if Mongo Hacker thinks it won't work

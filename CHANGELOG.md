@@ -1,6 +1,24 @@
 Changes to Mongo Hacker
 =======================
 
+#### v0.1.0 / 2019-08-29
+ - Add support disclaimer and link to new CHANGELOG.md
+ - Remove sharding customisations: these have diverged too far from the upstream source.
+ - Fix #161: TypeError: this._db._initExtraInfo is not a function
+ - Fix #199: Edit function has ASCII color codes
+ - Fix #114: additional setting to turn off colorization
+ - Fix #195: profile command failing on .find() operation
+ - Fix #196: filter is not a function
+ - Fix #193: avoid calling `profile` command to get `slowms` on 4.0+ as this  may block with pending transactions
+ - Handle exceptions for GLE (not supported in 4.0+ transactions)
+ - Improved manual install:
+   - Change default "make install" target to copy to ~/.mongorc.js
+   - Backup  ~/.mongorc.js using current unixtime in filename
+   - Add "make develop" target to symlink to ~/.mongorc.js
+ - Add notice for EOL shell/server versions
+ - Refer to document(s) instead of record(s) and pluralise appropriately
+ - Add GitHub issue & PR templates
+
 #### v0.0.16 / 2018-10-28
  - Updated the code to work in older mongo shells (@vaelen)
  - Adding support for view to show (@jmatth)
