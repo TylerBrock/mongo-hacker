@@ -1,6 +1,9 @@
 Changes to Mongo Hacker
 =======================
 
+#### v0.1.1 / 2019-12-06
+ - Fix #208: Change Stream cursor methods isExhausted(), hasNext() broken
+
 #### v0.1.0 / 2019-08-29
  - Add support disclaimer and link to new CHANGELOG.md
  - Remove sharding customisations: these have diverged too far from the upstream source.
