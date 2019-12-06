@@ -3,37 +3,33 @@
 //----------------------------------------------------------------------------
 
 // Inject aggregation extension while supporting base API
-DBCollection.prototype.aggregate = function( ops, extraOpts ){
-    if (hasDollar(ops) || (ops instanceof Array && hasDollar(ops[0]))){
-        var arr = ops;
+DBCollection.prototype.aggregate = function( pipeline, aggregateOptions ){
 
-        if (!ops.length) {
-            arr = [];
-            for (var i=0; i<arguments.length; i++) {
-                arr.push(arguments[i]);
-            }
-        }
-
-        if (extraOpts === undefined) {
-            extraOpts = {};
-        }
-
-        if (extraOpts.cursor === undefined){
-            extraOpts.cursor = {batchSize: 1000};
-        }
-
-        var cmd = {pipeline: arr};
-        Object.extend(cmd, extraOpts);
-
-        var res = this.runCommand("aggregate", cmd);
-        if (!res.ok) {
-            printStackTrace();
-            throw "aggregate failed: " + tojson(res);
-        }
-        return res;
+    if (pipeline instanceof Array) {
+        // Expected case for modern usage; skip extra checks
+    } else if (hasDollar(pipeline) && !(pipeline instanceof Array) ) {
+        // Support legacy varargs form (2.6 and older) but warn on usage
+        print("WARNING: Legacy aggregate() syntax does not support passing options.");
+        print("         Passing the pipeline as an array is recommended.");
+        pipeline = Array.from(arguments);
+        aggregateOptions = {};
+    } else if (pipeline === undefined) {
+        pipeline = [];
     } else {
-        return new Aggregation( this ).match( ops || {} );
+        // Use Mongo Hacker's fluent aggregation API
+        return new Aggregation( this ).match( pipeline || {} );
     }
+
+    if (aggregateOptions === undefined) {
+        aggregateOptions = {};
+    }
+
+    if (aggregateOptions.cursor === undefined){
+        aggregateOptions.cursor = {batchSize: 1000};
+    }
+
+    const cmdObj = this._makeCommand("aggregate", {pipeline: pipeline});
+    return this._db._runAggregate(cmdObj, aggregateOptions);
 };
 
 // Helper method for determining if parameter has dollar signs
@@ -53,62 +49,56 @@ Aggregation = function( collection, fields ){
     this._collection = collection;
     this._pipeline = [];
     this._options = {};
-    this._shellBatchSize = 20;
 };
 
-Aggregation.prototype.has_next = function() {
-    return (this._index < this._results.length);
+Aggregation.prototype.hasNext = function() {
+    if (this._results == undefined) {
+        return;
+    } else {
+        return this._results.hasNext();
+    }
 };
+
+// Alias the cursor API's hasNext() in case any Mongo Hacker users relied on this
+Aggregation.prototype.has_next = Aggregation.prototype.hasNext;
 
 Aggregation.prototype.next = function() {
-    var next = this._results[this._index];
-    this._index += 1;
-    return next
+    if (this._results === undefined) {
+        return;
+    } else {
+        return this._results.next();
+    }
 };
 
 Aggregation.prototype.execute = function() {
-    // build the command
-    var aggregation = { pipeline: this._pipeline };
-    if ( this._readPreference ) {
-        aggregation["$readPreference"] = this.readPreference;
-    }
-    Object.extend(aggregation, this._options);
-
-    // run the command
-    var res = this._collection.runCommand(
-        "aggregate", aggregation
-    );
-
-    // check result
-    if ( ! res.ok ) {
-        printStackTrace();
-        throw "aggregation failed: " + tojson(res);
+    var aggregateOptions = this._options;
+    if (aggregateOptions === undefined) {
+        aggregateOptions = {};
     }
 
-    // setup results as pseudo cursor
-    this._index = 0;
-
-    if (this._options["explain"] === true) {
-        this._results = res.stages
-    } else {
-        this._results = res.result;
+    if (aggregateOptions.cursor === undefined){
+        aggregateOptions.cursor = {batchSize: 1000};
     }
 
-    return this._results;
+    var res = this._collection.aggregate(this._pipeline, aggregateOptions);
+    this._results = res;
+
+    return;
 };
 
 Aggregation.prototype.shellPrint = function() {
-    if (this._results == undefined) {
+    if (this._results === undefined) {
         this.execute();
     }
+
     try {
         var i = 0;
-        while (this.has_next() && i < this._shellBatchSize) {
+        while (this.hasNext() && (i < DBQuery.shellBatchSize) ) {
             var result = this.next();
             printjson( result );
             i++;
         }
-        if ( this.has_next() ) {
+        if ( this.hasNext() ) {
             print ( "Type \"it\" for more" );
             ___it___ = this;
         }
