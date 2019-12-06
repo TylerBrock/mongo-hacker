@@ -13,8 +13,9 @@
 ## Warnings
 
 * These enhancements are useful to me but they don't make sense for everyone. Feel free to tweak to your desire and please submit [feedback or pull requests](https://github.com/TylerBrock/mongo-hacker/issues).
+* Only tested with non-EOL versions of MongoDB server (currently 3.4+)
 * Does not work with `mongo` shell or MongoDB servers < 2.4
-* Updates called on existing cursors are new and experimental (see notes in API section)
+* Updates called on existing cursors are experimental (see notes in API section)
 
 ## Installation
 
