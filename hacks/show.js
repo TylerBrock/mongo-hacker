@@ -25,8 +25,20 @@ shellHelper.show = function () {
                 }
                 return "";
             });
+            var collectionDocCount = collectionNames.map(function (name) {
+              var stats = db.getCollection(name).stats();
+              if (stats.ok) {
+                var strCount = stats.count.toString();
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(strCount)) {
+                  strCount = strCount.replace(rgx, '$1' + ',' + '$2');
+                }
+                return (strCount + " r(s)");
+              }
+              return "";
+            });
             collectionNames = colorizeAll(collectionNames, mongo_hacker_config['colors']['collectionNames']);
-            printPaddedColumns(collectionNames, collectionStats, collectionStorageSizes);
+            printPaddedColumns(collectionNames, collectionStats, collectionStorageSizes, collectionDocCount);
             return "";
         }
 
