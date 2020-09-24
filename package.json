@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "description": "MongoDB Shell Enhancements for Hackers",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest test/hacks/*.test.js --coverage --detectOpenHandles",
     "install": "make install",
     "update": "make install",
     "postuninstall": "make uninstall"
@@ -27,5 +27,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/TylerBrock/mongo-hacker/issues"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2"
   }
 }

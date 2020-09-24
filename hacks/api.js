@@ -201,3 +201,7 @@ DBQuery.prototype.textSearch = function( search ) {
     var result = this._db.runCommand( text );
     return result.results;
 };
+
+if (module && module.exports) {
+    module.exports = { DB, Mongo, DBQuery };
+}

@@ -192,3 +192,7 @@ Aggregation.prototype.explain = function( ) {
     this._options['explain'] = true;
     return this;
 };
+
+if (module && module.exports) {
+    module.exports = { DBCollection, hasDollar, Aggregation };
+}
