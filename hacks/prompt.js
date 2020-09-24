@@ -1,31 +1,21 @@
-// Improve the default prompt with role, state, version and dbname
-
-run('df')
-print('')
-
+// Improve the default prompt with hostname, process type, and version
 prompt = function() {
-  // set version
-  const version = db.version();
-  const dbName = db.getName()
-  // case mongos
-  if (rs.status().info == 'mongos') {
-    return rs.status().info + ':[' + version + '] > ';
-  }
-
-  // config or replica
-  if (rs.status().set) {
-    role = rs.status().set;
-  } else {
-    role = 'config';
-    return role + ':[' + version + '] > ';
-  }
-
-  const stats = {
-    0: 'STARTING UP 1',
-    1: 'PRIMARY', 2: 'SECONDARY', 3: 'RECOVERING', 4: 'FATAL ERROR',
-    5: 'STARTING UP 2', 6: 'UNKNOWN STATE', 7: 'ARBITER', 8: 'DOWN'
-  }
-  const stateStr = stats[rs.status().myState]
-
-  return role + ':' + stateStr + ':[' + version + ']'+':' + dbName +'> ';
-}
+    var serverstatus = db.serverStatus();
+    var host = serverstatus.host.split('.')[0];
+    var process = serverstatus.process;
+    var version = db.serverBuildInfo().version;
+    var repl_set = db._adminCommand({"replSetGetStatus": 1}).ok !== 0;
+    var rs_state = '';
+    if(repl_set) {
+        var status = rs.status();
+        var members = status.members;
+        var rs_name = status.set;
+        for(var i = 0; i<members.length; i++){
+            if(members[i].self === true){
+                rs_state = '[' + members[i].stateStr + ':' + rs_name + ']';
+            }
+        };
+    }
+    var state = isMongos() ? '[mongos]' : rs_state;
+    return host + '(' + process + '-' + version + ')' + state + ' ' + db + '> ';
+};
