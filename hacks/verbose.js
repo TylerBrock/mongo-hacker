@@ -3,7 +3,7 @@ setVerboseShell(mongo_hacker_config.verbose_shell);
 DBQuery.prototype._prettyShell = true
 
 // Display verbose information about the operation
-DBCollection.prototype._printExtraInfo = function(action, startTime) {
+DBQuery.prototype._printExtraInfo = function(action, startTime) {
     if (typeof _verboseShell === 'undefined' || !_verboseShell) {
         __callLastError = true;
         return;
