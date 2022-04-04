@@ -21,6 +21,7 @@
 
 ```sh
 npm install -g mongo-hacker
+mongo
 ```
 
 
@@ -31,6 +32,7 @@ cd mongo-hacker
 make install
 cd ..
 rm -rdf mongo-hacker/
+mongo
 ```
 
 ## Enhancements
