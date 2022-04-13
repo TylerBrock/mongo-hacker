@@ -48,6 +48,7 @@ mongo
   - Disable notification of "Type 'it' for more"
   - Option to sort document keys (config: `sort_keys`)
   - Option to format keys in JavaScript style (config: `javascript_keys`)
+  - Option to quote strings minimally (config: `minimal_quotes`)
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of a statement.
   - Colorized query output for console/terminal windows supporting ANSI color codes.

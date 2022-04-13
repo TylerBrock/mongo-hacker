@@ -295,10 +295,11 @@ tojson = function( x, indent , nolint, nocolor, sort_keys ) {
     var s;
     switch ( typeof x ) {
     case "string": {
-        s = "\"";
+        var quoteChar = mongo_hacker_config.minimal_quotes && (x.indexOf("'")===-1 || x.indexOf('"')>-1) ? "'" : '"';
+        s = quoteChar;
         for ( var i=0; i<x.length; i++ ){
             switch (x[i]){
-                case '"': s += '\\"'; break;
+                case quoteChar: s += '\\' + quoteChar; break;
                 case '\\': s += '\\\\'; break;
                 case '\b': s += '\\b'; break;
                 case '\f': s += '\\f'; break;
@@ -316,7 +317,7 @@ tojson = function( x, indent , nolint, nocolor, sort_keys ) {
                 }
             }
         }
-        s += "\"";
+        s += quoteChar;
         return colorize(s, mongo_hacker_config.colors.string, nocolor);
     }
     case "number":

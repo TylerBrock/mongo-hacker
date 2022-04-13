@@ -16,6 +16,7 @@ mongo_hacker_config = {
   indent:         2,                // number of spaces for indent
   sort_keys:      false,            // sort the keys in documents when displayed
   javascript_keys:false,            // output is formatted with JavaScript style keys
+  minimal_quotes: false,            // single quote strings that don't contain them
   uuid_type:      'default',        // 'java', 'c#', 'python' or 'default'
   banner_message: 'Mongo-Hacker ',  // banner message
   version:        '0.1.1',          // current mongo-hacker version
