@@ -47,6 +47,7 @@ mongo
   - Default indent is 2 spaces instead of tab (config: `indent`)
   - Disable notification of "Type 'it' for more"
   - Option to sort document keys (config: `sort_keys`)
+  - Option to format keys in JavaScript style (config: `javascript_keys`)
   - Custom prompt: `hostname(process-version)[rs_status:set_name] db>`
   - Always pretty print. You can still use default format by appending `.ugly()` to the end of a statement.
   - Colorized query output for console/terminal windows supporting ANSI color codes.
@@ -160,29 +161,29 @@ db.test.aggregate().group({_id: '$a', 'sum': {'$sum': 1}}).sort({sum: -1})
 
 #### Data Generation
 
-For easy and simple random data generation you can utilise these methods below. You can use any of these functions in a loop. For example: 
+For easy and simple random data generation you can utilise these methods below. You can use any of these functions in a loop. For example:
 
 ```js
-// Inserts 20 documents with random data. 
-for (i=1; i<21; i++) { 
+// Inserts 20 documents with random data.
+for (i=1; i<21; i++) {
     db.collection.insert(
             {
-             word: randomWord(), 
-             number: randomNumber(), 
-             date: randomDate() 
+             word: randomWord(),
+             number: randomNumber(),
+             date: randomDate()
             }
-    ); 
+    );
 }
 ```
 
-##### randomWord 
+##### randomWord
 
 You can specify the length of each word, the number of words, and an optional seeded word in a sentence randomly. Use the optional `seed` parameter for testing text search.
 
-`randomWord(length=5, words=1, seed=undefined)` 
+`randomWord(length=5, words=1, seed=undefined)`
 
 ```js
-// Inserts a random sentence consisting of 5 letters per word, 5 words in total, 
+// Inserts a random sentence consisting of 5 letters per word, 5 words in total,
 // with a probability to insert the word 'needle' in the sentence
 db.collection.insert( { words: randomWord(5, 5, 'needle') } )
 
@@ -197,15 +198,15 @@ You can specify maximum number to be randomly generated (exclusive)
 `randomNumber(max=100)`
 
 ```js
-// Inserts a random number in the range of 0 or 1. 
+// Inserts a random number in the range of 0 or 1.
 db.collection.insert( { number: randomNumber(2) } )
 
-// Inserts a random number in the range of 0 or 999. 
+// Inserts a random number in the range of 0 or 999.
 db.collection.insert( { number: randomNumber(1000) } )
 
 ```
 
-##### randomDate 
+##### randomDate
 
 You can specify start and end dates range to be randomly generated. (exclusive)
 
@@ -215,7 +216,7 @@ You can specify start and end dates range to be randomly generated. (exclusive)
 // Inserts a random date object in the range of 1st January 2016 to 1st February 2016
 db.collection.insert( { date: randomDate(ISODate("2016-01-01T00:00:00"), ISODate("2016-02-01T00:00:00")) })
 
-// If today is 19th May 2016 and you specify only the start of the day, 
+// If today is 19th May 2016 and you specify only the start of the day,
 // this will generate random date object between 00:00:00 to current time.  
 db.collection.insert( { date: randomDate(ISODate("2016-05-19T00:00:00")) })
 ```
