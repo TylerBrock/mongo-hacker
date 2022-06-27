@@ -15,6 +15,7 @@ mongo_hacker_config = {
   enhance_api:    true,             // additonal api extensions
   indent:         2,                // number of spaces for indent
   sort_keys:      false,            // sort the keys in documents when displayed
+  javascript_keys:false,            // output is formatted with JavaScript style keys
   uuid_type:      'default',        // 'java', 'c#', 'python' or 'default'
   banner_message: 'Mongo-Hacker ',  // banner message
   version:        '0.1.1',          // current mongo-hacker version
@@ -53,4 +54,3 @@ mongo_hacker_config = {
 if (mongo_hacker_config['show_banner']) {
   print(mongo_hacker_config['banner_message'] + mongo_hacker_config['version']);
 }
-

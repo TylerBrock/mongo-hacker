@@ -249,7 +249,8 @@ tojsonObject = function( x, indent, nolint, nocolor, sort_keys ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
+        var formattedKey = mongo_hacker_config.javascript_keys && key.match(/^[A-Za-z_][A-Za-z\d_]*$/) ? key : '"' + key + '"';
+        s += indent + colorize(formattedKey, color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
         if (num != total) {
             s += ",";
             num++;
