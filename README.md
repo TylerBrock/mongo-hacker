@@ -8,6 +8,13 @@
             │                          /____/                                                   │
             └───────────────────────────────────────────────────────────────────────────────────┘
 
+**This project has not been maintained for quite some time! [MongoSH](https://github.com/mongodb-js/mongosh) is now available.**
+
+Please prefer using [MongoSH](https://github.com/mongodb-js/mongosh)!
+
+Continue at your own risk...
+
+
 # MongoDB Shell Enhancements
 
 ## Warnings
