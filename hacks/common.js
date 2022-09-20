@@ -249,7 +249,8 @@ tojsonObject = function( x, indent, nolint, nocolor, sort_keys ) {
             continue;
 
         var color = mongo_hacker_config.colors.key;
-        s += indent + colorize("\"" + key + "\"", color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
+        var formattedKey = mongo_hacker_config.javascript_keys && key.match(/^[A-Za-z_][A-Za-z\d_]*$/) ? key : '"' + key + '"';
+        s += indent + colorize(formattedKey, color, nocolor) + ": " + tojson( val, indent , nolint, nocolor, sortKeys );
         if (num != total) {
             s += ",";
             num++;
@@ -294,10 +295,11 @@ tojson = function( x, indent , nolint, nocolor, sort_keys ) {
     var s;
     switch ( typeof x ) {
     case "string": {
-        s = "\"";
+        var quoteChar = mongo_hacker_config.minimal_quotes && (x.indexOf("'")===-1 || x.indexOf('"')>-1) ? "'" : '"';
+        s = quoteChar;
         for ( var i=0; i<x.length; i++ ){
             switch (x[i]){
-                case '"': s += '\\"'; break;
+                case quoteChar: s += '\\' + quoteChar; break;
                 case '\\': s += '\\\\'; break;
                 case '\b': s += '\\b'; break;
                 case '\f': s += '\\f'; break;
@@ -315,7 +317,7 @@ tojson = function( x, indent , nolint, nocolor, sort_keys ) {
                 }
             }
         }
-        s += "\"";
+        s += quoteChar;
         return colorize(s, mongo_hacker_config.colors.string, nocolor);
     }
     case "number":
